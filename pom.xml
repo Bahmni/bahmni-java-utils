@@ -12,6 +12,7 @@
 
     <modules>
         <module>bahmni-migrator</module>
+        <module>web-clients</module>
     </modules>
 
     <build>
