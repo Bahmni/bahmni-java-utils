@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
@@ -11,30 +12,38 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.bahmni.webclients.WebClientsException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.InputStream;
 
 public class OpenMRSAuthenticator {
     private static Logger logger = Logger.getLogger(OpenMRSAuthenticator.class);
-    private String host;
+    private String authURL;
     private int connectionTimeout;
     private int readTimeout;
 
-    public OpenMRSAuthenticator(String host, int connectionTimeout, int readTimeout) {
-        this.host = host;
+    public OpenMRSAuthenticator(String authURL, int connectionTimeout, int readTimeout) {
+        this.authURL = authURL;
         this.connectionTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
     }
 
-    public String authenticate(String user, String password) throws Exception {
-        String URL = String.format("http://%s/openmrs/ws/rest/v1/session", host);
+    /**
+     *
+     * @param user     in plain text
+     * @param password in plain text
+     * @return JSessionId value
+     * @throws AuthenticationException, IOException
+     */
+    public OpenMRSAuthenticationResponse authenticate(String user, String password, ObjectMapper objectMapper) {
         String responseText = null;
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout);
             httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, readTimeout);
 
-            HttpGet httpGet = new HttpGet(URL);
+            HttpGet httpGet = new HttpGet(authURL);
 
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(user, password);
             BasicScheme scheme = new BasicScheme();
@@ -51,9 +60,10 @@ public class OpenMRSAuthenticator {
             }
             logger.info(String.format("Authentication response: %s", responseText));
             EntityUtils.consume(entity);
-            String sessionId = responseText.substring(14);
-            sessionId = sessionId.substring(0, sessionId.indexOf("\""));
-            return sessionId;
+
+            return objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
+        } catch (Exception e) {
+            throw new WebClientsException(e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
