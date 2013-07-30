@@ -6,9 +6,9 @@
         <artifactId>bahmni</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
-    <artifactId>bahmnicore-mail-appender</artifactId>
+    <artifactId>mail-appender</artifactId>
     <packaging>jar</packaging>
-    <name>BahmniEMR Mail Appender</name>
+    <name>Bahmni Mail Appender</name>
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>

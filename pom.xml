@@ -13,6 +13,7 @@
     <modules>
         <module>bahmni-migrator</module>
         <module>web-clients</module>
+        <module>mail-appender</module>
     </modules>
 
     <build>
