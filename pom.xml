@@ -14,6 +14,7 @@
         <module>bahmni-migrator</module>
         <module>web-clients</module>
         <module>mail-appender</module>
+        <module>file-uploader</module>
     </modules>
 
     <build>
