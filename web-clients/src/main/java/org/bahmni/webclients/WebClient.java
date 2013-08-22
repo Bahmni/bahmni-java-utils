@@ -60,4 +60,10 @@ public class WebClient {
         }
         return stringBuilder.toString();
     }
+
+    public Map<String, String> getCookies() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(sessionIdKey, sessionIdValue);
+        return map;
+    }
 }
