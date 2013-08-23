@@ -40,7 +40,7 @@ public class RowResult<T extends CSVEntity> {
     }
 
     public String getRowWithErrorColumnAsString() {
-        return StringUtils.join(Arrays.asList(getRowWithErrorColumn()), ",");
+        return StringUtils.join(getRowWithErrorColumn(), ",");
     }
 
     private static String getStackTrace(Throwable exception) {

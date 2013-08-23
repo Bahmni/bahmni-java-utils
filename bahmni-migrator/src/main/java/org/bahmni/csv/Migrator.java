@@ -45,4 +45,8 @@ public class Migrator<T extends CSVEntity> {
         aThrowable.printStackTrace(printWriter);
         return result.toString();
     }
+
+    public void shutdown() {
+        allStages.shutdown();
+    }
 }

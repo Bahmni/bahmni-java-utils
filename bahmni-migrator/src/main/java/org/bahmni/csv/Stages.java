@@ -21,4 +21,11 @@ class Stages<T extends CSVEntity>  {
         index++;
         return aStage;
     }
+
+    public void shutdown() {
+        for (Stage<T> stage : stages) {
+            stage.shutdown();
+        }
+
+    }
 }

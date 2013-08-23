@@ -21,6 +21,7 @@ public class Stage<T extends CSVEntity> {
     private CSVFile inputCSVFile;
 
     private static Logger logger = Logger.getLogger(Stage.class);
+    private ExecutorService executorService;
 
     private Stage(String stageName) {
         this.stageName = stageName;
@@ -38,7 +39,7 @@ public class Stage<T extends CSVEntity> {
         logger.info("Starting " + stageName + " Stage with file - " + inputCSVFile.getAbsoluteFileName());
         MigrateResult<T> stageResult = new MigrateResult<>(stageName);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        executorService = Executors.newFixedThreadPool(numberOfThreads);
         try {
             inputCSVFile.openForRead();
 
@@ -66,12 +67,15 @@ public class Stage<T extends CSVEntity> {
             throw new MigrationException("Could not execute threads", e);
         } finally {
             logger.warn("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
-
-            executorService.shutdown();
-            inputCSVFile.close();
-            errorFile.close();
+            shutdown();
         }
         return stageResult;
+    }
+
+    public void shutdown() {
+        if (executorService != null) executorService.shutdownNow();
+        if (inputCSVFile != null) inputCSVFile.close();
+        if (errorFile != null) errorFile.close();
     }
 
     void setErrorFile(CSVFile<T> errorFile) {
@@ -97,6 +101,7 @@ public class Stage<T extends CSVEntity> {
     public String toString() {
         return stageName;
     }
+
 }
 
 
