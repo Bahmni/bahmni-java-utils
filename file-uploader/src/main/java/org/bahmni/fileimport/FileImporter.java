@@ -3,6 +3,7 @@ package org.bahmni.fileimport;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.EntityPersister;
+import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
 import java.io.File;
 
@@ -10,13 +11,9 @@ import java.io.File;
 public class FileImporter<T extends CSVEntity> {
     private static Logger logger = Logger.getLogger(FileImporter.class);
 
-    public boolean importCSV(String fileLocation, String fileName, EntityPersister<T> persister, Class csvEntityClass) {
-        logger.info("Starting file import thread for " + fileLocation + "/" + fileName);
-        return ImportRegistry.register(fileLocation, fileName, persister, csvEntityClass);
-    }
-
-    public boolean importCSV(File csvFile, EntityPersister<T> persister, Class csvEntityClass) {
-        return importCSV(csvFile.getParent(), csvFile.getName(), persister, csvEntityClass);
+    public boolean importCSV(File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider) {
+        logger.info("Starting file import thread for " + csvFile.getAbsolutePath());
+        return ImportRegistry.register(csvFile, persister, csvEntityClass, jdbcConnectionProvider);
     }
 
 }
