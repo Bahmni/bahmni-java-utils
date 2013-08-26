@@ -17,5 +17,4 @@ public class CSVFileTest {
         CSVFile<DummyCSVEntity> dummyCSVEntityCSVFile = new CSVFile<>(".", "invalidFile.csv", DummyCSVEntity.class);
         dummyCSVEntityCSVFile.openForRead();
     }
-
 }

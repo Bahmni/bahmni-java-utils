@@ -7,13 +7,21 @@ import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
 import java.io.File;
 
-// Starts the importer thread. Gives ability to manage the thread.
+// External API to start the csv file import.
 public class FileImporter<T extends CSVEntity> {
     private static Logger logger = Logger.getLogger(FileImporter.class);
 
-    public boolean importCSV(File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider) {
+    public boolean importCSV(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy) {
         logger.info("Starting file import thread for " + csvFile.getAbsolutePath());
-        return ImportRegistry.register(csvFile, persister, csvEntityClass, jdbcConnectionProvider);
+        try {
+            Importer importer = ImportRegistry.register(originalFileName, csvFile, persister, csvEntityClass, uploadedBy);
+            importer.start(jdbcConnectionProvider);
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        }
+        logger.info("Initiated upload in background for " + csvFile.getAbsolutePath());
+        return true;
     }
 
 }

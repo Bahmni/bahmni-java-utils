@@ -4,6 +4,7 @@ public class MigrateResult<T extends CSVEntity> {
     private int successCount;
     private int failCount;
     private String stageName;
+    private CSVFile errorFile;
 
     public MigrateResult(String stageName) {
         this.stageName = stageName;
@@ -31,5 +32,16 @@ public class MigrateResult<T extends CSVEntity> {
 
     public String getStageName() {
         return stageName;
+    }
+
+    public void setErrorFile(CSVFile errorFile) {
+        this.errorFile = errorFile;
+    }
+
+    public String getErrorFileName() {
+        if (errorFile == null)
+            return null;
+
+        return errorFile.getAbsoluteFileName();
     }
 }

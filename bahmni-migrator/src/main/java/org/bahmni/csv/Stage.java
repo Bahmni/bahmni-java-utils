@@ -56,6 +56,8 @@ public class Stage<T extends CSVEntity> {
                 if (!rowResult.isSuccessful()) {
                     logger.error("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
+                    // TODO : Mujir - not entirely clean. Can this be merged with stageResult.addResult(rowResult); ????
+                    stageResult.setErrorFile(errorFile);
                 }
             }
 
@@ -66,7 +68,7 @@ public class Stage<T extends CSVEntity> {
             logger.error("Could not execute threads. " + getStackTrace(e));
             throw new MigrationException("Could not execute threads", e);
         } finally {
-            logger.warn("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
+            logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
             shutdown();
         }
         return stageResult;
