@@ -24,7 +24,7 @@ class Stages<T extends CSVEntity>  {
 
     public void shutdown() {
         for (Stage<T> stage : stages) {
-            stage.shutdown();
+            stage.closeResources();
         }
 
     }

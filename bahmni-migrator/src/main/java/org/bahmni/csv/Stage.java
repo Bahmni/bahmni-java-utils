@@ -54,7 +54,7 @@ public class Stage<T extends CSVEntity> {
                 RowResult<T> rowResult = result.get();
                 stageResult.addResult(rowResult);
                 if (!rowResult.isSuccessful()) {
-                    logger.error("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
+                    logger.info("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
                     // TODO : Mujir - not entirely clean. Can this be merged with stageResult.addResult(rowResult); ????
                     stageResult.setErrorFile(errorFile);
@@ -69,12 +69,12 @@ public class Stage<T extends CSVEntity> {
             throw new MigrationException("Could not execute threads", e);
         } finally {
             logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
-            shutdown();
+            closeResources();
         }
         return stageResult;
     }
 
-    public void shutdown() {
+    public void closeResources() {
         if (executorService != null) executorService.shutdownNow();
         if (inputCSVFile != null) inputCSVFile.close();
         if (errorFile != null) errorFile.close();
