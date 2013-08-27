@@ -1,0 +1,88 @@
+package org.bahmni.fileimport;
+
+import java.util.Date;
+
+public class ImportStatus {
+
+    private final String id;
+    private final String originalFileName;
+    private final String savedFileName;
+    private final String errorFileName;
+    private final String type;
+    private final String status;
+    private final int successfulRecords;
+    private final int failedRecords;
+    private final String stageName;
+    private final String uploadedBy;
+    private final Date startTime;
+    private final Date endTime;
+    private final String stackTrace;
+
+    public ImportStatus(String id, String originalFileName, String savedFileName, String errorFileName, String type, String status, int successfulRecords, int failedRecords, String stageName, String uploadedBy, Date startTime, Date endTime, String stackTrace) {
+        this.id = id;
+        this.originalFileName = originalFileName;
+        this.savedFileName = savedFileName;
+        this.errorFileName = errorFileName;
+        this.type = type;
+        this.status = status;
+        this.successfulRecords = successfulRecords;
+        this.failedRecords = failedRecords;
+        this.stageName = stageName;
+        this.uploadedBy = uploadedBy;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.stackTrace = stackTrace;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public String getSavedFileName() {
+        return savedFileName;
+    }
+
+    public String getErrorFileName() {
+        return errorFileName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getSuccessfulRecords() {
+        return successfulRecords;
+    }
+
+    public int getFailedRecords() {
+        return failedRecords;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public String getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public String getStackTrace() {
+        return stackTrace;
+    }
+}

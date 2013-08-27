@@ -10,7 +10,7 @@ public class RowResultTest {
     public void isSuccessful_returns_true_when_no_errormessage() {
         RowResult successfulRow = new RowResult(new DummyCSVEntity("1", "name"));
         Assert.assertTrue("isSuccessful() should be true, as there is no Error Message", successfulRow.isSuccessful());
-        Assert.assertTrue("isSuccessful() should be true, as there is no Error Message", RowResult.SUCCESS.isSuccessful());
+        Assert.assertTrue("isSuccessful() should be true, as there is no Error Message", new RowResult(new DummyCSVEntity()).isSuccessful());
     }
 
     @Test

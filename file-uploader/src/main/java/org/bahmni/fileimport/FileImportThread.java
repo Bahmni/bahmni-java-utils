@@ -38,6 +38,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
                     .persistWith(persister)
                     .withMultipleValidators(5)
                     .withMultipleMigrators(5)
+                    .withAllRecordsInValidationErrorFile()
                     .build();
             MigrateResult migrateResult = migrator.migrate();
             getNewImportStatusDao().saveFinished(csvFile, csvEntityClass.getSimpleName(), migrateResult);

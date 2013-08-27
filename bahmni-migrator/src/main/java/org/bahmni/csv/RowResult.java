@@ -5,11 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 
 public class RowResult<T extends CSVEntity> {
-    public static final RowResult SUCCESS = new RowResult<>();
-
     private T csvEntity;
     private String errorMessage;
 
@@ -25,8 +22,6 @@ public class RowResult<T extends CSVEntity> {
         this.csvEntity = csvEntity;
         this.errorMessage = errorMessage;
     }
-
-    private RowResult() {}
 
     public boolean isSuccessful() {
         return errorMessage == null || errorMessage.trim().isEmpty();

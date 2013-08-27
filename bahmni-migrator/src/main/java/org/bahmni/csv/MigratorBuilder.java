@@ -11,6 +11,7 @@ public class MigratorBuilder<T extends CSVEntity> {
     private final Class<T> entityClass;
     private int numberOfValidationThreads = 1;
     private int numberOfMigrationThreads = 1;
+    private boolean withAllRecordsInValidationErrorFile;
 
     public MigratorBuilder(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -24,6 +25,11 @@ public class MigratorBuilder<T extends CSVEntity> {
 
     public MigratorBuilder<T> persistWith(EntityPersister<T> entityPersister) {
         this.entityPersister = entityPersister;
+        return this;
+    }
+
+    public MigratorBuilder<T> withAllRecordsInValidationErrorFile() {
+        this.withAllRecordsInValidationErrorFile = true;
         return this;
     }
 
@@ -46,11 +52,16 @@ public class MigratorBuilder<T extends CSVEntity> {
         CSVFile migrationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, MIGRATION_ERROR_FILE_EXTENSION), entityClass);
         CSVFile inputCSVFile = new CSVFile(inputCSVFileLocation, inputCSVFileName, entityClass);
 
-        Stage validationStage = new StageBuilder().validation().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
         Stage migrationStage = new StageBuilder().migration().withInputFile(inputCSVFile).withErrorFile(migrationErrorFile).withNumberOfThreads(numberOfMigrationThreads).build();
 
         Stages allStages = new Stages();
-        allStages.addStage(validationStage);
+        if (withAllRecordsInValidationErrorFile) {
+            Stage validationWithAllRecordsInErrorStage = new StageBuilder().validationWithAllRecordsInErrorFile().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
+            allStages.addStage(validationWithAllRecordsInErrorStage);
+        } else {
+            Stage validationStage = new StageBuilder().validation().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
+            allStages.addStage(validationStage);
+        }
         allStages.addStage(migrationStage);
 
         return new Migrator<>(entityPersister, allStages);

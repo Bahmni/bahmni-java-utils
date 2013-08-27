@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class Stage<T extends CSVEntity> {
+    static final Stage VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE = new Stage("validation");
     static final Stage VALIDATION = new Stage("validation");
     static final Stage MIGRATION = new Stage("migration");
 
@@ -29,7 +30,7 @@ public class Stage<T extends CSVEntity> {
 
     public Callable<RowResult> getCallable(EntityPersister entityPersister, CSVEntity csvEntity) {
         // TODO : Mujir - can we do this more elegantly? If not for csvEntity we could inject Callable by constructor
-        if (this == Stage.VALIDATION)
+        if (this == Stage.VALIDATION || this == Stage.VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE)
             return new ValidationCallable(entityPersister, csvEntity);
 
         return new MigrationCallable(entityPersister, csvEntity);
@@ -50,9 +51,15 @@ public class Stage<T extends CSVEntity> {
                 results.add(rowResult);
             }
 
+            // TODO : Mujir - if multiple jobs are submitted, and one of them fails fatally in code below,
+            // TODO : the executor service would get closed, and throw RejectedExecutionException
             for (Future<RowResult> result : results) {
                 RowResult<T> rowResult = result.get();
                 stageResult.addResult(rowResult);
+
+                if (this == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE && rowResult.isSuccessful())
+                    errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
+
                 if (!rowResult.isSuccessful()) {
                     logger.info("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
@@ -115,6 +122,11 @@ class StageBuilder<T extends CSVEntity> {
 
     public StageBuilder<T> validation() {
         stage = Stage.VALIDATION;
+        return this;
+    }
+
+    public StageBuilder<T> validationWithAllRecordsInErrorFile() {
+        stage = Stage.VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE;
         return this;
     }
 

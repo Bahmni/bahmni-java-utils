@@ -2,21 +2,22 @@ package org.bahmni.fileimport.dao;
 
 import org.apache.log4j.Logger;
 import org.bahmni.csv.MigrateResult;
+import org.bahmni.fileimport.ImportStatus;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class ImportStatusDao {
     private static final String IN_PROGRESS = "IN_PROGRESS";
     private static final String COMPLETED = "COMPLETED";
     private static final String FATAL_ERROR = "ERROR";
-    private static final String COMPLETED_WITH_ERRORS= "COMPLETED_WITH_ERRORS";
+    private static final String COMPLETED_WITH_ERRORS = "COMPLETED_WITH_ERRORS";
 
     private JDBCConnectionProvider jdbcConnectionProvider;
 
@@ -82,6 +83,25 @@ public class ImportStatusDao {
         } finally {
             closeResources(connection, statement);
         }
+    }
+
+    public List<ImportStatus> getImportStatusFromDate(Date fromDate) throws SQLException {
+        Connection connection = jdbcConnectionProvider.getConnection();
+        PreparedStatement statement = null;
+        List<ImportStatus> importStatuses = new ArrayList<>();
+        try {
+            statement = connection.prepareStatement("select id, original_file_name, saved_file_name, error_file_name, type, status, successful_records, failed_records, stage_name, uploaded_by, start_time, end_time, stack_trace from import_status where start_time >= ? order by start_time desc");
+            statement.setDate(1, new java.sql.Date(fromDate.getTime()));
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                importStatuses.add(new ImportStatus(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
+                        resultSet.getString(4), resultSet.getString(5), resultSet.getString(6), resultSet.getInt(7), resultSet.getInt(8),
+                        resultSet.getString(9), resultSet.getString(10), resultSet.getTimestamp(11), resultSet.getTimestamp(12), resultSet.getString(13)));
+            }
+        } finally {
+            closeResources(connection, statement);
+        }
+        return importStatuses;
     }
 
     private static String getStackTrace(Throwable aThrowable) {
