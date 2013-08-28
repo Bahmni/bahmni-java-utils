@@ -3,11 +3,10 @@ package org.bahmni.fileimport;
 import java.util.Date;
 
 public class ImportStatus {
-
     private final String id;
     private final String originalFileName;
     private final String savedFileName;
-    private final String errorFileName;
+    private String errorFileName;
     private final String type;
     private final String status;
     private final int successfulRecords;
@@ -32,6 +31,10 @@ public class ImportStatus {
         this.startTime = startTime;
         this.endTime = endTime;
         this.stackTrace = stackTrace;
+    }
+
+    public void setErrorFileName(String errorFileName) {
+        this.errorFileName = errorFileName;
     }
 
     public String getId() {

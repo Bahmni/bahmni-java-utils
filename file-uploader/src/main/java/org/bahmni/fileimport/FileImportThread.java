@@ -10,6 +10,9 @@ import java.sql.SQLException;
 
 // Does the actual import. This includes basic validation, import and updating status tables..
 class FileImportThread<T extends CSVEntity> implements Runnable {
+    public static final int NUMBER_OF_VALIDATION_THREADS = 5;
+    public static final int NUMBER_OF_MIGRATION_THREADS = 5;
+
     private String originalFileName;
     private File csvFile;
     private final EntityPersister<T> persister;
@@ -36,8 +39,8 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
             migrator = new MigratorBuilder(csvEntityClass)
                     .readFrom(csvFile.getParent(), csvFile.getName())
                     .persistWith(persister)
-                    .withMultipleValidators(5)
-                    .withMultipleMigrators(5)
+                    .withMultipleValidators(NUMBER_OF_VALIDATION_THREADS)
+                    .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
                     .withAllRecordsInValidationErrorFile()
                     .build();
             MigrateResult migrateResult = migrator.migrate();
