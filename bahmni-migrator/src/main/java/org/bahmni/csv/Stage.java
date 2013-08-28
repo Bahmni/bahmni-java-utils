@@ -3,10 +3,7 @@ package org.bahmni.csv;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.exception.MigrationException;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -77,6 +74,9 @@ public class Stage<T extends CSVEntity> {
         } finally {
             logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
             closeResources();
+
+            if (this == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE && !stageResult.hasFailed())
+                errorFile.delete();
         }
         return stageResult;
     }

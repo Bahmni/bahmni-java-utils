@@ -82,4 +82,8 @@ class CSVFile<T extends CSVEntity> {
     public String getFileName() {
         return fileName;
     }
+
+    public void delete() {
+        new File(fileLocation, fileName) .delete();
+    }
 }

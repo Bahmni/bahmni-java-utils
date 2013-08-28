@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 // Registry can manage the threads
-class ImportRegistry<T extends CSVEntity> {
+public class ImportRegistry<T extends CSVEntity> {
     public static final int MAX_CONCURRENT_IMPORTS = 5;
 
     private static List<Importer> fileImportThreads = new ArrayList<>();
@@ -19,13 +19,6 @@ class ImportRegistry<T extends CSVEntity> {
         if (fileImportThreads.size() > MAX_CONCURRENT_IMPORTS)
             throw new FileImportException("Maximum number of concurrent uploads reached. Max Concurrent uploads - " +
                     MAX_CONCURRENT_IMPORTS + ". Current concurrent uploads - " + fileImportThreads.size() + ".");
-
-        // TODO : Mujir - do we need this??
-//        for (Importer fileImportThread : fileImportThreads) {
-//            if (fileImportThread.isUploadFor(csvFile)) {
-//                throw new FileImportException("File");
-//            }
-//        }
 
         Importer fileImportThread = new Importer(originalFileName, csvFile, persister, csvEntityClass, uploadedBy);
         fileImportThreads.add(fileImportThread);
