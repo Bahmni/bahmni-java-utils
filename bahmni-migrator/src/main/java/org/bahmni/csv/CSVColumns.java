@@ -24,7 +24,7 @@ class CSVColumns<T extends CSVEntity> {
     private int getPosition(String headerValueInClass) {
         for (int i = 0; i < headerNames.length; i++) {
             String headerName = headerNames[i];
-            if (headerName.toLowerCase().contains(headerValueInClass.toLowerCase()))
+            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase()))
                 return i;
         }
         throw new MigrationException("No Column found in the csv file. " + headerValueInClass);
