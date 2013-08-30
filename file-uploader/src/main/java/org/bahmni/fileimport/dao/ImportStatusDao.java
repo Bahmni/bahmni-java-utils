@@ -67,14 +67,14 @@ public class ImportStatusDao {
         }
     }
 
-    public void saveFatalError(File csvFile, String type, Exception exception) throws SQLException {
+    public void saveFatalError(File csvFile, String type, String errorMessage) throws SQLException {
         Connection connection = jdbcConnectionProvider.getConnection();
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement("update import_status set type=?, status=?, stack_trace=?, end_time=? where saved_file_name=?;");
             statement.setString(1, type);
             statement.setString(2, FATAL_ERROR);
-            statement.setString(3, getStackTrace(exception));
+            statement.setString(3, errorMessage);
             statement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             statement.setString(5, csvFile.getAbsolutePath());
 
@@ -83,6 +83,10 @@ public class ImportStatusDao {
         } finally {
             closeResources(connection, statement);
         }
+    }
+
+    public void saveFatalError(File csvFile, String type, Throwable exception) throws SQLException {
+        saveFatalError(csvFile, type, getStackTrace(exception));
     }
 
     public List<ImportStatus> getImportStatusFromDate(Date fromDate) throws SQLException {

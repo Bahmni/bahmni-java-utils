@@ -50,10 +50,11 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
             logger.info("Stage : " + migrateResult.getStageName() + ". Success count : " + migrateResult.numberOfSuccessfulRecords() +
                     ". Fail count : " + migrateResult.numberOfFailedRecords());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("There was an error during migration. " + e.getMessage(), e);
             try {
                 getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), e);
+                migrator.shutdown();
             } catch (SQLException e1) {
                 logger.error(e1);
             }
@@ -64,6 +65,11 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
 
     public void shutdown() {
         migrator.shutdown();
+        try {
+            getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), "Server shutdown");
+        } catch (SQLException e1) {
+            logger.error(e1);
+        }
     }
 
     private ImportStatusDao getNewImportStatusDao() {
