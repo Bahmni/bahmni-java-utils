@@ -15,7 +15,7 @@ public class ImportStatus {
     private final String uploadedBy;
     private final Date startTime;
     private final Date endTime;
-    private final String stackTrace;
+    private String stackTrace;
 
     public ImportStatus(String id, String originalFileName, String savedFileName, String errorFileName, String type, String status, int successfulRecords, int failedRecords, String stageName, String uploadedBy, Date startTime, Date endTime, String stackTrace) {
         this.id = id;
@@ -30,6 +30,10 @@ public class ImportStatus {
         this.uploadedBy = uploadedBy;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.stackTrace = stackTrace;
+    }
+
+    public void setStackTrace(String stackTrace) {
         this.stackTrace = stackTrace;
     }
 
