@@ -1,8 +1,13 @@
 package org.bahmni.webclients;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -20,6 +25,11 @@ public class WebClient {
         this.readTimeout = readTimeout;
         this.sessionIdKey = sessionIdKey;
         this.sessionIdValue = sessionIdValue;
+    }
+
+    public WebClient(int connectionTimeout, int readTimeout) {
+        this.connectTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
     }
 
     public String get(URI uri) {
@@ -65,5 +75,23 @@ public class WebClient {
         HashMap<String, String> map = new HashMap<>();
         map.put(sessionIdKey, sessionIdValue);
         return map;
+    }
+
+    public HttpResponse get(HttpRequestDetails requestDetails) {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+
+        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, readTimeout);
+        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectTimeout);
+
+        HttpGet httpGet = new HttpGet(requestDetails.getUri());
+        requestDetails.addDetailsTo(httpGet);
+
+        try {
+            return httpClient.execute(httpGet);
+        } catch (IOException e) {
+            throw new WebClientsException("Error executing request");
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
     }
 }

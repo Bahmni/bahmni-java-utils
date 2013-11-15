@@ -4,12 +4,10 @@ import org.apache.log4j.Logger;
 import org.bahmni.webclients.WebClient;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
 
-@Ignore
 public class OpenMRSIT {
     private static Logger logger = Logger.getLogger(OpenMRSIT.class);
     private OpenMRSAuthenticator openMRSAuthenticator;
