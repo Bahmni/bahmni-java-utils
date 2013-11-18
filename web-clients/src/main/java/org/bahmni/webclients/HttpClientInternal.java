@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebClient {
+public class HttpClientInternal {
     private int connectTimeout;
     private int readTimeout;
     private String sessionIdKey;
@@ -22,14 +22,14 @@ public class WebClient {
     private DefaultHttpClient defaultHttpClient;
 
 
-    public WebClient(int connectTimeout, int readTimeout, String sessionIdKey, String sessionIdValue) {
+    public HttpClientInternal(int connectTimeout, int readTimeout, String sessionIdKey, String sessionIdValue) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
         this.sessionIdKey = sessionIdKey;
         this.sessionIdValue = sessionIdValue;
     }
 
-    public WebClient(int connectionTimeout, int readTimeout) {
+    public HttpClientInternal(int connectionTimeout, int readTimeout) {
         this.connectTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
     }
@@ -101,8 +101,6 @@ public class WebClient {
             return httpClient.execute(httpGet);
         } catch (IOException e) {
             throw new WebClientsException("Error executing request");
-        } finally {
-            httpClient.getConnectionManager().shutdown();
         }
     }
 

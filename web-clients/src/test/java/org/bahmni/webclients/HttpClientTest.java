@@ -24,7 +24,7 @@ public class HttpClientTest {
     private Authenticator authenticator;
 
     @Mock
-    private WebClient webClient;
+    private HttpClientInternal webClient;
 
     private URI uri;
 

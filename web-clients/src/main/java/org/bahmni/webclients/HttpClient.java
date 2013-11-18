@@ -13,24 +13,24 @@ import java.net.URI;
 
 public class HttpClient {
     private Authenticator authenticator;
-    private WebClient webClient;
+    private HttpClientInternal webClient;
 
 
     public HttpClient(ConnectionDetails connectionDetails) {
-        this(new WebClient(connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout()));
+        this(new HttpClientInternal(connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout()));
     }
 
     public HttpClient(ConnectionDetails connectionDetails, Authenticator authenticator) {
-        this(new WebClient(connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout()), authenticator);
+        this(new HttpClientInternal(connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout()), authenticator);
     }
 
     //Just for tests
-    public HttpClient(WebClient webClient) {
+    public HttpClient(HttpClientInternal webClient) {
         this(webClient, new NullAuthenticator());
     }
 
     //Just for tests
-    public HttpClient(WebClient webClient, Authenticator authenticator) {
+    public HttpClient(HttpClientInternal webClient, Authenticator authenticator) {
         this.authenticator = authenticator;
         this.webClient = webClient;
     }
