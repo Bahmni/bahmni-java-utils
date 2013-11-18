@@ -19,6 +19,8 @@ public class WebClient {
     private int readTimeout;
     private String sessionIdKey;
     private String sessionIdValue;
+    private DefaultHttpClient defaultHttpClient;
+
 
     public WebClient(int connectTimeout, int readTimeout, String sessionIdKey, String sessionIdValue) {
         this.connectTimeout = connectTimeout;
@@ -34,6 +36,14 @@ public class WebClient {
 
     public String get(URI uri) {
         return get(uri, null);
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
     }
 
     public String get(URI uri, Map<String, String> headers) {
@@ -77,8 +87,9 @@ public class WebClient {
         return map;
     }
 
-    public HttpResponse get(HttpRequestDetails requestDetails) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+    HttpResponse get(HttpRequestDetails requestDetails) {
+        defaultHttpClient = new DefaultHttpClient();
+        DefaultHttpClient httpClient = defaultHttpClient;
 
         httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, readTimeout);
         httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectTimeout);
@@ -94,4 +105,10 @@ public class WebClient {
             httpClient.getConnectionManager().shutdown();
         }
     }
+
+    void closeConnection(){
+        if(defaultHttpClient != null)
+            defaultHttpClient.getConnectionManager().shutdown() ;
+    }
+
 }

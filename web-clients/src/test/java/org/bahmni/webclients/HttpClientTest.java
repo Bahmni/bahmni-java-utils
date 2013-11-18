@@ -34,19 +34,6 @@ public class HttpClientTest {
         uri = new URI("http://asdf.com");
     }
 
-    @Test
-    public void shouldDelegateGetCallToWebClient() {
-        HttpRequestDetails requestDetails = new HttpRequestDetails(uri);
-        when(authenticator.getRequestDetails(uri)).thenReturn(requestDetails);
-
-        String expectedResponseContent = "good response";
-        when(webClient.get(requestDetails)).thenReturn(okResponse(expectedResponseContent));
-        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
-
-        authenticatingWebClient.get(uri);
-
-        verify(webClient).get(requestDetails);
-    }
 
     @Test
     public void shouldReturnContentFromWebClientResponse() {

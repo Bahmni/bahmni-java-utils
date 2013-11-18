@@ -15,6 +15,7 @@ public class HttpClient {
     private Authenticator authenticator;
     private WebClient webClient;
 
+
     public HttpClient(ConnectionDetails connectionDetails) {
         this(new WebClient(connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout()));
     }
@@ -43,6 +44,8 @@ public class HttpClient {
             return asString(httpResponse);
         } catch (IOException e) {
             throw new WebClientsException(e);
+        } finally {
+            webClient.closeConnection();
         }
     }
 
@@ -73,4 +76,6 @@ public class HttpClient {
 
         return stringBuilder.toString();
     }
+
+
 }
