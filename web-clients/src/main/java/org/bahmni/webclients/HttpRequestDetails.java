@@ -27,4 +27,8 @@ public class HttpRequestDetails {
         httpHeaders.addTo(httpMessage);
         clientCookies.addTo(httpMessage);
     }
+
+    public HttpRequestDetails createNewWith(URI uri) {
+        return new HttpRequestDetails(uri, (ClientCookies)clientCookies.clone(), (HttpHeaders)httpHeaders.clone());
+    }
 }

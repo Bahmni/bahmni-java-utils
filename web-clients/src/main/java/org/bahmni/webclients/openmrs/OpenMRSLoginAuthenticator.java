@@ -34,7 +34,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
         if (requestDetails == null) {
             return refreshRequestDetails(uri);
         }
-        return requestDetails;
+        return requestDetails.createNewWith(uri);
     }
 
     @Override
@@ -69,8 +69,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             clientCookies.put(SESSION_ID_KEY, openMRSResponse.getSessionId());
 
             requestDetails = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
-            HttpRequestDetails httpRequestDetails = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
-            return httpRequestDetails;
+            return requestDetails;
 
         } catch (Exception e) {
             throw new WebClientsException(e);
