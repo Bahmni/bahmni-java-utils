@@ -23,7 +23,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
 
 
     private ConnectionDetails authenticationDetails;
-    private HttpRequestDetails requestDetails;
+    private HttpRequestDetails previousSuccessfulRequest;
 
     public OpenMRSLoginAuthenticator(ConnectionDetails authenticationDetails) {
         this.authenticationDetails = authenticationDetails;
@@ -31,10 +31,10 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
 
     @Override
     public HttpRequestDetails getRequestDetails(URI uri) {
-        if (requestDetails == null) {
+        if (previousSuccessfulRequest == null) {
             return refreshRequestDetails(uri);
         }
-        return requestDetails.createNewWith(uri);
+        return previousSuccessfulRequest.createNewWith(uri);
     }
 
     @Override
@@ -68,8 +68,8 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             ClientCookies clientCookies = new ClientCookies();
             clientCookies.put(SESSION_ID_KEY, openMRSResponse.getSessionId());
 
-            requestDetails = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
-            return requestDetails;
+            previousSuccessfulRequest = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
+            return previousSuccessfulRequest;
 
         } catch (Exception e) {
             throw new WebClientsException(e);

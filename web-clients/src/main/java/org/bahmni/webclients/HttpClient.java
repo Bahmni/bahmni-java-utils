@@ -31,16 +31,21 @@ public class HttpClient {
 
     //Just for tests
     public HttpClient(HttpClientInternal webClient, Authenticator authenticator) {
-        this.authenticator = authenticator;
         this.webClient = webClient;
+        this.authenticator = authenticator;
     }
 
-    public String get(URI uri){
-        HttpResponse httpResponse = webClient.get(authenticator.getRequestDetails(uri));
-        httpResponse = retryIfRequired(uri, httpResponse);
-        checkSanityOfResponse(httpResponse);
-
+    public String get(URI uri) {
         try {
+            HttpResponse httpResponse = webClient.get(authenticator.getRequestDetails(uri));
+
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                webClient.closeConnection();
+                webClient = webClient.createNew();
+                httpResponse = webClient.get(authenticator.refreshRequestDetails(uri));
+            }
+
+            checkSanityOfResponse(httpResponse);
             return asString(httpResponse);
         } catch (IOException e) {
             throw new WebClientsException(e);
@@ -58,13 +63,6 @@ public class HttpClient {
         if (entity == null) throw new WebClientsException("Cannot read response");
     }
 
-    private HttpResponse retryIfRequired(URI uri, HttpResponse httpResponse) {
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            httpResponse = webClient.get(authenticator.refreshRequestDetails(uri));
-        }
-        return httpResponse;
-    }
-
     private String asString(HttpResponse httpResponse) throws IOException {
         InputStream content = httpResponse.getEntity().getContent();
         BufferedReader reader = new BufferedReader(new InputStreamReader(content));
@@ -76,6 +74,4 @@ public class HttpClient {
 
         return stringBuilder.toString();
     }
-
-
 }

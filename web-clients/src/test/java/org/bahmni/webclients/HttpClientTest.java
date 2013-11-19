@@ -69,6 +69,7 @@ public class HttpClientTest {
 
         when(webClient.get(firstRequestDetails)).thenReturn(unAuthorizedResponse());
         when(webClient.get(secondRequestDetails)).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.createNew()).thenReturn(webClient);
 
         String response = authenticatingWebClient.get(uri);
 
@@ -89,6 +90,7 @@ public class HttpClientTest {
 
         when(webClient.get(any(HttpRequestDetails.class))).thenReturn(unAuthorizedResponse());
         when(webClient.get(any(HttpRequestDetails.class))).thenReturn(unAuthorizedResponse());
+        when(webClient.createNew()).thenReturn(webClient);
 
         authenticatingWebClient.get(uri);
     }
