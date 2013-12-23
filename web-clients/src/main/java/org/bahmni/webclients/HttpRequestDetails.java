@@ -28,6 +28,10 @@ public class HttpRequestDetails {
         clientCookies.addTo(httpMessage);
     }
 
+    public ClientCookies getClientCookies() {
+        return clientCookies;
+    }
+
     public HttpRequestDetails createNewWith(URI uri) {
         return new HttpRequestDetails(uri, (ClientCookies)clientCookies.clone(), (HttpHeaders)httpHeaders.clone());
     }

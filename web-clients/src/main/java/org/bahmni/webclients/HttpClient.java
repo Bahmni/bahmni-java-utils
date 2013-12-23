@@ -13,7 +13,7 @@ import java.net.URI;
 
 public class HttpClient {
     private Authenticator authenticator;
-    private HttpClientInternal webClient;
+    private HttpClientInternal httpClientInternal;
 
 
     public HttpClient(ConnectionDetails connectionDetails) {
@@ -25,24 +25,28 @@ public class HttpClient {
     }
 
     //Just for tests
-    public HttpClient(HttpClientInternal webClient) {
-        this(webClient, new NullAuthenticator());
+    public HttpClient(HttpClientInternal httpClientInternal) {
+        this(httpClientInternal, new NullAuthenticator());
     }
 
     //Just for tests
-    public HttpClient(HttpClientInternal webClient, Authenticator authenticator) {
-        this.webClient = webClient;
+    public HttpClient(HttpClientInternal httpClientInternal, Authenticator authenticator) {
+        this.httpClientInternal = httpClientInternal;
         this.authenticator = authenticator;
+    }
+
+    public ClientCookies getCookies(URI uri) {
+        return authenticator.getRequestDetails(uri).getClientCookies();
     }
 
     public String get(URI uri) {
         try {
-            HttpResponse httpResponse = webClient.get(authenticator.getRequestDetails(uri));
+            HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri));
 
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                webClient.closeConnection();
-                webClient = webClient.createNew();
-                httpResponse = webClient.get(authenticator.refreshRequestDetails(uri));
+                httpClientInternal.closeConnection();
+                httpClientInternal = httpClientInternal.createNew();
+                httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri));
             }
 
             checkSanityOfResponse(httpResponse);
@@ -50,7 +54,7 @@ public class HttpClient {
         } catch (IOException e) {
             throw new WebClientsException(e);
         } finally {
-            webClient.closeConnection();
+            httpClientInternal.closeConnection();
         }
     }
 
