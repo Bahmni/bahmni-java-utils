@@ -5,10 +5,7 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.log4j.Logger;
-import org.bahmni.webclients.Authenticator;
-import org.bahmni.webclients.HttpClient;
-import org.bahmni.webclients.HttpClientInternal;
-import org.bahmni.webclients.HttpRequestDetails;
+import org.bahmni.webclients.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +30,13 @@ public class OpenMRSIT {
 
     @Test
     public void successfulAuth() throws Exception {
-        OpenMRSAuthenticationResponse authenticationResponse = openMRSAuthenticator.authenticate("admin", "test", ObjectMapperRepository.OBJECT_MAPPER);
+        OpenMRSAuthenticationResponse authenticationResponse = openMRSAuthenticator.authenticate("admin", "test", ObjectMapperRepository.objectMapper);
         Assert.assertTrue(authenticationResponse.isAuthenticated());
     }
 
     @Test
     public void unSuccessfulAuth() throws Exception {
-        OpenMRSAuthenticationResponse authenticationResponse = openMRSAuthenticator.authenticate("admin", "test1", ObjectMapperRepository.OBJECT_MAPPER);
+        OpenMRSAuthenticationResponse authenticationResponse = openMRSAuthenticator.authenticate("admin", "test1", ObjectMapperRepository.objectMapper);
         Assert.assertFalse(authenticationResponse.isAuthenticated());
     }
 

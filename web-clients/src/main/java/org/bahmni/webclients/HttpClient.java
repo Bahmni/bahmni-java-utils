@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.bahmni.webclients.ObjectMapperRepository.objectMapper;
 
 public class HttpClient {
     private Authenticator authenticator;
@@ -56,6 +59,11 @@ public class HttpClient {
         } finally {
             httpClientInternal.closeConnection();
         }
+    }
+
+    public <T> T get(String url, Class<T> returnType) throws IOException {
+        String response = get(URI.create(url));
+        return objectMapper.readValue(response, returnType);
     }
 
     private void checkSanityOfResponse(HttpResponse httpResponse) {
