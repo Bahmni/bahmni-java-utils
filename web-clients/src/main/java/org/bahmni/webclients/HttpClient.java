@@ -43,13 +43,17 @@ public class HttpClient {
     }
 
     public String get(URI uri) {
+        return get(uri, new HttpHeaders());
+    }
+
+    private String get(URI uri, HttpHeaders httpHeaders) {
         try {
-            HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri));
+            HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri), httpHeaders);
 
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 httpClientInternal.closeConnection();
                 httpClientInternal = httpClientInternal.createNew();
-                httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri));
+                httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri), httpHeaders);
             }
 
             checkSanityOfResponse(httpResponse);
@@ -62,7 +66,9 @@ public class HttpClient {
     }
 
     public <T> T get(String url, Class<T> returnType) throws IOException {
-        String response = get(URI.create(url));
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("Accept", "application/json");
+        String response = get(URI.create(url), httpHeaders);
         return objectMapper.readValue(response, returnType);
     }
 

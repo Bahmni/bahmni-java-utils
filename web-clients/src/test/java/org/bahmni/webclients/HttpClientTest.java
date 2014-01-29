@@ -38,7 +38,7 @@ public class HttpClientTest {
     @Test
     public void shouldReturnContentFromWebClientResponse() {
         String expectedResponseContent = "good response";
-        when(webClient.get(any(HttpRequestDetails.class))).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
 
         String response = authenticatingWebClient.get(uri);
@@ -49,7 +49,7 @@ public class HttpClientTest {
     @Test
     public void shouldWorkWithoutAnAuthenticator() {
         String expectedResponseContent = "good response";
-        when(webClient.get(any(HttpRequestDetails.class))).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
         HttpClient authenticatingWebClient = new HttpClient(webClient);
 
         String response = authenticatingWebClient.get(uri);
@@ -67,16 +67,15 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(uri)).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(uri)).thenReturn(secondRequestDetails);
 
-        when(webClient.get(firstRequestDetails)).thenReturn(unAuthorizedResponse());
-        when(webClient.get(secondRequestDetails)).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.get(eq(firstRequestDetails), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
+        when(webClient.get(eq(secondRequestDetails), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
         when(webClient.createNew()).thenReturn(webClient);
 
         String response = authenticatingWebClient.get(uri);
 
-        verify(webClient).get(firstRequestDetails);
-        verify(webClient).get(secondRequestDetails);
+        verify(webClient).get(eq(firstRequestDetails), any(HttpHeaders.class));
+        verify(webClient).get(eq(secondRequestDetails), any(HttpHeaders.class));
         assertThat(response, containsString(expectedResponseContent));
-
     }
 
     @Test(expected = WebClientsException.class)
@@ -88,8 +87,8 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(uri)).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(uri)).thenReturn(secondRequestDetails);
 
-        when(webClient.get(any(HttpRequestDetails.class))).thenReturn(unAuthorizedResponse());
-        when(webClient.get(any(HttpRequestDetails.class))).thenReturn(unAuthorizedResponse());
+        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
+        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
         when(webClient.createNew()).thenReturn(webClient);
 
         authenticatingWebClient.get(uri);

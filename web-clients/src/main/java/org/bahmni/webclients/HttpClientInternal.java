@@ -16,16 +16,20 @@ public class HttpClientInternal {
     HttpClientInternal(int connectionTimeout, int readTimeout) {
         this.connectTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
-        this.defaultHttpClient = defaultHttpClient;
     }
 
     public HttpResponse get(HttpRequestDetails requestDetails) {
+        return get(requestDetails, new HttpHeaders());
+    }
+
+    public HttpResponse get(HttpRequestDetails requestDetails, HttpHeaders httpHeaders) {
         defaultHttpClient = new DefaultHttpClient();
         defaultHttpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, readTimeout);
         defaultHttpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectTimeout);
 
         HttpGet httpGet = new HttpGet(requestDetails.getUri());
         requestDetails.addDetailsTo(httpGet);
+        httpHeaders.addTo(httpGet);
 
         try {
             return defaultHttpClient.execute(httpGet);
