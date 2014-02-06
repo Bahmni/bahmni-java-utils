@@ -27,7 +27,7 @@ public class AnonymousAuthenticator implements Authenticator {
 
     @Override
     public HttpRequestDetails getRequestDetails(URI uri) {
-        if (previousSuccessfulRequest == null) {
+        if (previousSuccessfulRequest == null || previousSuccessfulRequest.getClientCookies().size() == 0) {
             return refreshRequestDetails(uri);
         }
         return previousSuccessfulRequest.createNewWith(uri);
