@@ -34,7 +34,7 @@ public class HttpClientInternal {
         try {
             return defaultHttpClient.execute(httpGet);
         } catch (IOException e) {
-            throw new WebClientsException("Error executing request");
+            throw new WebClientsException("Error executing request", e);
         }
     }
 
