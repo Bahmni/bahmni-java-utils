@@ -3,7 +3,7 @@
     <parent>
         <artifactId>bahmni-java-utils</artifactId>
         <groupId>org.bahmni.module</groupId>
-        <version>2.5-SNAPSHOT</version>
+        <version>4.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
