@@ -20,7 +20,10 @@ public class VisitUpdater {
             statement = connection.createStatement();
             List<VisitChainItem> toSquash = new ArrayList<VisitChainItem>();
             VisitChainItem previousVisitChainItem = new VisitChainItem(0, 0, null, null);
-            ResultSet resultSet = statement.executeQuery("select visit_id1, visit_id2, date_stopped1, date_stopped2 from visit_migration order by patient_id asc, date_started1 asc");
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT visit_id1, visit_id2, date_stopped1, date_stopped2 " +
+                    "FROM visit_migration " +
+                    "ORDER by patient_id asc, date_started1 asc");
             while (resultSet.next()) {
                 VisitChainItem visitChainItem = new VisitChainItem(resultSet.getInt("visit_id1"), resultSet.getInt("visit_id2"), resultSet.getDate("date_stopped1"), resultSet.getDate("date_stopped2"));
                 try {
