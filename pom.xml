@@ -15,6 +15,7 @@
         <module>web-clients</module>
         <module>mail-appender</module>
         <module>file-uploader</module>
+        <module>visit-squasher</module>
     </modules>
 
     <build>

@@ -1,11 +1,13 @@
-package org.bahmni.util.squasher;
+package org.bahmni.util.squasher.adjacentvisits;
+
+import org.bahmni.util.squasher.Database;
 
 import java.sql.SQLException;
 
-public class VisitSquasher {
+public class AdjacentVisitSquasher {
     private final Database database;
 
-    public VisitSquasher() {
+    public AdjacentVisitSquasher() {
         this.database = new Database();
     }
 
@@ -16,7 +18,7 @@ public class VisitSquasher {
         System.out.println("Done");
     }
 
-    private void createVisitChainItemTable() {
+    private void createVisitChainItemTable() throws SQLException {
         System.out.println("Creating table...");
         database.execute("create table visit_migration as (\n" +
                 "select v1.patient_id patient_id, \n" +
@@ -46,7 +48,7 @@ public class VisitSquasher {
 
     }
 
-    private void dropVisitChainItemTableIfExists() {
+    private void dropVisitChainItemTableIfExists() throws SQLException {
         System.out.println("Dropping table");
         database.execute("drop table if exists visit_migration;");
     }

@@ -8,6 +8,7 @@ import java.sql.Statement;
 public class Database {
 
     private static final String DB_URL = "jdbc:mysql://193.168.33.15/openmrs";
+//    private static final String DB_URL = "jdbc:mysql://192.168.0.152/openmrs";
     private static final String USER = "root";
     private static final String PASS = "password";
 
@@ -27,16 +28,15 @@ public class Database {
         }
     }
 
-    public void execute(String query) {
+    public void execute(String query) throws SQLException {
         Connection connection = getConnection();
         Statement statement = null;
         try {
             statement = connection.createStatement();
             statement.execute(query);
+        } finally {
             statement.close();
             connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

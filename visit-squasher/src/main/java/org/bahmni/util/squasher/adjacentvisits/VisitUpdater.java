@@ -1,4 +1,6 @@
-package org.bahmni.util.squasher;
+package org.bahmni.util.squasher.adjacentvisits;
+
+import org.bahmni.util.squasher.Database;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,16 +18,17 @@ public class VisitUpdater {
     public void update() throws SQLException {
         Connection connection = database.getConnection();
         Statement statement = null;
+        ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
             List<VisitChainItem> toSquash = new ArrayList<VisitChainItem>();
             VisitChainItem previousVisitChainItem = new VisitChainItem(0, 0, null, null);
-            ResultSet resultSet = statement.executeQuery(
+            resultSet = statement.executeQuery(
                     "SELECT visit_id1, visit_id2, date_stopped1, date_stopped2 " +
                     "FROM visit_migration " +
                     "ORDER by patient_id asc, date_started1 asc");
             while (resultSet.next()) {
-                VisitChainItem visitChainItem = new VisitChainItem(resultSet.getInt("visit_id1"), resultSet.getInt("visit_id2"), resultSet.getDate("date_stopped1"), resultSet.getDate("date_stopped2"));
+                VisitChainItem visitChainItem = new VisitChainItem(resultSet.getInt("visit_id1"), resultSet.getInt("visit_id2"), resultSet.getTimestamp("date_stopped1"), resultSet.getTimestamp("date_stopped2"));
                 try {
                     if (toSquash.size() == 0) {
                         toSquash.add(visitChainItem);
@@ -44,6 +47,7 @@ public class VisitUpdater {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
+            resultSet.close();
             statement.close();
             connection.close();
             writeConnection.close();
@@ -56,13 +60,13 @@ public class VisitUpdater {
         }
         System.out.println("----------");
         int rootVisitId = visitChainItems.get(0).getVisit1Id();
-        Date dateStoppedForRootVisit = visitChainItems.get(visitChainItems.size() - 1).getVisit2DateStopped();
+        Timestamp dateStoppedForRootVisit = visitChainItems.get(visitChainItems.size() - 1).getVisit2DateStopped();
 
         Connection connection = writeConnection;
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement("update visit set date_stopped = ? where visit_id = ?");
-            statement.setDate(1, dateStoppedForRootVisit);
+            statement.setTimestamp(1, dateStoppedForRootVisit);
             statement.setInt(2, rootVisitId);
             statement.executeUpdate();
             statement.close();

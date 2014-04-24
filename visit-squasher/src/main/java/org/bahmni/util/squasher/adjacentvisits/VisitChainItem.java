@@ -1,14 +1,14 @@
-package org.bahmni.util.squasher;
+package org.bahmni.util.squasher.adjacentvisits;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class VisitChainItem {
     private int visit1Id;
     private int visit2Id;
-    private Date visit1DateStopped;
-    private Date visit2DateStopped;
+    private Timestamp visit1DateStopped;
+    private Timestamp visit2DateStopped;
 
-    public VisitChainItem(int visit1Id, int visit2Id, Date visit1DateStopped, Date visit2DateStopped) {
+    public VisitChainItem(int visit1Id, int visit2Id, Timestamp visit1DateStopped, Timestamp visit2DateStopped) {
         this.visit1Id = visit1Id;
         this.visit2Id = visit2Id;
         this.visit1DateStopped = visit1DateStopped;
@@ -23,13 +23,13 @@ public class VisitChainItem {
         return visit2Id;
     }
 
-    public Date getVisit2DateStopped() {
+    public Timestamp getVisit2DateStopped() {
         return visit2DateStopped;
     }
 
     @Override
     public String toString() {
-        return "org.bahmni.util.squasher.VisitChainItem{" +
+        return "VisitChainItem{" +
                 "visit1Id=" + visit1Id +
                 ", visit2Id=" + visit2Id +
                 ", visit1DateStopped=" + visit1DateStopped +
