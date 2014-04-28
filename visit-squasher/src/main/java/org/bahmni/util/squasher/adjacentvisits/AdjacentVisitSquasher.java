@@ -41,7 +41,8 @@ public class AdjacentVisitSquasher {
                 "            and date_started <= v2.date_started \n" +
                 "            and visit_id not in (v1.visit_id, v2.visit_id))\n" +
                 "  and datediff(v2.date_started, v1.date_stopped) < 6\n" +
-                "  and datediff(v2.date_started, v1.date_stopped) > 0\n" +
+                "  and timestampdiff(SECOND, v1.date_stopped, v2.date_started) >= 0\n" +
+                "  and v1.voided = false and v2.voided = false\n" +
                 "  and v1.visit_type_id = vt1.visit_type_id\n" +
                 "  and v2.visit_type_id = vt2.visit_type_id\n" +
                 "  and v2.visit_type_id not in (1, 2));");
