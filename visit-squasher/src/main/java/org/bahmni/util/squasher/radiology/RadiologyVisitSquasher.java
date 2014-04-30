@@ -22,7 +22,8 @@ public class RadiologyVisitSquasher {
             "from visit v\n" +
             "inner join encounter e on v.visit_id = e.visit_id\n" +
             "inner join encounter_type et on e.encounter_type = et.encounter_type_id and et.name = 'RADIOLOGY' " +
-            "where v.visit_id not in (1505, 60150, 59170, 58597, 58042, 57463, 58612)";
+            "where v.visit_id not in (1505, 60150, 59170, 58597, 58042, 57463, 58612)\n" +
+            "and v.voided = false and v.date_stopped is not null";
     private Connection readConnection;
     private Connection writeConnection;
 
@@ -66,9 +67,30 @@ public class RadiologyVisitSquasher {
     }
 
     private void squashVisit(Visit visit, Visit overlappingVisit) throws SQLException {
-        System.out.println("Squashing " + overlappingVisit + " into " + visit);
-        updateStartAndStopDates(visit, overlappingVisit);
-        moveEncountersAndVoidVisit(visit, overlappingVisit);
+        if(visitVoided(visit)) {
+            System.out.println("Visit" + visit + " is already voided");
+        } else {
+            System.out.println("Squashing " + overlappingVisit + " into " + visit);
+            updateStartAndStopDates(visit, overlappingVisit);
+            moveEncountersAndVoidVisit(visit, overlappingVisit);
+        }
+    }
+
+    private boolean visitVoided(Visit visit) throws SQLException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = readConnection.prepareStatement("select voided as voided from visit where visit_id = ?");
+            statement.setInt(1, visit.getVisitId());
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getBoolean("voided");
+            }
+        } finally {
+            resultSet.close();
+            statement.close();
+        }
+        throw new RuntimeException("Cannot reach here");
     }
 
     private void moveEncountersAndVoidVisit(Visit visit, Visit overlappingVisit) throws SQLException {
@@ -128,8 +150,8 @@ public class RadiologyVisitSquasher {
             statement = readConnection.prepareStatement("select visit_id visit_id, date_started date_started, date_stopped date_stopped, patient_id patient_id from visit v\n" +
                     "where v.visit_id <> ?\n" +
                     "\tand v.patient_id = ?\n" +
-                    "\tand v.date_started < ?\n" +
-                    "\tand v.date_stopped > ?" +
+                    "\tand v.date_started <= ?\n" +
+                    "\tand v.date_stopped >= ?" +
                     "\tand v.voided = false" +
                     "\torder by date_started asc");
             statement.setInt(1, visit.getVisitId());
