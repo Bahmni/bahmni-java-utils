@@ -39,7 +39,8 @@ public class AdjacentVisitSquasher {
                 "          where patient_id = v1.patient_id \n" +
                 "            and date_started >= v1.date_started \n" +
                 "            and date_started <= v2.date_started \n" +
-                "            and visit_id not in (v1.visit_id, v2.visit_id))\n" +
+                "            and visit_id not in (v1.visit_id, v2.visit_id)" +
+                "            and voided = false)\n" +
                 "  and datediff(v2.date_started, v1.date_stopped) < 6\n" +
                 "  and timestampdiff(SECOND, v1.date_stopped, v2.date_started) >= 0\n" +
                 "  and v1.voided = false and v2.voided = false\n" +
