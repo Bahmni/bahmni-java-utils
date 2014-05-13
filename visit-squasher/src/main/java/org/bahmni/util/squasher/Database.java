@@ -6,6 +6,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
+//    Add a user root in mysql with the hostname assigned to your machine on the network.
+//    CREATE USER 'root'@'hostname' IDENTIFIED BY 'password'; (to connect to vagrant box from mysqlworkbench)
+//    GRANT ALL PRIVILEGES ON *.* TO 'root'@'hostname' WITH GRANT OPTION;
+//
 
     private static final String DB_URL = "jdbc:mysql://192.168.33.10/openmrs";
 //    private static final String DB_URL = "jdbc:mysql://192.168.0.152/openmrs";
