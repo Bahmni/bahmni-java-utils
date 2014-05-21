@@ -9,7 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class CSVFile<T extends CSVEntity> {
+public class CSVFile<T extends CSVEntity> {
     public static final char SEPARATOR = ',';
 
     private String fileName;
@@ -36,12 +36,12 @@ class CSVFile<T extends CSVEntity> {
         headerNames = csvReader.readNext();
     }
 
-    public CSVEntity readEntity() throws IOException, InstantiationException, IllegalAccessException {
+    public T readEntity() throws IOException, InstantiationException, IllegalAccessException {
         if (csvReader == null)
             throw new MigrationException("Please open the CSVFile before reading it");
         String[] aRow = csvReader.readNext();
         CSVRow tempCSVRow = new CSVRow<>(getHeaderColumn(), entityClass);
-        return tempCSVRow.getEntity(aRow);
+        return (T) tempCSVRow.getEntity(aRow);
     }
 
     public void writeARecord(RowResult<T> aRow, String[] headerRow) throws IOException {
