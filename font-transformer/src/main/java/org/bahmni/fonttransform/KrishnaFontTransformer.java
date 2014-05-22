@@ -1,26 +1,23 @@
 package org.bahmni.fonttransform;
 
 import org.apache.log4j.Logger;
-import org.bahmni.csv.CSVEntity;
-import org.bahmni.csv.CSVFile;
-import org.bahmni.csv.exception.MigrationException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class FontTransformer {
-    private static Logger logger = Logger.getLogger(FontTransformer.class.getName());
+/**
+ * This class performs Krishna Font to Unicode Transformation. It does this via:
+ * a) A mapping file which contains Krishna character to Unicode character mapping (created by Pankaj)
+ * b) Some rules which it applies to ensure the hindi word is actually correctly mapped in unicode.
+ *
+ * @see #krishnaToUnicode(java.util.List)
+ */
+public class KrishnaFontTransformer {
+    private static Logger logger = Logger.getLogger(KrishnaFontTransformer.class.getName());
     private static Properties KRISHNA_TO_UNICODE = new Properties();
-    private static List<String> COMBINATION_CHARACTERS = Arrays.asList("Z");
-    private final Class csvEntityClass;
-    private final EntityTransformer entityTransformer;
 
-    public FontTransformer(Class csvEntityClass, EntityTransformer entityTransformer) {
-        this.csvEntityClass = csvEntityClass;
-        this.entityTransformer = entityTransformer;
+    public KrishnaFontTransformer() {
         initializeUnicodeMapperFromProperties();
-
     }
 
     private void initializeUnicodeMapperFromProperties() {
@@ -39,27 +36,6 @@ public class FontTransformer {
         }
     }
 
-    public boolean transform(File csvFile, List<TransformationMetaDatum> metadata) {
-        logger.info("Starting fontTransformation");
-        CSVFile inputCsvFile = new CSVFile(csvFile.getAbsolutePath(), csvFile.getName(), csvEntityClass);
-
-        try {
-            inputCsvFile.openForRead();
-            CSVEntity csvEntity;
-
-            while ((csvEntity = inputCsvFile.readEntity()) != null) {
-                entityTransformer.transform(csvEntity, metadata);
-            }
-        } catch (Exception e) {
-            logger.error("Thread interrupted exception. " + e.getStackTrace());
-            throw new MigrationException("Could not execute threads", e);
-        } finally {
-            logger.info("Done font transformation");
-            closeResources();
-        }
-        return true;
-    }
-
     public String krishnaToUnicode(String s) {
         return krishnaToUnicode(Arrays.asList(s)).get(0);
     }
@@ -69,14 +45,18 @@ public class FontTransformer {
 
         StringBuilder stringBuilderInUnicode = null;
         for (String s : stringList) {
+
             s = performHalfConsonantSanitization(s);
+
             stringBuilderInUnicode = new StringBuilder();
             char[] chars = s.toCharArray();
-            int iter;
-            for (iter = 0; iter < chars.length; iter++) {
+
+            for (int iter = 0; iter < chars.length; iter++) {
+
                 char token = chars[iter];
                 char nextToken = iter < chars.length - 1 ? chars[iter + 1] : ' ';
                 char tokenAfterNext = iter < chars.length - 2 ? chars[iter + 2] : ' ';
+
                 String u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(token));
 
                 if(isHalfConsonant(token) && nextToken == 'k'){
@@ -174,7 +154,4 @@ public class FontTransformer {
         return token == 'b' && nextToken == 'Z';
     }
 
-    private void closeResources() {
-        //To change body of created methods use File | Settings | File Templates.
-    }
 }

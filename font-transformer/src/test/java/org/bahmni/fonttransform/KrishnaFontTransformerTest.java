@@ -3,17 +3,15 @@ package org.bahmni.fonttransform;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 
-public class FontTransformerTest {
+public class KrishnaFontTransformerTest {
 
-    FontTransformer transformer = null;
+    KrishnaFontTransformer transformer = null;
 
     @Before
     public void init(){
-        transformer = new FontTransformer(null, null);
+        transformer = new KrishnaFontTransformer();
     }
 
     @Test
