@@ -46,7 +46,7 @@ public class AdjacentVisitSquasher {
                 "  and v1.voided = false and v2.voided = false\n" +
                 "  and v1.visit_type_id = vt1.visit_type_id\n" +
                 "  and v2.visit_type_id = vt2.visit_type_id\n" +
-                "  and v2.visit_type_id not in (1, 2));");
+                "  and vt2.name not in ('OPD', 'OPD - NEW', 'OPD - RETURNING'));");
 
     }
 
