@@ -44,4 +44,13 @@ public class MigrateResult<T extends CSVEntity> {
 
         return errorFile.getAbsoluteFileName();
     }
+
+    @Override
+    public String toString() {
+        String s = "Stage Name: " + stageName + " Status: "+
+                ((hasFailed())? "Failed " : "Passed ") +
+                " Success Count : " + successCount +
+                " Fail Count: " + failCount;
+        return s;
+    }
 }

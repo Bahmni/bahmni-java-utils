@@ -9,14 +9,20 @@ import java.io.Writer;
 
 // Assumption - if you use multithreading, there should be no dependency between the records in the file.
 public class Migrator<T extends CSVEntity> {
+    private boolean abortIfValidationFails = true;
     private Stages<T> allStages;
     private final EntityPersister entityPersister;
 
     private static Logger logger = Logger.getLogger(Migrator.class);
 
     public Migrator(EntityPersister entityPersister, Stages allStages) {
+        this(entityPersister, allStages, true);
+    }
+
+    public Migrator(EntityPersister entityPersister, Stages allStages, boolean abortIfValidationFails) {
         this.entityPersister = entityPersister;
         this.allStages = allStages;
+        this.abortIfValidationFails = abortIfValidationFails;
     }
 
     public MigrateResult<T> migrate() {
@@ -24,9 +30,10 @@ public class Migrator<T extends CSVEntity> {
         try {
             while (allStages.hasMoreStages()) {
                 stageResult = allStages.nextStage().run(entityPersister);
-                if (stageResult.hasFailed()) {
+                if (abortIfValidationFails && stageResult.hasFailed()) {
                     return stageResult;
                 }
+                logger.info(">>> " + stageResult);
             }
         } catch(MigrationException e) {
             logger.error(getStackTrace(e));

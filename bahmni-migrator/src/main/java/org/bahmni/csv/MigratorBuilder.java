@@ -12,6 +12,7 @@ public class MigratorBuilder<T extends CSVEntity> {
     private int numberOfValidationThreads = 1;
     private int numberOfMigrationThreads = 1;
     private boolean withAllRecordsInValidationErrorFile;
+    private boolean abortIfAnyStageFails = true;
 
     public MigratorBuilder(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -30,6 +31,11 @@ public class MigratorBuilder<T extends CSVEntity> {
 
     public MigratorBuilder<T> withAllRecordsInValidationErrorFile() {
         this.withAllRecordsInValidationErrorFile = true;
+        return this;
+    }
+
+    public MigratorBuilder<T> dontAbortOnStageFailure() {
+        this.abortIfAnyStageFails = false;
         return this;
     }
 
@@ -64,7 +70,7 @@ public class MigratorBuilder<T extends CSVEntity> {
         }
         allStages.addStage(migrationStage);
 
-        return new Migrator<>(entityPersister, allStages);
+        return new Migrator<>(entityPersister, allStages, abortIfAnyStageFails);
     }
 
     private String errorFileName(String fileName, String fileNameAddition) {

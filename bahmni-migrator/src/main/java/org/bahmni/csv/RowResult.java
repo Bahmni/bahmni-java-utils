@@ -38,6 +38,10 @@ public class RowResult<T extends CSVEntity> {
         return StringUtils.join(getRowWithErrorColumn(), ",");
     }
 
+    public String getErrorMessage(){
+        return errorMessage;
+    }
+
     private static String getStackTrace(Throwable exception) {
         if (exception == null)
             return null;
