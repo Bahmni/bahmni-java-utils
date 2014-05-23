@@ -13,7 +13,7 @@ public class Database {
 
     private static final String DB_URL = "jdbc:mysql://192.168.33.10/openmrs";
 //    private static final String DB_URL = "jdbc:mysql://192.168.0.152/openmrs";
-    private static final String USER = "root";
+    private static final String USER = "openmrs-user";
     private static final String PASS = "password";
 
     public Database() {
