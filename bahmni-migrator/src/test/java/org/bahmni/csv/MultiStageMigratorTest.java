@@ -73,7 +73,7 @@ public class MultiStageMigratorTest {
 
 
     private SimpleStage createDummyStage() {
-        SimpleStage dummyStage = new SimpleStage() {
+        SimpleStage dummyStage = new SimpleStage<DummyCSVEntity>() {
             @Override
             public String getName() {
                 return "DummyStage";
@@ -85,7 +85,7 @@ public class MultiStageMigratorTest {
             }
 
             @Override
-            public StageResult execute(List<CSVEntity> csvEntityList) throws MigrationException {
+            public StageResult execute(List<DummyCSVEntity> csvEntityList) throws MigrationException {
                 System.out.println("Invoked with list of size: " + csvEntityList.size());
                 return new StageResult(getName(), 0, csvEntityList.size(), "All good. Validation passed.");
             }
@@ -94,7 +94,7 @@ public class MultiStageMigratorTest {
     }
 
     private SimpleStage createDummyErrorStage() {
-        SimpleStage dummyErrorStage = new SimpleStage() {
+        SimpleStage dummyErrorStage = new SimpleStage<DummyCSVEntity>() {
             @Override
             public String getName() {
                 return "DummyERRORStage";
@@ -106,7 +106,7 @@ public class MultiStageMigratorTest {
             }
 
             @Override
-            public StageResult execute(List<CSVEntity> csvEntityList) throws MigrationException {
+            public StageResult execute(List<DummyCSVEntity> csvEntityList) throws MigrationException {
                 throw new MigrationException("Unable to proceed. Data is invalid!");
             }
         };

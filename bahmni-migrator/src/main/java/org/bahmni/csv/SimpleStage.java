@@ -4,7 +4,7 @@ import org.bahmni.csv.exception.MigrationException;
 
 import java.util.List;
 
-public interface SimpleStage {
+public interface SimpleStage<T extends CSVEntity> {
     /**
      * Name of the Stage
      */
@@ -23,6 +23,6 @@ public interface SimpleStage {
      * @return A summary of the stage result
      * @throws MigrationException To indicate that migration should be aborted
      */
-    public StageResult execute(List<CSVEntity> csvEntityList) throws MigrationException;
+    public StageResult execute(List<T> csvEntityList) throws MigrationException;
 
 }
