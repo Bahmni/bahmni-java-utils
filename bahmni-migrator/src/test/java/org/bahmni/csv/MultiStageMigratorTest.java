@@ -16,9 +16,9 @@ public class MultiStageMigratorTest {
     @Test
     public void shouldInvokeStageWithMultipleRows() throws IOException, InstantiationException, IllegalAccessException {
 
-        MultiStageMigrator multiStageMigrator = new MultiStageMigrator();
+        MultiStageMigrator multiStageMigrator = new MultiStageMigrator<DummyCSVEntity>();
         multiStageMigrator.addStage(createDummyStage());
-        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile());
+        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile(), DummyCSVEntity.class);
         assertEquals(1, stageResults.size());
         assertEquals(5, stageResults.get(0).getSuccessCount());
 
@@ -28,11 +28,11 @@ public class MultiStageMigratorTest {
     @Test
     public void shouldInvokeTwoStageWithMultipleRows() throws IOException, InstantiationException, IllegalAccessException {
 
-        MultiStageMigrator multiStageMigrator = new MultiStageMigrator();
+        MultiStageMigrator multiStageMigrator = new MultiStageMigrator<DummyCSVEntity>();
         multiStageMigrator
                 .addStage(createDummyStage())
                 .addStage(createDummyStage());
-        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile());
+        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile(), DummyCSVEntity.class);
         assertEquals(2, stageResults.size());
         assertEquals(5, stageResults.get(0).getSuccessCount());
         assertEquals(5, stageResults.get(1).getSuccessCount());
@@ -42,14 +42,14 @@ public class MultiStageMigratorTest {
     @Test
     public void shouldAbortIfOneStageThrowsException() throws IOException, InstantiationException, IllegalAccessException {
 
-        MultiStageMigrator multiStageMigrator = new MultiStageMigrator();
+        MultiStageMigrator multiStageMigrator = new MultiStageMigrator<DummyCSVEntity>();
         multiStageMigrator
                 .addStage(createDummyStage())
                 .addStage(createDummyStage())
                 .addStage(createDummyErrorStage())
                 .addStage(createDummyStage());
 
-        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile());
+        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile(), DummyCSVEntity.class);
         assertEquals("Should receive on 2 stage results",2, stageResults.size());
 
     }
@@ -87,7 +87,7 @@ public class MultiStageMigratorTest {
             @Override
             public StageResult execute(List<DummyCSVEntity> csvEntityList) throws MigrationException {
                 System.out.println("Invoked with list of size: " + csvEntityList.size());
-                return new StageResult(getName(), 0, csvEntityList.size(), "All good. Validation passed.");
+                return new StageResult(getName(), null, csvEntityList);
             }
         };
         return dummyStage;

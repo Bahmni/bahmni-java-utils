@@ -21,6 +21,10 @@ public class CSVFile<T extends CSVEntity> {
 
     private String[] headerNames;
 
+    public String getFileLocation() {
+        return fileLocation;
+    }
+
     public CSVFile(String fileLocation, String fileName, Class<T> entityClass) {
         this.fileLocation = fileLocation;
         this.fileName = fileName;

@@ -1,17 +1,18 @@
 package org.bahmni.csv;
 
-public class StageResult {
+import java.util.List;
+
+public class StageResult <T extends CSVEntity> {
 
     private String stageName;
-    private int failureCount;
-    private int successCount;
-    private String message;
+    private List<T> allCsvEntities;
+    private List<FailedRowResult<T>> failedCsvEntities;
 
-    public StageResult(String stageName, int failureCount, int successCount, String message) {
+
+    public StageResult(String stageName, List<FailedRowResult<T>> failedCsvEntities, List<T> allCsvEntities) {
         this.stageName = stageName;
-        this.failureCount = failureCount;
-        this.successCount = successCount;
-        this.message = message;
+        this.failedCsvEntities = failedCsvEntities;
+        this.allCsvEntities = allCsvEntities;
     }
 
 
@@ -20,14 +21,27 @@ public class StageResult {
     }
 
     public int getFailureCount() {
-        return failureCount;
+        if(failedCsvEntities == null)
+            return 0;
+        return failedCsvEntities.size();
     }
 
     public int getSuccessCount() {
-        return successCount;
+        if(allCsvEntities == null)
+            return 0;
+        return allCsvEntities.size() - getFailureCount();
     }
 
-    public String getMessage() {
-        return message;
+    @Override
+    public String toString() {
+        return "Stage "+ getStageName() + " status: PASS:"+ getSuccessCount() + " FAIL: "+ getFailureCount();
+    }
+
+    public List<T> getAllCsvEntities() {
+        return allCsvEntities;
+    }
+
+    public List<FailedRowResult<T>> getFailedCSVEntities() {
+        return failedCsvEntities;
     }
 }

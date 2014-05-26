@@ -71,4 +71,8 @@ public class RowResult<T extends CSVEntity> {
         result = 31 * result + (errorMessage != null ? errorMessage.hashCode() : 0);
         return result;
     }
+
+    public T getCsvEntity() {
+        return csvEntity;
+    }
 }
