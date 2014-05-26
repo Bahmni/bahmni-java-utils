@@ -41,6 +41,8 @@ public class KrishnaFontTransformerTest {
     @Test
     public void shouldPlaceUpROneBack() {
         assertEquals("अार्यन", transformer.krishnaToUnicode("vk;Zu"));
+        assertEquals("बर्फी", transformer.krishnaToUnicode("cQhZ"));
+        assertEquals("बर्फि", transformer.krishnaToUnicode("cQfZ"));
     }
 
     @Test

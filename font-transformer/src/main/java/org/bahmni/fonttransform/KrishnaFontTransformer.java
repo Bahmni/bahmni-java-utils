@@ -139,7 +139,7 @@ public class KrishnaFontTransformer {
     }
 
     private boolean isVowel(char c) {
-        return c == 'k';
+        return c == 'k' || c == 'h' || c == 'f';
     }
 
     private boolean isHalf_R_onTop(char c) {
