@@ -54,6 +54,20 @@ public class MultiStageMigratorTest {
 
     }
 
+    @Test
+    public void shouldInvokeTwoStageWithMultipleThreads() throws IOException, InstantiationException, IllegalAccessException {
+
+        MultiStageMigrator multiStageMigrator = new MultiStageMigrator<DummyCSVEntity>();
+        multiStageMigrator
+                .addStage(createDummyStage())
+                .addStage(createDummyParallelStage());
+        List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile(), DummyCSVEntity.class);
+        assertEquals(2, stageResults.size());
+        assertEquals(5, stageResults.get(0).getSuccessCount());
+        assertEquals(5, stageResults.get(1).getSuccessCount());
+
+    }
+
     private CSVFile createMockCSVFile() throws IOException, IllegalAccessException, InstantiationException {
         CSVFile mockInputFile = mock(CSVFile.class);
         doNothing().when(mockInputFile).openForRead();
@@ -113,5 +127,25 @@ public class MultiStageMigratorTest {
         return dummyErrorStage;
     }
 
+    private SimpleStage createDummyParallelStage() {
+        SimpleStage dummyStage = new SimpleStage<DummyCSVEntity>() {
+            @Override
+            public String getName() {
+                return "DummyParallelStage";
+            }
 
+            @Override
+            public boolean canRunInParallel() {
+                return true;
+            }
+
+            @Override
+            public StageResult execute(List<DummyCSVEntity> csvEntityList) throws MigrationException {
+                System.out.println("Invoked with list of size: " + csvEntityList.size() + " on thread:"+ Thread.currentThread());
+                return new StageResult(getName(), null, csvEntityList);
+            }
+        };
+        return dummyStage;
+
+    }
 }
