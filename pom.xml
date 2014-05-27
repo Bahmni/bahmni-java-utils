@@ -17,6 +17,7 @@
         <module>file-uploader</module>
         <module>visit-squasher</module>
         <module>font-transformer</module>
+        <module>openmrs-connector</module>
     </modules>
 
     <build>
