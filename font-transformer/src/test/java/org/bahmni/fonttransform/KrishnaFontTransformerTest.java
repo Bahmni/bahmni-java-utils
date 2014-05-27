@@ -16,7 +16,7 @@ public class KrishnaFontTransformerTest {
 
     @Test
     public void shouldTransformFromKrishnaToUnicode() {
-        assertEquals("दर्श्ान", transformer.krishnaToUnicode("n'kZu"));
+        assertEquals("दर्शन", transformer.krishnaToUnicode("n'kZu"));
         assertEquals("निकुरे", transformer.krishnaToUnicode("fudqjs"));
         assertEquals("वाल्मीक", transformer.krishnaToUnicode("okYehd"));
         assertEquals("पुरूषाेत्तम", transformer.krishnaToUnicode("iq:\"kksRre"));
@@ -51,6 +51,7 @@ public class KrishnaFontTransformerTest {
         assertEquals("वर्षा", transformer.krishnaToUnicode("o\"kkZ"));
     }
 
+
     @Test
     public void shouldReplaceHalfConsonantsFollowedByKWithFullConsonants() {
         assertEquals("मंडल", transformer.krishnaToUnicode("eaMYk"));
@@ -62,6 +63,8 @@ public class KrishnaFontTransformerTest {
         assertEquals("प्रभाकर", transformer.krishnaToUnicode("izHkkdj"));
         assertEquals("प्रतिक्षा", transformer.krishnaToUnicode("izfr{kk"));
         assertEquals("भेद्रुजी", transformer.krishnaToUnicode("Hksnzqth"));
+        assertEquals("शंकरजी", transformer.krishnaToUnicode("'kadjth"));
+        assertEquals("प्रीती", transformer.krishnaToUnicode("izhrh"));
     }
 
 }

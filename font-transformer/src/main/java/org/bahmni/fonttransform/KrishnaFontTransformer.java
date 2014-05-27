@@ -88,8 +88,6 @@ public class KrishnaFontTransformer {
                     iter++;
                 }
 
-
-
                 stringBuilderInUnicode.append(u);
             }
 
@@ -108,6 +106,7 @@ public class KrishnaFontTransformer {
             case 'H' : return "\u092d";
             case 'F' : return "\u0925";
             case '?' : return "\u0918";
+            case '\'': return "\u0936";
         }
 
         return c+""; //Should never come here!
@@ -121,21 +120,22 @@ public class KrishnaFontTransformer {
                 c == '.' ||
                 c == 'H' ||
                 c == 'F' ||
-                c == '?';
+                c == '?' ||
+                c == '\'';
     }
 
     private String performHalfConsonantSanitization(String s) {
         return s.replaceAll("Ek", "e")
-                           .replaceAll("Rk","r")
-                            .replaceAll("Tk","t")
-                            .replaceAll("Yk","y")
-                            .replaceAll("Uk","u")
-                            .replaceAll("Ik","i")
-                            .replaceAll("Ok","o")
-                            .replaceAll("Pk","p")
-                            .replaceAll("Dk","d")
-                            .replaceAll("Ck","c")
-                            .replaceAll("Xk","x");
+                           .replaceAll("Rk", "r")
+                            .replaceAll("Tk", "t")
+                            .replaceAll("Yk", "y")
+                            .replaceAll("Uk", "u")
+                            .replaceAll("Ik", "i")
+                            .replaceAll("Ok", "o")
+                            .replaceAll("Pk", "p")
+                            .replaceAll("Dk", "d")
+                            .replaceAll("Ck", "c")
+                            .replaceAll("Xk", "x");
     }
 
     private boolean isVowel(char c) {
