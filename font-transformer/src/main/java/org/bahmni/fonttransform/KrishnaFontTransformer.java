@@ -3,7 +3,11 @@ package org.bahmni.fonttransform;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This class performs Krishna Font to Unicode Transformation. It does this via:
@@ -59,17 +63,16 @@ public class KrishnaFontTransformer {
 
                 String u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(token));
 
-                if(isHalfConsonant(token) && nextToken == 'k'){
+                if (isHalfConsonant(token) && nextToken == 'k') {
                     u = getFullUnicodeFor(token);
                     iter++;
                     nextToken = tokenAfterNext;
                     tokenAfterNext = iter < chars.length - 2 ? chars[iter + 2] : ' ';
                 }
-
                 if (is_Big_E(token, nextToken)) {
                     u = "\u0908";
                     iter++;
-                }else if (isHalf_R_onTop(nextToken)) {
+                } else if (isHalf_R_onTop(nextToken)) {
                     String next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
                     stringBuilderInUnicode.append(next);
                     iter++;
@@ -80,12 +83,16 @@ public class KrishnaFontTransformer {
                     u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
                     iter = iter + 2;
                 }
-
-
                 if (isSmall_E_Matra(token)) {
-                    String next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
+                    String next;
+                    if (isHalfConsonant(nextToken)) {
+                        next = krishnaToUnicode(new String(new char[]{nextToken, tokenAfterNext}));
+                        iter = iter + 2;
+                    } else {
+                        next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
+                        iter++;
+                    }
                     stringBuilderInUnicode.append(next);
-                    iter++;
                 }
 
                 stringBuilderInUnicode.append(u);
@@ -96,23 +103,38 @@ public class KrishnaFontTransformer {
         return transformedStrings;
     }
 
+    private boolean isModifierVowel(char c) {
+        return c == 's'
+                || c=='f';
+    }
+
     private String getFullUnicodeFor(char c) {
-        switch(c) {
-            case '[': return "\u0916";
-            case '{': return "\u0915\u094d\u0937";
-            case '\"': return "\u0937";
-            case '/': return "\u0927";
-            case '.': return "\u0923";
-            case 'H' : return "\u092d";
-            case 'F' : return "\u0925";
-            case '?' : return "\u0918";
-            case '\'': return "\u0936";
+        switch (c) {
+            case '[':
+                return "\u0916";
+            case '{':
+                return "\u0915\u094d\u0937";
+            case '\"':
+                return "\u0937";
+            case '/':
+                return "\u0927";
+            case '.':
+                return "\u0923";
+            case 'H':
+                return "\u092d";
+            case 'F':
+                return "\u0925";
+            case '?':
+                return "\u0918";
+            case '\'':
+                return "\u0936";
         }
 
-        return c+""; //Should never come here!
+        return c + ""; //Should never come here!
     }
 
     private boolean isHalfConsonant(char c) {
+//        fHkokth
         return c == '[' ||
                 c == '{' ||
                 c == '\"' ||
@@ -126,16 +148,16 @@ public class KrishnaFontTransformer {
 
     private String performHalfConsonantSanitization(String s) {
         return s.replaceAll("Ek", "e")
-                           .replaceAll("Rk", "r")
-                            .replaceAll("Tk", "t")
-                            .replaceAll("Yk", "y")
-                            .replaceAll("Uk", "u")
-                            .replaceAll("Ik", "i")
-                            .replaceAll("Ok", "o")
-                            .replaceAll("Pk", "p")
-                            .replaceAll("Dk", "d")
-                            .replaceAll("Ck", "c")
-                            .replaceAll("Xk", "x");
+                .replaceAll("Rk", "r")
+                .replaceAll("Tk", "t")
+                .replaceAll("Yk", "y")
+                .replaceAll("Uk", "u")
+                .replaceAll("Ik", "i")
+                .replaceAll("Ok", "o")
+                .replaceAll("Pk", "p")
+                .replaceAll("Dk", "d")
+                .replaceAll("Ck", "c")
+                .replaceAll("Xk", "x");
     }
 
     private boolean isVowel(char c) {

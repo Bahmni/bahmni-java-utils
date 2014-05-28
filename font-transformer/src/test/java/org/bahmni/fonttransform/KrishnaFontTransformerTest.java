@@ -67,4 +67,9 @@ public class KrishnaFontTransformerTest {
         assertEquals("प्रीती", transformer.krishnaToUnicode("izhrh"));
     }
 
+    @Test
+    public void shouldReplaceSmallMatraEFollowedByHalfConsonants() {
+        assertEquals("भिवाजी", transformer.krishnaToUnicode("fHkokth"));
+    }
+
 }
