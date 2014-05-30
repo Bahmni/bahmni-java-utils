@@ -68,13 +68,9 @@ public class MultiStageMigrator<T extends CSVEntity> {
         int numberOfThreads = 5;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         int partitionSize = csvRowsForNextStage.size() / numberOfThreads;
-        System.out.println("##### Partion Size: " + partitionSize);
         ArrayList<Future<StageResult>> futureResults = new ArrayList<>();
-
         int beginIndex = 0, endIndex = partitionSize;
         for (int i = 0; i < numberOfThreads; i++) {
-            System.out.println("##### BEGIN INDEX: " + beginIndex);
-            System.out.println("##### END   INDEX: " + endIndex);
 
             List<T> partionSetCSVRows = csvRowsForNextStage.subList(beginIndex, endIndex);
             Future<StageResult> futureStageResult = executorService.submit(new SimpleStageCallable(stage, partionSetCSVRows));
@@ -90,7 +86,6 @@ public class MultiStageMigrator<T extends CSVEntity> {
 
         for (Future<StageResult> futureResult : futureResults) {
             StageResult stageResult = futureResult.get();
-            System.out.println("RECIEVED STAGE RESULT:: " + stageResult);
             List failedCSVEntities = stageResult.getFailedCSVEntities();
             List allCsvEntities = stageResult.getAllCsvEntities();
 
