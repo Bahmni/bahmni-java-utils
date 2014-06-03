@@ -3,7 +3,7 @@ package org.bahmni.openmrsconnector.response;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PersonAttributeType {
+public class Resource {
     private String uuid;
     private String name;
 

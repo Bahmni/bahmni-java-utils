@@ -4,8 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.bahmni.openmrsconnector.response.AuthenticationResponse;
-import org.bahmni.openmrsconnector.response.PersonAttributeType;
-import org.bahmni.openmrsconnector.response.PersonAttributeTypes;
+import org.bahmni.openmrsconnector.response.Resource;
+import org.bahmni.openmrsconnector.response.ResourceResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OpenMRSRestService {
     private RestTemplate restTemplate = new RestTemplate();
@@ -27,6 +29,8 @@ public class OpenMRSRestService {
     private static Logger logger = Logger.getLogger(OpenMRSRestService.class);
     private AllPatientAttributeTypes allPatientAttributeTypes;
     private OpenMRSRESTConnection openMRSRESTConnection;
+    private Map<String, String> allEncounterTypes;
+    private Map<String, String> allVisitTypes;
 
     public OpenMRSRestService(OpenMRSRESTConnection openMRSRESTConnection) throws IOException, URISyntaxException {
         this.openMRSRESTConnection = openMRSRESTConnection;
@@ -46,15 +50,47 @@ public class OpenMRSRestService {
     }
 
     private void loadReferences() throws URISyntaxException, IOException {
+        loadAllPatientAttributes();
+        loadAllEncounterTypes();
+        loadAllVisitTypes();
+    }
+
+    private void loadAllPatientAttributes() throws URISyntaxException, IOException {
         allPatientAttributeTypes = new AllPatientAttributeTypes();
         String jsonResponse = executeHTTPMethod("personattributetype?v=full", HttpMethod.GET);
-        PersonAttributeTypes personAttributeTypes = objectMapper.readValue(jsonResponse, PersonAttributeTypes.class);
-        for (PersonAttributeType personAttributeType : personAttributeTypes.getResults())
-            allPatientAttributeTypes.addPersonAttributeType(personAttributeType.getName(), personAttributeType.getUuid());
+        ResourceResponse resourceResponse = objectMapper.readValue(jsonResponse, ResourceResponse.class);
+        for (Resource resource : resourceResponse.getResults())
+            allPatientAttributeTypes.addPersonAttributeType(resource.getName(), resource.getUuid());
     }
 
     public AllPatientAttributeTypes getAllPatientAttributeTypes() {
         return allPatientAttributeTypes;
+    }
+
+    public Map<String, String> getAllEncounterTypes() throws URISyntaxException, IOException {
+        return allEncounterTypes;
+    }
+
+    public Map<String, String> getAllVisitTypes() throws URISyntaxException, IOException {
+        return allVisitTypes;
+    }
+
+    private void loadAllEncounterTypes() throws URISyntaxException, IOException {
+        allEncounterTypes = new HashMap<>();
+        String jsonResponse = executeHTTPMethod("encountertype?v=full", HttpMethod.GET);
+        ResourceResponse encounterTypes = objectMapper.readValue(jsonResponse, ResourceResponse.class);
+        for ( Resource encounterType : encounterTypes.getResults()){
+            allEncounterTypes.put(encounterType.getName(), encounterType.getUuid());
+        }
+    }
+
+    private void loadAllVisitTypes() throws URISyntaxException, IOException {
+        allVisitTypes = new HashMap<>();
+        String jsonResponse = executeHTTPMethod("visittype?v=full", HttpMethod.GET);
+        ResourceResponse visitTypes = objectMapper.readValue(jsonResponse, ResourceResponse.class);
+        for ( Resource visitType : visitTypes.getResults()){
+            allVisitTypes.put(visitType.getName(), visitType.getUuid());
+        }
     }
 
     private String executeHTTPMethod(String urlSuffix, HttpMethod method) throws URISyntaxException {
