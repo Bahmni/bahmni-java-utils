@@ -27,7 +27,7 @@ public class StageResult <T extends CSVEntity> {
     }
 
     public int getSuccessCount() {
-        if(allCsvEntities == null)
+        if(allCsvEntities == null || allCsvEntities.size() == 0)
             return 0;
         return allCsvEntities.size() - getFailureCount();
     }
