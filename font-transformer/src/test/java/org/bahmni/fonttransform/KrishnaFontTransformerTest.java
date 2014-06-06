@@ -72,4 +72,9 @@ public class KrishnaFontTransformerTest {
         assertEquals("भिवाजी", transformer.krishnaToUnicode("fHkokth"));
     }
 
+    @Test
+    public void shouldReplaceAiMatraCorrectly() {
+        assertEquals("कैलाश", transformer.krishnaToUnicode("dSyk'k"));
+        assertEquals("वैशाली", transformer.krishnaToUnicode("oS'kkyh"));
+    }
 }

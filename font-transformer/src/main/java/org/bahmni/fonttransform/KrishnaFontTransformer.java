@@ -76,7 +76,7 @@ public class KrishnaFontTransformer {
                     String next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
                     stringBuilderInUnicode.append(next);
                     iter++;
-                }else if (isVowel(nextToken) && isHalf_R_onTop(tokenAfterNext)) {
+                } else if (isVowel(nextToken) && isHalf_R_onTop(tokenAfterNext)) {
                     String topR = KRISHNA_TO_UNICODE.getProperty(String.valueOf(tokenAfterNext));
                     stringBuilderInUnicode.append(topR);
                     stringBuilderInUnicode.append(u);
@@ -84,15 +84,7 @@ public class KrishnaFontTransformer {
                     iter = iter + 2;
                 }
                 if (isSmall_E_Matra(token)) {
-                    String next;
-                    if (isHalfConsonant(nextToken)) {
-                        next = krishnaToUnicode(new String(new char[]{nextToken, tokenAfterNext}));
-                        iter = iter + 2;
-                    } else {
-                        next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
-                        iter++;
-                    }
-                    stringBuilderInUnicode.append(next);
+                    iter = handleSmall_E_Matra(stringBuilderInUnicode, iter, nextToken, tokenAfterNext);
                 }
 
                 stringBuilderInUnicode.append(u);
@@ -103,9 +95,22 @@ public class KrishnaFontTransformer {
         return transformedStrings;
     }
 
+    private int handleSmall_E_Matra(StringBuilder stringBuilderInUnicode, int iter, char nextToken, char tokenAfterNext) {
+        String next;
+        if (isHalfConsonant(nextToken)) {
+            next = krishnaToUnicode(new String(new char[]{nextToken, tokenAfterNext}));
+            iter = iter + 2;
+        } else {
+            next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
+            iter++;
+        }
+        stringBuilderInUnicode.append(next);
+        return iter;
+    }
+
     private boolean isModifierVowel(char c) {
         return c == 's'
-                || c=='f';
+                || c == 'f';
     }
 
     private String getFullUnicodeFor(char c) {
@@ -161,7 +166,7 @@ public class KrishnaFontTransformer {
     }
 
     private boolean isVowel(char c) {
-        return c == 'k' || c == 'h' || c == 'f';
+        return c == 'k' || c == 'h' || c == 'f' || c == 'S' || c == 's';
     }
 
     private boolean isHalf_R_onTop(char c) {
