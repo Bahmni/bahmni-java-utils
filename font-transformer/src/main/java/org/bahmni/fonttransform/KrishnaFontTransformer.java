@@ -56,37 +56,40 @@ public class KrishnaFontTransformer {
             char[] chars = s.toCharArray();
 
             for (int iter = 0; iter < chars.length; iter++) {
-
                 char token = chars[iter];
                 char nextToken = iter < chars.length - 1 ? chars[iter + 1] : ' ';
                 char tokenAfterNext = iter < chars.length - 2 ? chars[iter + 2] : ' ';
-
-                String u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(token));
-
-                if (isHalfConsonant(token) && nextToken == 'k') {
-                    u = getFullUnicodeFor(token);
-                    iter++;
-                    nextToken = tokenAfterNext;
-                    tokenAfterNext = iter < chars.length - 2 ? chars[iter + 2] : ' ';
+                String u;
+                if(Character.isSpaceChar(token)){
+                    u = String.valueOf(token);
                 }
-                if (is_Big_E(token, nextToken)) {
-                    u = "\u0908";
-                    iter++;
-                } else if (isHalf_R_onTop(nextToken)) {
-                    String next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
-                    stringBuilderInUnicode.append(next);
-                    iter++;
-                } else if (isVowel(nextToken) && isHalf_R_onTop(tokenAfterNext)) {
-                    String topR = KRISHNA_TO_UNICODE.getProperty(String.valueOf(tokenAfterNext));
-                    stringBuilderInUnicode.append(topR);
-                    stringBuilderInUnicode.append(u);
-                    u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
-                    iter = iter + 2;
-                }
-                if (isSmall_E_Matra(token)) {
-                    iter = handleSmall_E_Matra(stringBuilderInUnicode, iter, nextToken, tokenAfterNext);
-                }
+                else{
+                    u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(token));
 
+                    if (isHalfConsonant(token) && nextToken == 'k') {
+                        u = getFullUnicodeFor(token);
+                        iter++;
+                        nextToken = tokenAfterNext;
+                        tokenAfterNext = iter < chars.length - 2 ? chars[iter + 2] : ' ';
+                    }
+                    if (is_Big_E(token, nextToken)) {
+                        u = "\u0908";
+                        iter++;
+                    } else if (isHalf_R_onTop(nextToken)) {
+                        String next = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
+                        stringBuilderInUnicode.append(next);
+                        iter++;
+                    } else if (isVowel(nextToken) && isHalf_R_onTop(tokenAfterNext)) {
+                        String topR = KRISHNA_TO_UNICODE.getProperty(String.valueOf(tokenAfterNext));
+                        stringBuilderInUnicode.append(topR);
+                        stringBuilderInUnicode.append(u);
+                        u = KRISHNA_TO_UNICODE.getProperty(String.valueOf(nextToken));
+                        iter = iter + 2;
+                    }
+                    if (isSmall_E_Matra(token)) {
+                        iter = handleSmall_E_Matra(stringBuilderInUnicode, iter, nextToken, tokenAfterNext);
+                    }
+                }
                 stringBuilderInUnicode.append(u);
             }
 
