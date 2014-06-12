@@ -90,9 +90,15 @@ public class KrishnaFontTransformer {
                 stringBuilderInUnicode.append(u);
             }
 
-            transformedStrings.add(stringBuilderInUnicode.toString());
+            String transformedString = stringBuilderInUnicode.toString();
+            transformedString = replace_O_MatraUnicode(transformedString);
+            transformedStrings.add(transformedString);
         }
         return transformedStrings;
+    }
+
+    private String replace_O_MatraUnicode(String transformedString) {
+        return transformedString.replaceAll("\u093e\u0947", "\u094b");
     }
 
     private int handleSmall_E_Matra(StringBuilder stringBuilderInUnicode, int iter, char nextToken, char tokenAfterNext) {

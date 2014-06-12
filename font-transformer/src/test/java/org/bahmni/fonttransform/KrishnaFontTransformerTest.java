@@ -19,7 +19,7 @@ public class KrishnaFontTransformerTest {
         assertEquals("दर्शन", transformer.krishnaToUnicode("n'kZu"));
         assertEquals("निकुरे", transformer.krishnaToUnicode("fudqjs"));
         assertEquals("वाल्मीक", transformer.krishnaToUnicode("okYehd"));
-        assertEquals("पुरूषाेत्तम", transformer.krishnaToUnicode("iq:\"kksRre"));
+        assertEquals("पुरूषोत्तम", transformer.krishnaToUnicode("iq:\"kksRre"));
         assertEquals("सुधाकर", transformer.krishnaToUnicode("lq/kkdj"));
         assertEquals("केव्ळराम", transformer.krishnaToUnicode("dsOGjke"));
     }
@@ -76,5 +76,11 @@ public class KrishnaFontTransformerTest {
     public void shouldReplaceAiMatraCorrectly() {
         assertEquals("कैलाश", transformer.krishnaToUnicode("dSyk'k"));
         assertEquals("वैशाली", transformer.krishnaToUnicode("oS'kkyh"));
+    }
+
+    @Test
+    public void shouldTransformOMatra() {
+        assertEquals("शोधग्राम", transformer.krishnaToUnicode("'kks/kxzke"));
+        assertEquals("घोडेझरी", transformer.krishnaToUnicode("?kksMs>jh"));
     }
 }
