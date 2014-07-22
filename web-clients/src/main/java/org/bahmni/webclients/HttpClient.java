@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.bahmni.webclients.ObjectMapperRepository.objectMapper;
 
@@ -50,7 +49,8 @@ public class HttpClient {
         try {
             HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri), httpHeaders);
 
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
+                    httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
                 httpClientInternal.closeConnection();
                 httpClientInternal = httpClientInternal.createNew();
                 httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri), httpHeaders);
