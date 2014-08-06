@@ -1,6 +1,5 @@
 package org.bahmni.csv;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -38,6 +37,23 @@ public class CSVRowTest {
         assertEquals(new DummyKeyValue("key2", "Value2"), aDummyEntity.keyValues.get(1));
     }
 
+    @Test
+    public void parse_a_row_with_repeating_regex_header_columns() throws Exception {
+        String[] headerRows = new String[]{"id", "name", "obs.HEIGHT", "obs.WEIGHT", "diagnosis", "patient.caste"};
+        String[] aRow = new String[]{"1", "bahmniUser", "178", "92", "Cancer", "HUMAN"};
+        CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
+        DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
+
+        assertEquals(2, aDummyEntity.observations.size());
+        assertEquals(new KeyValue("HEIGHT", "178"), aDummyEntity.observations.get(0));
+        assertEquals(new KeyValue("WEIGHT", "92"), aDummyEntity.observations.get(1));
+
+        assertEquals(1, aDummyEntity.patientAttributes.size());
+        assertEquals(new KeyValue("caste", "HUMAN"), aDummyEntity.patientAttributes.get(0));
+
+        assertEquals("Cancer", aDummyEntity.diagnosis);
+    }
+
     private static class DummyCSVEntityWithRepeatingValues extends CSVEntity {
         @CSVHeader(name = "id")
         public String id;
@@ -46,7 +62,24 @@ public class CSVRowTest {
         @CSVRepeatingHeaders(names = {"key", "value"}, type = DummyKeyValue.class)
         public java.util.List<DummyKeyValue> keyValues;
 
-        public DummyCSVEntityWithRepeatingValues() {}
+        public DummyCSVEntityWithRepeatingValues() {
+        }
+    }
+
+    private static class DummyCSVEntityWithRegexRepeatingValues extends CSVEntity {
+        @CSVHeader(name = "id")
+        public String id;
+        @CSVHeader(name = "name")
+        public String name;
+        @CSVRegexHeader(pattern = "obs.*")
+        public java.util.List<KeyValue> observations;
+        @CSVHeader(name="diagnosis")
+        public String diagnosis;
+        @CSVRegexHeader(pattern = "patient.*")
+        public java.util.List<KeyValue> patientAttributes;
+
+        public DummyCSVEntityWithRegexRepeatingValues() {
+        }
     }
 
     private static class DummyKeyValue {

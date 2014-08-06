@@ -18,7 +18,36 @@ class CSVColumns<T extends CSVEntity> {
             addRepeatingColumnValues(entity, field, aRow);
         } else if (field.getAnnotation(CSVHeader.class) != null) {
             addColumnValue(entity, field, aRow);
+        } else if (field.getAnnotation(CSVRegexHeader.class) != null) {
+            addRegexColumnValue(entity, field, aRow);
         }
+    }
+
+    private void addRegexColumnValue(T entity, Field field, String[] aRow) throws IllegalAccessException {
+        List values = new ArrayList<>();
+        CSVRegexHeader annotation = field.getAnnotation(CSVRegexHeader.class);
+        String regexPattern = annotation.pattern();
+
+        List<String> matchingHeaders = getMatchingHeaders(this.headerNames, regexPattern);
+        for (String matchingHeader : matchingHeaders) {
+            KeyValue keyValue = new KeyValue();
+            keyValue.setKey(matchingHeader.replace(regexPattern.replace("*", ""), ""));
+            keyValue.setValue(aRow[getPosition(matchingHeader, 0)]);
+            values.add(keyValue);
+        }
+        field.setAccessible(true);
+        field.set(entity, values);
+
+    }
+
+    private List<String> getMatchingHeaders(String[] headerNames, String regexPattern) {
+        List<String> matchingHeaders = new ArrayList<>();
+        for (String headerName : headerNames) {
+            if (headerName.matches(regexPattern)) {
+                matchingHeaders.add(headerName);
+            }
+        }
+        return matchingHeaders;
     }
 
     private void addColumnValue(T entity, Field field, String[] aRow) throws IllegalAccessException {
