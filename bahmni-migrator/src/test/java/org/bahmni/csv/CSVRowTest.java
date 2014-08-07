@@ -1,10 +1,19 @@
 package org.bahmni.csv;
 
+import org.bahmni.csv.exception.MigrationException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
 public class CSVRowTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void parse_a_row() throws InstantiationException, IllegalAccessException {
         String[] headerRows = new String[]{"id", "name"};
@@ -39,8 +48,8 @@ public class CSVRowTest {
 
     @Test
     public void parse_a_row_with_repeating_regex_header_columns() throws Exception {
-        String[] headerRows = new String[]{"id", "name", "obs.HEIGHT", "obs.WEIGHT", "diagnosis", "patient.caste"};
-        String[] aRow = new String[]{"1", "bahmniUser", "178", "92", "Cancer", "HUMAN"};
+        String[] headerRows = new String[]{"id", "name", "obs.HEIGHT", "obs.WEIGHT", "diagnosis.diagnosis1", "patient.caste", "diagnosis.diagnosis2"};
+        String[] aRow = new String[]{"1", "bahmniUser", "178", "92", "Cancer", "HUMAN", "Tubercolosis"};
         CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
         DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
 
@@ -51,7 +60,19 @@ public class CSVRowTest {
         assertEquals(1, aDummyEntity.patientAttributes.size());
         assertEquals(new KeyValue("caste", "HUMAN"), aDummyEntity.patientAttributes.get(0));
 
-        assertEquals("Cancer", aDummyEntity.diagnosis);
+        assertEquals(2, aDummyEntity.diagnoses.size());
+        assertEquals(new KeyValue("diagnosis1", "Cancer"), aDummyEntity.diagnoses.get(0));
+        assertEquals(new KeyValue("diagnosis2", "Tubercolosis"), aDummyEntity.diagnoses.get(1));
+    }
+
+    @Test
+    public void throws_exception_for_non_unique_regex_header_columns() throws Exception {
+        String[] headerRows = new String[]{"id", "name", "diagnosis.diagnosis", "diagnosis.diagnosis"};
+        String[] aRow = new String[]{"1", "bahmniUser", "Cancer", "Tubercolosis"};
+        expectedException.expect(MigrationException.class);
+        expectedException.expectMessage("A header by name 'diagnosis.diagnosis' already exists. Header names must be unique");
+        CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
+        DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
     }
 
     private static class DummyCSVEntityWithRepeatingValues extends CSVEntity {
@@ -69,14 +90,18 @@ public class CSVRowTest {
     private static class DummyCSVEntityWithRegexRepeatingValues extends CSVEntity {
         @CSVHeader(name = "id")
         public String id;
+
         @CSVHeader(name = "name")
         public String name;
+
         @CSVRegexHeader(pattern = "obs.*")
         public java.util.List<KeyValue> observations;
-        @CSVHeader(name="diagnosis")
-        public String diagnosis;
+
+        @CSVRegexHeader(pattern="diagnosis.*")
+        public List<KeyValue> diagnoses;
+
         @CSVRegexHeader(pattern = "patient.*")
-        public java.util.List<KeyValue> patientAttributes;
+        public List<KeyValue> patientAttributes;
 
         public DummyCSVEntityWithRegexRepeatingValues() {
         }

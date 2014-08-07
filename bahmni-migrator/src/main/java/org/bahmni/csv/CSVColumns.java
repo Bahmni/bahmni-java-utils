@@ -1,5 +1,6 @@
 package org.bahmni.csv;
 
+import org.apache.commons.lang.StringUtils;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.lang.reflect.Field;
@@ -43,8 +44,10 @@ class CSVColumns<T extends CSVEntity> {
     private List<String> getMatchingHeaders(String[] headerNames, String regexPattern) {
         List<String> matchingHeaders = new ArrayList<>();
         for (String headerName : headerNames) {
-            if (headerName.matches(regexPattern)) {
+            if (headerName.matches(regexPattern) && !matchingHeaders.contains(headerName)) {
                 matchingHeaders.add(headerName);
+            } else if (matchingHeaders.contains(headerName)) {
+                throw new MigrationException(String.format("A header by name '%s' already exists. Header names must be unique", headerName));
             }
         }
         return matchingHeaders;
