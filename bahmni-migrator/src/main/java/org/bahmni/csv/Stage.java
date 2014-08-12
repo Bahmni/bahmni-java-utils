@@ -111,6 +111,9 @@ public class Stage<T extends CSVEntity> {
         return stageName;
     }
 
+    String getName() {
+        return stageName;
+    }
 }
 
 

@@ -57,6 +57,8 @@ public class MigratorTest {
         Assert.assertTrue("should return false as validation failed", migrateStatus.hasFailed());
         Assert.assertEquals(2, migrateStatus.numberOfFailedRecords());
 
+        Assert.assertTrue("should have stopped at validation stage", migrateStatus.isValidationStage());
+
         verify(mockInputFile, times(1)).openForRead();
 
         verify(mockValidationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("1", "dummyEntity1"), "validation failed"), headerRow);

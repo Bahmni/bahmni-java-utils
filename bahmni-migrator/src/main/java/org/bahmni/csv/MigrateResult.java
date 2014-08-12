@@ -45,6 +45,10 @@ public class MigrateResult<T extends CSVEntity> {
         return errorFile.getAbsoluteFileName();
     }
 
+    public boolean isValidationStage() {
+        return stageName.equals(Stage.VALIDATION.getName());
+    }
+
     @Override
     public String toString() {
         String s = "Stage Name: " + stageName + " Status: "+
