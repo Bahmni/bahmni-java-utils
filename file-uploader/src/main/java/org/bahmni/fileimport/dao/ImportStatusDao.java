@@ -21,8 +21,6 @@ public class ImportStatusDao {
 
     private JDBCConnectionProvider jdbcConnectionProvider;
 
-    private Logger logger = Logger.getLogger(ImportStatusDao.class);
-
     public ImportStatusDao(JDBCConnectionProvider jdbcConnectionProvider) {
         this.jdbcConnectionProvider = jdbcConnectionProvider;
     }

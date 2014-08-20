@@ -13,6 +13,7 @@ public class MigratorBuilder<T extends CSVEntity> {
     private int numberOfMigrationThreads = 1;
     private boolean withAllRecordsInValidationErrorFile;
     private boolean abortIfAnyStageFails = true;
+    private boolean skipValidation;
 
     public MigratorBuilder(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -46,6 +47,11 @@ public class MigratorBuilder<T extends CSVEntity> {
         return this;
     }
 
+    public MigratorBuilder skipValidation() {
+        this.skipValidation = true;
+        return this;
+    }
+
     public MigratorBuilder<T> withMultipleValidators(int numberOfValidationThreads) {
         if (numberOfValidationThreads < 0)
             throw new RuntimeException("Invalid number of threads. numberOfValidationThreads:" + numberOfValidationThreads);
@@ -54,23 +60,29 @@ public class MigratorBuilder<T extends CSVEntity> {
     }
 
     public Migrator<T> build() {
-        CSVFile validationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, VALIDATION_ERROR_FILE_EXTENSION), entityClass);
-        CSVFile migrationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, MIGRATION_ERROR_FILE_EXTENSION), entityClass);
         CSVFile inputCSVFile = new CSVFile(inputCSVFileLocation, inputCSVFileName, entityClass);
 
-        Stage migrationStage = new StageBuilder().migration().withInputFile(inputCSVFile).withErrorFile(migrationErrorFile).withNumberOfThreads(numberOfMigrationThreads).build();
-
         Stages allStages = new Stages();
-        if (withAllRecordsInValidationErrorFile) {
-            Stage validationWithAllRecordsInErrorStage = new StageBuilder().validationWithAllRecordsInErrorFile().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
-            allStages.addStage(validationWithAllRecordsInErrorStage);
-        } else {
-            Stage validationStage = new StageBuilder().validation().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
-            allStages.addStage(validationStage);
+        if (!skipValidation) {
+            allStages.addStage(getValidationStage(inputCSVFile));
         }
-        allStages.addStage(migrationStage);
+        allStages.addStage(getMigrationStage(inputCSVFile));
 
         return new Migrator<>(entityPersister, allStages, abortIfAnyStageFails);
+    }
+
+    private Stage getMigrationStage(CSVFile inputCSVFile) {
+        CSVFile migrationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, MIGRATION_ERROR_FILE_EXTENSION), entityClass);
+        return new StageBuilder().migration().withInputFile(inputCSVFile).withErrorFile(migrationErrorFile).withNumberOfThreads(numberOfMigrationThreads).build();
+    }
+
+    private Stage getValidationStage(CSVFile inputCSVFile) {
+        CSVFile validationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, VALIDATION_ERROR_FILE_EXTENSION), entityClass);
+        if (withAllRecordsInValidationErrorFile) {
+            return new StageBuilder().validationWithAllRecordsInErrorFile().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
+        } else {
+            return new StageBuilder().validation().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
+        }
     }
 
     private String errorFileName(String fileName, String fileNameAddition) {
@@ -78,5 +90,4 @@ public class MigratorBuilder<T extends CSVEntity> {
         String fileExtension = fileName.substring(fileName.lastIndexOf("."));
         return fileNameWithoutExtension + fileNameAddition + fileExtension;
     }
-
 }

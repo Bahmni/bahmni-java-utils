@@ -25,8 +25,8 @@ class Importer<T extends CSVEntity> {
         this.uploadedBy = uploadedBy;
     }
 
-    public void start(JDBCConnectionProvider jdbcConnectionProvider) {
-        fileImportThread = new FileImportThread<>(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy);
+    public void start(JDBCConnectionProvider jdbcConnectionProvider, boolean skipValidation) {
+        fileImportThread = new FileImportThread<>(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy, skipValidation);
         thread = new Thread(fileImportThread);
         thread.start();
     }

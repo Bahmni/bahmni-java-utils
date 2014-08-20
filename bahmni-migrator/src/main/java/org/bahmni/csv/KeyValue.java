@@ -13,7 +13,7 @@ public class KeyValue {
     }
 
     public String getKey() {
-        return key;
+        return key != null ? key.trim() : key;
     }
 
     public void setKey(String key) {
@@ -21,7 +21,7 @@ public class KeyValue {
     }
 
     public String getValue() {
-        return value;
+        return value != null ? value.trim() : value;
     }
 
     public void setValue(String value) {

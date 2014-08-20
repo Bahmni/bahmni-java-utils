@@ -19,30 +19,42 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     private final Class csvEntityClass;
     private JDBCConnectionProvider jdbcConnectionProvider;
     private String uploadedBy;
+    private boolean skipValidation;
 
     private static Logger logger = Logger.getLogger(FileImportThread.class);
     private Migrator migrator;
 
-    public FileImportThread(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy) {
+    public FileImportThread(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
         this.originalFileName = originalFileName;
         this.csvFile = csvFile;
         this.persister = persister;
         this.csvEntityClass = csvEntityClass;
         this.jdbcConnectionProvider = jdbcConnectionProvider;
         this.uploadedBy = uploadedBy;
+        this.skipValidation = skipValidation;
     }
 
     public void run() {
         try {
             getNewImportStatusDao().saveInProgress(originalFileName, csvFile, csvEntityClass.getSimpleName(), uploadedBy);
 
-            migrator = new MigratorBuilder(csvEntityClass)
-                    .readFrom(csvFile.getParent(), csvFile.getName())
-                    .persistWith(persister)
-                    .withMultipleValidators(NUMBER_OF_VALIDATION_THREADS)
-                    .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
-                    .withAllRecordsInValidationErrorFile()
-                    .build();
+            if (skipValidation) {
+                migrator = new MigratorBuilder(csvEntityClass)
+                        .readFrom(csvFile.getParent(), csvFile.getName())
+                        .persistWith(persister)
+                        .skipValidation()
+                        .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
+                        .withAllRecordsInValidationErrorFile()
+                        .build();
+            } else {
+                migrator = new MigratorBuilder(csvEntityClass)
+                        .readFrom(csvFile.getParent(), csvFile.getName())
+                        .persistWith(persister)
+                        .withMultipleValidators(NUMBER_OF_VALIDATION_THREADS)
+                        .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
+                        .withAllRecordsInValidationErrorFile()
+                        .build();
+            }
             MigrateResult migrateResult = migrator.migrate();
             getNewImportStatusDao().saveFinished(csvFile, csvEntityClass.getSimpleName(), migrateResult);
 
