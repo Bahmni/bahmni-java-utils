@@ -33,8 +33,8 @@ public class Stage<T extends CSVEntity> {
         return new MigrationCallable(entityPersister, csvEntity);
     }
 
-    public MigrateResult<T> run(EntityPersister entityPersister) throws IOException, IllegalAccessException, InstantiationException {
-        logger.info("Starting " + stageName + " Stage with file - " + inputCSVFile.getAbsoluteFileName());
+    public MigrateResult<T> run(EntityPersister entityPersister, Class<T> csvEntityClass) throws IOException, IllegalAccessException, InstantiationException {
+        logger.info("Starting " + stageName + " Stage with file - " + inputCSVFile.getAbsolutePath());
         MigrateResult<T> stageResult = new MigrateResult<>(stageName);
 
         executorService = Executors.newFixedThreadPool(numberOfThreads);
@@ -43,7 +43,7 @@ public class Stage<T extends CSVEntity> {
 
             CSVEntity csvEntity;
             List<Future<RowResult>> results = new ArrayList<>();
-            while ((csvEntity = inputCSVFile.readEntity()) != null) {
+            while ((csvEntity = inputCSVFile.readEntity(csvEntityClass)) != null) {
                 Future<RowResult> rowResult = executorService.submit(getCallable(entityPersister, csvEntity));
                 results.add(rowResult);
             }

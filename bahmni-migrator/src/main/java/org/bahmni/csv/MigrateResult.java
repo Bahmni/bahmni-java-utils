@@ -42,7 +42,7 @@ public class MigrateResult<T extends CSVEntity> {
         if (errorFile == null)
             return null;
 
-        return errorFile.getAbsoluteFileName();
+        return errorFile.getRelativePath();
     }
 
     public boolean isValidationStage() {

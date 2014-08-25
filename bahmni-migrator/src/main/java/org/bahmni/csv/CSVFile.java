@@ -12,27 +12,25 @@ import java.io.IOException;
 public class CSVFile<T extends CSVEntity> {
     public static final char SEPARATOR = ',';
 
-    private String fileName;
-    private Class<T> entityClass;
-    private String fileLocation;
+    private String relativePath;
+    private String basePath;
 
     private CSVReader csvReader;
     private CSVWriter csvWriter;
 
     private String[] headerNames;
 
-    public String getFileLocation() {
-        return fileLocation;
+    public String getBasePath() {
+        return basePath;
     }
 
-    public CSVFile(String fileLocation, String fileName, Class<T> entityClass) {
-        this.fileLocation = fileLocation;
-        this.fileName = fileName;
-        this.entityClass = entityClass;
+    public CSVFile(String basePath, String relativePath) {
+        this.basePath = basePath;
+        this.relativePath = relativePath;
     }
 
     public void openForRead() throws IOException {
-        File file = new File(fileLocation, fileName);
+        File file = new File(basePath, relativePath);
         if (!file.exists())
             throw new MigrationException("Input CSV file does not exist. File - " + file.getAbsolutePath());
 
@@ -40,7 +38,7 @@ public class CSVFile<T extends CSVEntity> {
         headerNames = csvReader.readNext();
     }
 
-    public T readEntity() throws IOException, InstantiationException, IllegalAccessException {
+    public T readEntity(Class<T> entityClass) throws IOException, InstantiationException, IllegalAccessException {
         if (csvReader == null)
             throw new MigrationException("Please open the CSVFile before reading it");
         String[] aRow = csvReader.readNext();
@@ -58,7 +56,7 @@ public class CSVFile<T extends CSVEntity> {
     }
 
     private void openForWrite() throws IOException {
-        File file = new File(fileLocation, fileName);
+        File file = new File(basePath, relativePath);
         csvWriter = new CSVWriter(new FileWriter(file));
     }
 
@@ -79,15 +77,15 @@ public class CSVFile<T extends CSVEntity> {
         return headerNames;
     }
 
-    public String getAbsoluteFileName() {
-        return fileLocation + "/" + fileName;
+    public String getAbsolutePath() {
+        return basePath + "/" + relativePath;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getRelativePath() {
+        return relativePath;
     }
 
     public void delete() {
-        new File(fileLocation, fileName) .delete();
+        new File(basePath, relativePath).delete();
     }
 }

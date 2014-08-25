@@ -1,6 +1,7 @@
 package org.bahmni.fileimport;
 
 import org.bahmni.csv.CSVEntity;
+import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
@@ -9,7 +10,7 @@ import java.io.File;
 // This is an abstraction over a thread
 class Importer<T extends CSVEntity> {
     private String originalFileName;
-    private File csvFile;
+    private CSVFile csvFile;
     private final EntityPersister<T> persister;
     private final Class csvEntityClass;
     private String uploadedBy;
@@ -17,7 +18,7 @@ class Importer<T extends CSVEntity> {
     private Thread thread;
     private FileImportThread<T> fileImportThread;
 
-    public Importer(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, String uploadedBy) {
+    public Importer(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy) {
         this.originalFileName = originalFileName;
         this.csvFile = csvFile;
         this.persister = persister;
@@ -31,7 +32,7 @@ class Importer<T extends CSVEntity> {
         thread.start();
     }
 
-    public boolean isUploadFor(File csvFile) {
+    public boolean isUploadFor(CSVFile csvFile) {
         return this.csvFile.getAbsolutePath().equals(csvFile.getAbsolutePath());
     }
 

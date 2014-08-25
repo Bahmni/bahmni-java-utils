@@ -34,7 +34,7 @@ public class MultiStageMigrator<T extends CSVEntity> {
     }
 
     public List<StageResult> migrate(CSVFile csvFile, Class entityClass) {
-        List<T> csvRowsForNextStage = readCsvFileToMemory(csvFile);
+        List<T> csvRowsForNextStage = readCsvFileToMemory(csvFile, entityClass);
         List<StageResult> stageResults = new ArrayList<>();
         String stageName = null;
 
@@ -102,7 +102,7 @@ public class MultiStageMigrator<T extends CSVEntity> {
     }
 
     private void createFailureCsv(List<StageResult> stageResults, CSVFile inputCSVFile, Class entityClass) {
-        CSVFile errorCsvFile = new CSVFile(inputCSVFile.getFileLocation(), inputCSVFile.getFileName() + "_err.csv", entityClass);
+        CSVFile errorCsvFile = new CSVFile(inputCSVFile.getBasePath(), inputCSVFile.getRelativePath() + "_err.csv");
         for (StageResult<T> stageResult : stageResults) {
             List<FailedRowResult<T>> failedCSVEntities = stageResult.getFailedCSVEntities();
             if (failedCSVEntities == null || failedCSVEntities.size() == 0)
@@ -129,12 +129,12 @@ public class MultiStageMigrator<T extends CSVEntity> {
         return allCsvEntities;
     }
 
-    private List<T> readCsvFileToMemory(CSVFile csvFile) {
+    private List<T> readCsvFileToMemory(CSVFile csvFile, Class<T> entityClass) {
         try {
             T csvEntity;
             List<T> csvRowsFromFile = new ArrayList<>();
             csvFile.openForRead();
-            while ((csvEntity = (T) csvFile.readEntity()) != null) {
+            while ((csvEntity = (T) csvFile.readEntity(entityClass)) != null) {
                 csvRowsFromFile.add(csvEntity);
             }
             return csvRowsFromFile;

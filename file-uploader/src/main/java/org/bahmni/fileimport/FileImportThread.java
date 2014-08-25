@@ -5,7 +5,6 @@ import org.bahmni.csv.*;
 import org.bahmni.fileimport.dao.ImportStatusDao;
 import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
-import java.io.File;
 import java.sql.SQLException;
 
 // Does the actual import. This includes basic validation, import and updating status tables..
@@ -14,7 +13,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     public static final int NUMBER_OF_MIGRATION_THREADS = 5;
 
     private String originalFileName;
-    private File csvFile;
+    private CSVFile csvFile;
     private final EntityPersister<T> persister;
     private final Class csvEntityClass;
     private JDBCConnectionProvider jdbcConnectionProvider;
@@ -24,7 +23,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     private static Logger logger = Logger.getLogger(FileImportThread.class);
     private Migrator migrator;
 
-    public FileImportThread(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
+    public FileImportThread(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
         this.originalFileName = originalFileName;
         this.csvFile = csvFile;
         this.persister = persister;
@@ -40,7 +39,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
 
             if (skipValidation) {
                 migrator = new MigratorBuilder(csvEntityClass)
-                        .readFrom(csvFile.getParent(), csvFile.getName())
+                        .readFrom(csvFile.getBasePath(), csvFile.getRelativePath())
                         .persistWith(persister)
                         .skipValidation()
                         .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
@@ -48,7 +47,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
                         .build();
             } else {
                 migrator = new MigratorBuilder(csvEntityClass)
-                        .readFrom(csvFile.getParent(), csvFile.getName())
+                        .readFrom(csvFile.getBasePath(), csvFile.getRelativePath())
                         .persistWith(persister)
                         .withMultipleValidators(NUMBER_OF_VALIDATION_THREADS)
                         .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)

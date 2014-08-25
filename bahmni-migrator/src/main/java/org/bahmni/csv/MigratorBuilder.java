@@ -60,7 +60,7 @@ public class MigratorBuilder<T extends CSVEntity> {
     }
 
     public Migrator<T> build() {
-        CSVFile inputCSVFile = new CSVFile(inputCSVFileLocation, inputCSVFileName, entityClass);
+        CSVFile inputCSVFile = new CSVFile(inputCSVFileLocation, inputCSVFileName);
 
         Stages allStages = new Stages();
         if (!skipValidation) {
@@ -68,16 +68,16 @@ public class MigratorBuilder<T extends CSVEntity> {
         }
         allStages.addStage(getMigrationStage(inputCSVFile));
 
-        return new Migrator<>(entityPersister, allStages, abortIfAnyStageFails);
+        return new Migrator<>(entityPersister, allStages, entityClass, abortIfAnyStageFails);
     }
 
     private Stage getMigrationStage(CSVFile inputCSVFile) {
-        CSVFile migrationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, MIGRATION_ERROR_FILE_EXTENSION), entityClass);
+        CSVFile migrationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, MIGRATION_ERROR_FILE_EXTENSION));
         return new StageBuilder().migration().withInputFile(inputCSVFile).withErrorFile(migrationErrorFile).withNumberOfThreads(numberOfMigrationThreads).build();
     }
 
     private Stage getValidationStage(CSVFile inputCSVFile) {
-        CSVFile validationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, VALIDATION_ERROR_FILE_EXTENSION), entityClass);
+        CSVFile validationErrorFile = new CSVFile(inputCSVFileLocation, errorFileName(inputCSVFileName, VALIDATION_ERROR_FILE_EXTENSION));
         if (withAllRecordsInValidationErrorFile) {
             return new StageBuilder().validationWithAllRecordsInErrorFile().withInputFile(inputCSVFile).withErrorFile(validationErrorFile).withNumberOfThreads(numberOfValidationThreads).build();
         } else {

@@ -74,7 +74,7 @@ public class MultiStageMigratorTest {
         doNothing().when(mockInputFile).close();
 
         when(mockInputFile.getHeaderRow()).thenReturn(new String[]{"id", "name"});
-        when(mockInputFile.readEntity())
+        when(mockInputFile.readEntity(DummyCSVEntity.class))
                 .thenReturn(new DummyCSVEntity("1", "dummyEntity1"))
                 .thenReturn(new DummyCSVEntity("2", "dummyEntity2"))
                 .thenReturn(new DummyCSVEntity("3", "dummyEntity3"))

@@ -1,6 +1,7 @@
 package org.bahmni.fileimport;
 
 import org.bahmni.csv.CSVEntity;
+import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.fileimport.exception.FileImportException;
 
@@ -15,7 +16,7 @@ public class ImportRegistry<T extends CSVEntity> {
 
     private static List<Importer> fileImportThreads = new ArrayList<>();
 
-    public static Importer register(String originalFileName, File csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy) {
+    public static Importer register(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy) {
         if (fileImportThreads.size() > MAX_CONCURRENT_IMPORTS)
             throw new FileImportException("Maximum number of concurrent uploads reached. Max Concurrent uploads - " +
                     MAX_CONCURRENT_IMPORTS + ". Current concurrent uploads - " + fileImportThreads.size() + ".");
@@ -25,7 +26,7 @@ public class ImportRegistry<T extends CSVEntity> {
         return fileImportThread;
     }
 
-    public static void unregister(File csvFile) {
+    public static void unregister(CSVFile csvFile) {
         Iterator<Importer> iterator = fileImportThreads.iterator();
         while (iterator.hasNext()) {
             Importer fileImportThread = iterator.next();

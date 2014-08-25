@@ -9,19 +9,21 @@ import java.io.Writer;
 
 // Assumption - if you use multithreading, there should be no dependency between the records in the file.
 public class Migrator<T extends CSVEntity> {
+    private Class<T> entityClass;
     private boolean abortIfValidationFails = true;
     private Stages<T> allStages;
     private final EntityPersister entityPersister;
 
     private static Logger logger = Logger.getLogger(Migrator.class);
 
-    public Migrator(EntityPersister entityPersister, Stages allStages) {
-        this(entityPersister, allStages, true);
+    public Migrator(EntityPersister entityPersister, Stages allStages, Class<T> entityClass) {
+        this(entityPersister, allStages, entityClass, true);
     }
 
-    public Migrator(EntityPersister entityPersister, Stages allStages, boolean abortIfValidationFails) {
+    public Migrator(EntityPersister entityPersister, Stages allStages, Class<T> entityClass, boolean abortIfValidationFails) {
         this.entityPersister = entityPersister;
         this.allStages = allStages;
+        this.entityClass = entityClass;
         this.abortIfValidationFails = abortIfValidationFails;
     }
 
@@ -29,7 +31,7 @@ public class Migrator<T extends CSVEntity> {
         MigrateResult<T> stageResult = null;
         try {
             while (allStages.hasMoreStages()) {
-                stageResult = allStages.nextStage().run(entityPersister);
+                stageResult = allStages.nextStage().run(entityPersister, this.entityClass);
                 if (abortIfValidationFails && stageResult.hasFailed()) {
                     return stageResult;
                 }

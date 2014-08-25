@@ -2,6 +2,7 @@ package org.bahmni.fileimport;
 
 import org.apache.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
+import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
@@ -11,11 +12,11 @@ import java.io.File;
 public class FileImporter<T extends CSVEntity> {
     private static Logger logger = Logger.getLogger(FileImporter.class);
 
-    public boolean importCSV(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy) {
+    public boolean importCSV(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy) {
         return importCSV(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy, false);
     }
 
-    public boolean importCSV(String originalFileName, File csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
+    public boolean importCSV(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
         logger.info("Starting file import thread for " + csvFile.getAbsolutePath());
         try {
             Importer importer = ImportRegistry.register(originalFileName, csvFile, persister, csvEntityClass, uploadedBy);

@@ -1,10 +1,9 @@
 package org.bahmni.fileimport.dao;
 
-import org.apache.log4j.Logger;
+import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.MigrateResult;
 import org.bahmni.fileimport.ImportStatus;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -25,13 +24,13 @@ public class ImportStatusDao {
         this.jdbcConnectionProvider = jdbcConnectionProvider;
     }
 
-    public void saveInProgress(String originalFileName, File csvFile, String type, String uploadedBy) throws SQLException {
+    public void saveInProgress(String originalFileName, CSVFile csvFile, String type, String uploadedBy) throws SQLException {
         Connection connection = jdbcConnectionProvider.getConnection();
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement("insert into import_status (original_file_name, saved_file_name, type, status, uploaded_by, start_time) values (?, ?, ?, ?, ?, ?);");
             statement.setString(1, originalFileName);
-            statement.setString(2, csvFile.getAbsolutePath());
+            statement.setString(2, csvFile.getRelativePath());
             statement.setString(3, type);
             statement.setString(4, IN_PROGRESS);
             statement.setString(5, uploadedBy);
@@ -44,7 +43,7 @@ public class ImportStatusDao {
         }
     }
 
-    public void saveFinished(File csvFile, String simpleName, MigrateResult migrateResult) throws SQLException {
+    public void saveFinished(CSVFile csvFile, String simpleName, MigrateResult migrateResult) throws SQLException {
         Connection connection = jdbcConnectionProvider.getConnection();
         PreparedStatement statement = null;
         try {
@@ -56,7 +55,7 @@ public class ImportStatusDao {
             statement.setInt(5, migrateResult.numberOfFailedRecords());
             statement.setString(6, migrateResult.getStageName());
             statement.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
-            statement.setString(8, csvFile.getAbsolutePath());
+            statement.setString(8, csvFile.getRelativePath());
 
             statement.execute();
             connection.commit();
@@ -65,7 +64,7 @@ public class ImportStatusDao {
         }
     }
 
-    public void saveFatalError(File csvFile, String type, String errorMessage) throws SQLException {
+    public void saveFatalError(CSVFile csvFile, String type, String errorMessage) throws SQLException {
         Connection connection = jdbcConnectionProvider.getConnection();
         PreparedStatement statement = null;
         try {
@@ -74,7 +73,7 @@ public class ImportStatusDao {
             statement.setString(2, FATAL_ERROR);
             statement.setString(3, errorMessage);
             statement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            statement.setString(5, csvFile.getAbsolutePath());
+            statement.setString(5, csvFile.getRelativePath());
 
             statement.execute();
             connection.commit();
@@ -83,7 +82,7 @@ public class ImportStatusDao {
         }
     }
 
-    public void saveFatalError(File csvFile, String type, Throwable exception) throws SQLException {
+    public void saveFatalError(CSVFile csvFile, String type, Throwable exception) throws SQLException {
         saveFatalError(csvFile, type, getStackTrace(exception));
     }
 
