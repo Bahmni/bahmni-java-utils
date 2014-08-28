@@ -50,8 +50,8 @@ public class CSVRowTest {
     public void parse_a_row_with_repeating_regex_header_columns() throws Exception {
         String[] headerRows = new String[]{"id", "name", "obs.HEIGHT", "obs.WEIGHT", "diagnosis.diagnosis1", "patient.caste", "diagnosis.diagnosis2"};
         String[] aRow = new String[]{"1", "bahmniUser", "178", "92", "Cancer", "HUMAN", "Tubercolosis"};
-        CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
-        DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
+        CSVRow<DummyCSVEntityWithRegex> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegex.class);
+        DummyCSVEntityWithRegex aDummyEntity = entityCSVRow.getEntity(aRow);
 
         assertEquals(2, aDummyEntity.observations.size());
         assertEquals(new KeyValue("HEIGHT", "178"), aDummyEntity.observations.get(0));
@@ -71,8 +71,48 @@ public class CSVRowTest {
         String[] aRow = new String[]{"1", "bahmniUser", "Cancer", "Tubercolosis"};
         expectedException.expect(MigrationException.class);
         expectedException.expectMessage("A header by name 'diagnosis.diagnosis' already exists. Header names must be unique");
+        CSVRow<DummyCSVEntityWithRegex> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegex.class);
+        DummyCSVEntityWithRegex aDummyEntity = entityCSVRow.getEntity(aRow);
+    }
+
+    @Test
+    public void parse_a_row_with_combination_of_repeating_and_regex_header_columns() throws Exception {
+        String[] headerRows = new String[]{"Serial Number", "registrationDate", "patient.id", "patient.name", "Repeat.1.encounterDate", "Repeat.1.obs.HEIGHT", "Repeat.1.obs.WEIGHT", "Repeat.1.diagnosis.diagnosis1", "Repeat.1.diagnosis.diagnosis2", "Repeat.2.encounterDate", "Repeat.2.obs.Pulse"};
+        String[] aRow = new String[]{"1", "20/4/1977", "GAN200000", "Dummy Junior", "20/5/2001", "178", "92", "Cancer", "Malaria", "25/5/2005", "72"};
+
         CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
         DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
+
+        assertEquals("1", aDummyEntity.serialNumber);
+        assertEquals("20/4/1977", aDummyEntity.registrationDate);
+
+        assertEquals(2, aDummyEntity.patientAttributes.size());
+
+        assertEquals(new KeyValue("id", "GAN200000"), aDummyEntity.patientAttributes.get(0));
+        assertEquals(new KeyValue("name", "Dummy Junior"), aDummyEntity.patientAttributes.get(1));
+
+        assertEquals(2, aDummyEntity.repeatingRegExes.size());
+        assertEquals(2, aDummyEntity.repeatingRegExes.get(0).observations.size());
+        assertEquals("20/5/2001", aDummyEntity.repeatingRegExes.get(0).encounterDate);
+        assertEquals(new KeyValue("HEIGHT", "178"), aDummyEntity.repeatingRegExes.get(0).observations.get(0));
+        assertEquals(new KeyValue("WEIGHT", "92"), aDummyEntity.repeatingRegExes.get(0).observations.get(1));
+        assertEquals(new KeyValue("diagnosis1", "Cancer"), aDummyEntity.repeatingRegExes.get(0).diagnoses.get(0));
+        assertEquals(new KeyValue("diagnosis2", "Malaria"), aDummyEntity.repeatingRegExes.get(0).diagnoses.get(1));
+
+        assertEquals(1, aDummyEntity.repeatingRegExes.get(1).observations.size());
+        assertEquals("25/5/2005", aDummyEntity.repeatingRegExes.get(1).encounterDate);
+        assertEquals(new KeyValue("Pulse", "72"), aDummyEntity.repeatingRegExes.get(1).observations.get(0));
+    }
+
+    @Test
+    public void no_repeat_headers() throws Exception {
+        String[] headerRows = new String[]{"Serial Number", "registrationDate", "encounterDate", "obs.HEIGHT", "obs.WEIGHT", "diagnosis.diagnosis1", "diagnosis.diagnosis2"};
+        String[] aRow = new String[]{"1", "bahmniUser", "20/5/2001", "178", "92", "Cancer", "Malaria", "25/5/2005", "72"};
+
+        CSVRow<DummyCSVEntityWithRegexRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegexRepeatingValues.class);
+        DummyCSVEntityWithRegexRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
+
+        assertEquals(0, aDummyEntity.repeatingRegExes.size());
     }
 
     private static class DummyCSVEntityWithRepeatingValues extends CSVEntity {
@@ -81,13 +121,41 @@ public class CSVRowTest {
         @CSVHeader(name = "name")
         public String name;
         @CSVRepeatingHeaders(names = {"key", "value"}, type = DummyKeyValue.class)
-        public java.util.List<DummyKeyValue> keyValues;
+        public List<DummyKeyValue> keyValues;
 
         public DummyCSVEntityWithRepeatingValues() {
         }
     }
 
-    private static class DummyCSVEntityWithRegexRepeatingValues extends CSVEntity {
+    public static class DummyCSVEntityWithRegexRepeatingValues extends CSVEntity {
+        @CSVHeader(name = "Serial Number")
+        public String serialNumber;
+
+        @CSVHeader(name = "registrationDate")
+        public String registrationDate;
+
+        @CSVRegexHeader(pattern = "patient.*")
+        public List<KeyValue> patientAttributes;
+
+        @CSVRepeatingRegexHeaders(type=DummyRepeatingRegEx.class)
+        public List<DummyRepeatingRegEx> repeatingRegExes;
+    }
+
+    private static class DummyRepeatingRegEx extends CSVEntity {
+        @CSVHeader(name = "encounterDate")
+        public String encounterDate;
+
+        @CSVRegexHeader(pattern = "obs.*")
+        public java.util.List<KeyValue> observations;
+
+        @CSVRegexHeader(pattern="diagnosis.*")
+        public List<KeyValue> diagnoses;
+
+        public DummyRepeatingRegEx() {
+        }
+    }
+
+    private static class DummyCSVEntityWithRegex extends CSVEntity {
         @CSVHeader(name = "id")
         public String id;
 
@@ -103,7 +171,7 @@ public class CSVRowTest {
         @CSVRegexHeader(pattern = "patient.*")
         public List<KeyValue> patientAttributes;
 
-        public DummyCSVEntityWithRegexRepeatingValues() {
+        public DummyCSVEntityWithRegex() {
         }
     }
 
