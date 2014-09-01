@@ -2,6 +2,7 @@ package org.bahmni.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import org.bahmni.csv.column.CSVColumns;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.File;

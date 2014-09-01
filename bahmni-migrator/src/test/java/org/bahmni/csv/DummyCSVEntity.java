@@ -1,5 +1,7 @@
 package org.bahmni.csv;
 
+import org.bahmni.csv.annotation.CSVHeader;
+
 class DummyCSVEntity extends CSVEntity {
     @CSVHeader(name = "id")
     public String id;

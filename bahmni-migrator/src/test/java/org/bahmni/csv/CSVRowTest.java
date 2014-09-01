@@ -1,5 +1,10 @@
 package org.bahmni.csv;
 
+import org.bahmni.csv.annotation.CSVHeader;
+import org.bahmni.csv.annotation.CSVRegexHeader;
+import org.bahmni.csv.annotation.CSVRepeatingHeaders;
+import org.bahmni.csv.annotation.CSVRepeatingRegexHeaders;
+import org.bahmni.csv.column.CSVColumns;
 import org.bahmni.csv.exception.MigrationException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,7 +120,7 @@ public class CSVRowTest {
         assertEquals(0, aDummyEntity.repeatingRegExes.size());
     }
 
-    private static class DummyCSVEntityWithRepeatingValues extends CSVEntity {
+    public static class DummyCSVEntityWithRepeatingValues extends CSVEntity {
         @CSVHeader(name = "id")
         public String id;
         @CSVHeader(name = "name")
@@ -141,7 +146,7 @@ public class CSVRowTest {
         public List<DummyRepeatingRegEx> repeatingRegExes;
     }
 
-    private static class DummyRepeatingRegEx extends CSVEntity {
+    public static class DummyRepeatingRegEx extends CSVEntity {
         @CSVHeader(name = "encounterDate")
         public String encounterDate;
 
@@ -155,7 +160,7 @@ public class CSVRowTest {
         }
     }
 
-    private static class DummyCSVEntityWithRegex extends CSVEntity {
+    public static class DummyCSVEntityWithRegex extends CSVEntity {
         @CSVHeader(name = "id")
         public String id;
 
@@ -175,7 +180,7 @@ public class CSVRowTest {
         }
     }
 
-    private static class DummyKeyValue {
+    public static class DummyKeyValue {
         public String key;
         public String value;
 

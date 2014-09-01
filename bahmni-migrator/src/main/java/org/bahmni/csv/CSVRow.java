@@ -1,5 +1,7 @@
 package org.bahmni.csv;
 
+import org.bahmni.csv.column.CSVColumns;
+
 import java.lang.reflect.Field;
 
 public class CSVRow<T extends CSVEntity> {
