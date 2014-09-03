@@ -15,7 +15,7 @@ public class RowResult<T extends CSVEntity> {
     }
 
     public RowResult(T csvEntity, Throwable exception) {
-        this(csvEntity, getStackTrace(exception));
+        this(csvEntity, exception.getMessage());
     }
 
     public RowResult(T csvEntity, String errorMessage) {
