@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Stage<T extends CSVEntity> {
     static final Stage VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE = new Stage("validation");
@@ -37,7 +38,7 @@ public class Stage<T extends CSVEntity> {
         logger.info("Starting " + stageName + " Stage with file - " + inputCSVFile.getAbsolutePath());
         MigrateResult<T> stageResult = new MigrateResult<>(stageName);
 
-        executorService = Executors.newFixedThreadPool(numberOfThreads);
+        executorService = Executors.newFixedThreadPool(numberOfThreads, new BahmniThreadFactory());
         try {
             inputCSVFile.openForRead();
 
@@ -116,6 +117,29 @@ public class Stage<T extends CSVEntity> {
     }
 }
 
+class BahmniThreadFactory implements ThreadFactory {
+    private static final AtomicInteger poolNumber = new AtomicInteger(1);
+    private final ThreadGroup group;
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    private final String namePrefix;
+
+    BahmniThreadFactory() {
+        SecurityManager s = System.getSecurityManager();
+        group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+        namePrefix = "pool-" + poolNumber.getAndIncrement() + "-thread-";
+    }
+
+    public Thread newThread(Runnable r) {
+        Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
+        if (t.isDaemon())
+            t.setDaemon(false);
+        if (t.getPriority() != Thread.NORM_PRIORITY)
+            t.setPriority(Thread.NORM_PRIORITY);
+
+        t.setName("Bahmni_File_Importer:poolNumber:" + poolNumber + "_threadNumber:" + threadNumber);
+        return t;
+    }
+}
 
 class StageBuilder<T extends CSVEntity> {
     private Stage stage;

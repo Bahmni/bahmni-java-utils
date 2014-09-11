@@ -6,8 +6,6 @@ import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
 import org.bahmni.fileimport.dao.JDBCConnectionProvider;
 
-import java.io.File;
-
 // External API to start the csv file import.
 public class FileImporter<T extends CSVEntity> {
     private static Logger logger = Logger.getLogger(FileImporter.class);
@@ -28,5 +26,6 @@ public class FileImporter<T extends CSVEntity> {
         logger.info("Initiated upload in background for " + csvFile.getAbsolutePath());
         return true;
     }
+
 
 }

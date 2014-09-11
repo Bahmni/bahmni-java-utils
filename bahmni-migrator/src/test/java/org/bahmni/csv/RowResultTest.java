@@ -23,7 +23,7 @@ public class RowResultTest {
     public void isSuccessful_returns_false_when_no_errormessage() {
         RowResult validationFailedRow = new RowResult(new DummyCSVEntity("1", "name"), new FileNotFoundException("file not found"));
         Assert.assertFalse("isSuccessful() should be false, as there is an Error Message", validationFailedRow.isSuccessful());
-        Assert.assertTrue("Row Error should start with the row details." + validationFailedRow.getRowWithErrorColumnAsString(), validationFailedRow.getRowWithErrorColumnAsString().startsWith("1,name"));
+        Assert.assertTrue("Row Error should start with the row details. " + validationFailedRow.getRowWithErrorColumnAsString(), validationFailedRow.getRowWithErrorColumnAsString().startsWith("1,name"));
         Assert.assertTrue("Row Error should contain the exception stack trace. " + validationFailedRow.getRowWithErrorColumnAsString(), validationFailedRow.getRowWithErrorColumnAsString().contains("file not found"));
     }
 

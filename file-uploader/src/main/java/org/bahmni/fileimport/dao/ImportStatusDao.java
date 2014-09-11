@@ -7,7 +7,11 @@ import org.bahmni.fileimport.ImportStatus;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +43,7 @@ public class ImportStatusDao {
             statement.execute();
             connection.commit();
         } finally {
-            closeResources(connection, statement);
+            closeResources(statement);
         }
     }
 
@@ -60,7 +64,7 @@ public class ImportStatusDao {
             statement.execute();
             connection.commit();
         } finally {
-            closeResources(connection, statement);
+            closeResources(statement);
         }
     }
 
@@ -78,7 +82,7 @@ public class ImportStatusDao {
             statement.execute();
             connection.commit();
         } finally {
-            closeResources(connection, statement);
+            closeResources(statement);
         }
     }
 
@@ -100,7 +104,7 @@ public class ImportStatusDao {
                         resultSet.getString(9), resultSet.getString(10), resultSet.getTimestamp(11), resultSet.getTimestamp(12), resultSet.getString(13)));
             }
         } finally {
-            closeResources(connection, statement);
+            closeResources(statement);
         }
         return importStatuses;
     }
@@ -112,8 +116,8 @@ public class ImportStatusDao {
         return result.toString();
     }
 
-    private void closeResources(Connection connection, PreparedStatement statement) throws SQLException {
+    private void closeResources(PreparedStatement statement) throws SQLException {
         if (statement != null) statement.close();
-        if (connection != null && !connection.isClosed()) connection.close();
+        if (jdbcConnectionProvider != null) jdbcConnectionProvider.closeConnection();
     }
 }
