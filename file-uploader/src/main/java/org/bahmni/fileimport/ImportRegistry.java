@@ -16,12 +16,12 @@ public class ImportRegistry<T extends CSVEntity> {
 
     private static List<Importer> fileImportThreads = new ArrayList<>();
 
-    public static Importer register(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy) {
+    public static Importer register(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy, int numberOfThreads) {
         if (fileImportThreads.size() > MAX_CONCURRENT_IMPORTS)
             throw new FileImportException("Maximum number of concurrent uploads reached. Max Concurrent uploads - " +
                     MAX_CONCURRENT_IMPORTS + ". Current concurrent uploads - " + fileImportThreads.size() + ".");
 
-        Importer fileImportThread = new Importer(originalFileName, csvFile, persister, csvEntityClass, uploadedBy);
+        Importer fileImportThread = new Importer(originalFileName, csvFile, persister, csvEntityClass, uploadedBy, numberOfThreads);
         fileImportThreads.add(fileImportThread);
         return fileImportThread;
     }

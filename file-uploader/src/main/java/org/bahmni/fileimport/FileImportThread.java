@@ -9,8 +9,8 @@ import java.sql.SQLException;
 
 // Does the actual import. This includes basic validation, import and updating status tables..
 class FileImportThread<T extends CSVEntity> implements Runnable {
-    public static final int NUMBER_OF_VALIDATION_THREADS = 5;
-    public static final int NUMBER_OF_MIGRATION_THREADS = 5;
+    public int NUMBER_OF_VALIDATION_THREADS = 5;
+    public int numberOfMigrationThreads;
 
     private String originalFileName;
     private CSVFile csvFile;
@@ -23,7 +23,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     private static Logger logger = Logger.getLogger(FileImportThread.class);
     private Migrator migrator;
 
-    public FileImportThread(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation) {
+    public FileImportThread(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation, int numberOfThreads) {
         this.originalFileName = originalFileName;
         this.csvFile = csvFile;
         this.persister = persister;
@@ -31,6 +31,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
         this.jdbcConnectionProvider = jdbcConnectionProvider;
         this.uploadedBy = uploadedBy;
         this.skipValidation = skipValidation;
+        numberOfMigrationThreads = numberOfThreads;
     }
 
     public void run() {
@@ -42,7 +43,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
                         .readFrom(csvFile.getBasePath(), csvFile.getRelativePath())
                         .persistWith(persister)
                         .skipValidation()
-                        .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
+                        .withMultipleMigrators(numberOfMigrationThreads)
                         .withAllRecordsInValidationErrorFile()
                         .build();
             } else {
@@ -50,7 +51,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
                         .readFrom(csvFile.getBasePath(), csvFile.getRelativePath())
                         .persistWith(persister)
                         .withMultipleValidators(NUMBER_OF_VALIDATION_THREADS)
-                        .withMultipleMigrators(NUMBER_OF_MIGRATION_THREADS)
+                        .withMultipleMigrators(numberOfMigrationThreads)
                         .withAllRecordsInValidationErrorFile()
                         .build();
             }

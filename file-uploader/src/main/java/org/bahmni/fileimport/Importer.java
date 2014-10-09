@@ -9,6 +9,7 @@ import java.io.File;
 
 // This is an abstraction over a thread
 class Importer<T extends CSVEntity> {
+    private final int numberOfThreads;
     private String originalFileName;
     private CSVFile csvFile;
     private final EntityPersister<T> persister;
@@ -18,16 +19,17 @@ class Importer<T extends CSVEntity> {
     private Thread thread;
     private FileImportThread<T> fileImportThread;
 
-    public Importer(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy) {
+    public Importer(String originalFileName, CSVFile csvFile, EntityPersister persister, Class csvEntityClass, String uploadedBy, int numberOfThreads) {
         this.originalFileName = originalFileName;
         this.csvFile = csvFile;
         this.persister = persister;
         this.csvEntityClass = csvEntityClass;
         this.uploadedBy = uploadedBy;
+        this.numberOfThreads = numberOfThreads;
     }
 
     public void start(JDBCConnectionProvider jdbcConnectionProvider, boolean skipValidation) {
-        fileImportThread = new FileImportThread<>(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy, skipValidation);
+        fileImportThread = new FileImportThread<>(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy, skipValidation, numberOfThreads);
         thread = new Thread(fileImportThread);
         thread.start();
     }
