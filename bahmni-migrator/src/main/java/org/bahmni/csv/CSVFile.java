@@ -5,10 +5,10 @@ import au.com.bytecode.opencsv.CSVWriter;
 import org.bahmni.csv.column.CSVColumns;
 import org.bahmni.csv.exception.MigrationException;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class CSVFile<T extends CSVEntity> {
     public static final char SEPARATOR = ',';
@@ -20,6 +20,14 @@ public class CSVFile<T extends CSVEntity> {
     private CSVWriter csvWriter;
 
     private String[] headerNames;
+    private OutputStreamWriter writer;
+    private ByteArrayOutputStream outputStream;
+
+    public CSVFile(ByteArrayOutputStream outputStream) throws IOException {
+        this.outputStream = outputStream;
+        writer = new OutputStreamWriter(outputStream);
+        csvWriter = new CSVWriter(writer, SEPARATOR);
+    }
 
     public String getBasePath() {
         return basePath;
@@ -54,6 +62,16 @@ public class CSVFile<T extends CSVEntity> {
         }
 
         csvWriter.writeNext(aRow.getRowWithErrorColumn());
+    }
+
+    public void writeARecord(CSVEntity csvEntity) throws IOException {
+        List<String> originalRow = csvEntity.getOriginalRow();
+        csvWriter.writeNext(originalRow.toArray(new String[originalRow.size()]));
+    }
+
+    public ByteArrayOutputStream getOutputStream() throws IOException {
+        csvWriter.close();
+        return outputStream;
     }
 
     private void openForWrite() throws IOException {

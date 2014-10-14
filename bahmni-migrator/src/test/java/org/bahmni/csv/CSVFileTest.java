@@ -3,7 +3,12 @@ package org.bahmni.csv;
 import org.bahmni.csv.exception.MigrationException;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.ZipOutputStream;
+
+import static org.junit.Assert.assertTrue;
 
 public class CSVFileTest {
     @Test(expected = MigrationException.class)
