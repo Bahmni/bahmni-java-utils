@@ -15,7 +15,6 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 
 public class CSVRowTest {
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -27,6 +26,24 @@ public class CSVRowTest {
         DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
         assertEquals("bahmniUser", aDummyEntity.name);
         assertEquals("1", aDummyEntity.id);
+    }
+
+    @Test
+    public void trim_non_null_values() throws InstantiationException, IllegalAccessException {
+        String[] headerRows = new String[]{"id", "name"};
+        String[] aRow = {"1", "     bahmniUser      "};
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
+        assertEquals("bahmniUser", aDummyEntity.name);
+    }
+
+    @Test
+    public void trim_with_empty_value() throws InstantiationException, IllegalAccessException {
+        String[] headerRows = new String[]{"id", "name"};
+        String[] aRow = {"1", ""};
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
+        assertEquals("", aDummyEntity.name);
     }
 
     @Test

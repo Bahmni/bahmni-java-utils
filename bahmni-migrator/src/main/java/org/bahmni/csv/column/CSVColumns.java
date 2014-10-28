@@ -31,7 +31,8 @@ public class CSVColumns<T extends CSVEntity> {
     private void addColumnValue(Object entity, Field field, String[] aRow) throws IllegalAccessException {
         CSVHeader headerAnnotation = field.getAnnotation(CSVHeader.class);
         field.setAccessible(true);
-        field.set(entity, aRow[getPosition(headerAnnotation.name(), 0)]);
+        String value = aRow[getPosition(headerAnnotation.name(), 0)];
+        field.set(entity, value != null ? value.trim() : value);
     }
 
     protected int getPosition(String headerValueInClass, int startIndex) {
