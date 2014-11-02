@@ -20,6 +20,7 @@ public class CSVColumns<T extends CSVEntity> {
         if (field.getAnnotation(CSVRepeatingHeaders.class) != null) {
             new RepeatingCSVColumns(headerNames).setValue(entity, field, aRow);
         } else if (field.getAnnotation(CSVHeader.class) != null) {
+            CSVHeader annotation = field.getAnnotation(CSVHeader.class);
             addColumnValue(entity, field, aRow);
         } else if (field.getAnnotation(CSVRegexHeader.class) != null) {
             new RegexCSVColumns(headerNames).setValue(entity, field, aRow);
@@ -31,8 +32,23 @@ public class CSVColumns<T extends CSVEntity> {
     private void addColumnValue(Object entity, Field field, String[] aRow) throws IllegalAccessException {
         CSVHeader headerAnnotation = field.getAnnotation(CSVHeader.class);
         field.setAccessible(true);
-        String value = aRow[getPosition(headerAnnotation.name(), 0)];
+        int position = getPosition(headerAnnotation.name(), 0);
+        if (headerColunNotFoundForOptionalColumn(headerAnnotation, position))
+            return;
+
+        if (headerColumnNotFoundForMandatoryColumn(headerAnnotation, position))
+            throw new MigrationException("No Column found in the csv file. " + headerAnnotation.name());
+
+        String value = aRow[position];
         field.set(entity, value != null ? value.trim() : value);
+    }
+
+    private boolean headerColumnNotFoundForMandatoryColumn(CSVHeader headerAnnotation, int position) {
+        return position < 0 && !headerAnnotation.optional();
+    }
+
+    private boolean headerColunNotFoundForOptionalColumn(CSVHeader headerAnnotation, int position) {
+        return position < 0 && headerAnnotation.optional();
     }
 
     protected int getPosition(String headerValueInClass, int startIndex) {
@@ -41,6 +57,6 @@ public class CSVColumns<T extends CSVEntity> {
             if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase()))
                 return i;
         }
-        throw new MigrationException("No Column found in the csv file. " + headerValueInClass);
+        return -1;
     }
 }

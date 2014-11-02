@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 public class CSVRowTest {
     @Rule
@@ -26,6 +27,37 @@ public class CSVRowTest {
         DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
         assertEquals("bahmniUser", aDummyEntity.name);
         assertEquals("1", aDummyEntity.id);
+    }
+
+    @Test
+    public void optional_columns_need_not_have_values() throws InstantiationException, IllegalAccessException {
+        String[] headerRows = new String[]{"id", "name"};
+        String[] aRow = {"1", "bahmniUser"};
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
+        assertEquals("bahmniUser", aDummyEntity.name);
+        assertEquals("1", aDummyEntity.id);
+        assertNull("caste is an optional header and is defaulted to null", aDummyEntity.caste);
+    }
+
+    @Test
+    public void optional_columns_values_are_set_on_csvEntity() throws InstantiationException, IllegalAccessException {
+        String[] headerRows = new String[]{"id", "name", "caste"};
+        String[] aRow = {"1", "bahmniUser", "human"};
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
+        assertEquals("bahmniUser", aDummyEntity.name);
+        assertEquals("human", aDummyEntity.caste);
+    }
+
+    @Test
+    public void throws_exception_for_missing_header_for_mandatory_column() throws Exception {
+        String[] headerRows = new String[]{"id"};
+        String[] aRow = new String[]{"1"};
+        expectedException.expect(MigrationException.class);
+        expectedException.expectMessage("No Column found in the csv file.");
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
     }
 
     @Test

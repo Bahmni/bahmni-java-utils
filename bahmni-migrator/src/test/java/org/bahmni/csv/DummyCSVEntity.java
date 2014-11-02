@@ -3,10 +3,12 @@ package org.bahmni.csv;
 import org.bahmni.csv.annotation.CSVHeader;
 
 public class DummyCSVEntity extends CSVEntity {
-    @CSVHeader(name = "id")
+    @CSVHeader(name = "id"  )
     public String id;
     @CSVHeader(name = "name")
     public String name;
+    @CSVHeader(name = "caste", optional = true)
+    public String caste;
 
     public DummyCSVEntity() {}
 

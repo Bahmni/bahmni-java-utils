@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CSVHeader {
     String name();
+    boolean optional() default false;
 }
