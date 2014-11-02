@@ -33,7 +33,7 @@ public class CSVColumns<T extends CSVEntity> {
         CSVHeader headerAnnotation = field.getAnnotation(CSVHeader.class);
         field.setAccessible(true);
         int position = getPosition(headerAnnotation.name(), 0);
-        if (headerColunNotFoundForOptionalColumn(headerAnnotation, position))
+        if (headerColumnNotFoundForOptionalColumn(headerAnnotation, position))
             return;
 
         if (headerColumnNotFoundForMandatoryColumn(headerAnnotation, position))
@@ -47,7 +47,7 @@ public class CSVColumns<T extends CSVEntity> {
         return position < 0 && !headerAnnotation.optional();
     }
 
-    private boolean headerColunNotFoundForOptionalColumn(CSVHeader headerAnnotation, int position) {
+    private boolean headerColumnNotFoundForOptionalColumn(CSVHeader headerAnnotation, int position) {
         return position < 0 && headerAnnotation.optional();
     }
 
