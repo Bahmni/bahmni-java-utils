@@ -1,6 +1,8 @@
 package org.bahmni.fileimport;
 
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ImportStatus {
     private final String id;
@@ -16,6 +18,7 @@ public class ImportStatus {
     private final Date startTime;
     private final Date endTime;
     private String stackTrace;
+    private String errorMessage;
 
     public ImportStatus(String id, String originalFileName, String savedFileName, String errorFileName, String type, String status, int successfulRecords, int failedRecords, String stageName, String uploadedBy, Date startTime, Date endTime, String stackTrace) {
         this.id = id;
@@ -31,6 +34,21 @@ public class ImportStatus {
         this.startTime = startTime;
         this.endTime = endTime;
         this.stackTrace = stackTrace;
+
+        Pattern pattern = Pattern.compile(":([^\\n]+)",Pattern.DOTALL);
+        if (stackTrace != null && !stackTrace.trim().isEmpty()) {
+            Matcher matcher = pattern.matcher(stackTrace);
+            if (matcher.find())
+                this.errorMessage = matcher.group(1).trim();
+        }
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public void setStackTrace(String stackTrace) {
