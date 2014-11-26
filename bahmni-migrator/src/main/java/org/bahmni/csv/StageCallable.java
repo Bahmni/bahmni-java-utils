@@ -20,7 +20,7 @@ class ValidationCallable<T extends CSVEntity> implements Callable<RowResult<T>> 
     @Override
     public RowResult<T> call() throws Exception {
         try {
-            return entityPersister.validate(csvEntity);
+            return new RowResult<>(csvEntity, entityPersister.validate(csvEntity));
         } catch (Exception e) {
             logger.error("failed while validating. Record - " + StringUtils.join(csvEntity.getOriginalRow().toArray()));
             throw new MigrationException(e);
@@ -43,7 +43,7 @@ class MigrationCallable<T extends CSVEntity> implements Callable<RowResult<T>> {
     @Override
     public RowResult<T> call() throws Exception {
         try {
-            return entityPersister.persist(csvEntity);
+            return new RowResult<>(csvEntity, entityPersister.persist(csvEntity));
         } catch (Exception e) {
             logger.error("failed while persisting. Record - " + StringUtils.join(csvEntity.getOriginalRow().toArray()));
             throw new MigrationException(e);

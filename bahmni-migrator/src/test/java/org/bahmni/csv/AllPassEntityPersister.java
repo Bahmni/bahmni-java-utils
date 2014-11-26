@@ -1,14 +1,15 @@
 package org.bahmni.csv;
 
 class AllPassEntityPersister implements EntityPersister<DummyCSVEntity> {
+
     @Override
-    public RowResult<DummyCSVEntity> validate(DummyCSVEntity csvEntity) {
-        return new RowResult(csvEntity);
+    public Messages persist(DummyCSVEntity csvEntity) {
+        return new Messages();
     }
 
     @Override
-    public RowResult<DummyCSVEntity> persist(DummyCSVEntity csvEntity) {
-        return new RowResult(csvEntity);
+    public Messages validate(DummyCSVEntity csvEntity) {
+        return new Messages();
     }
 }
 
@@ -20,13 +21,13 @@ class ValidationFailedEntityPersister implements EntityPersister<DummyCSVEntity>
     }
 
     @Override
-    public RowResult<DummyCSVEntity> validate(DummyCSVEntity csvEntity) {
-        return new RowResult<>(csvEntity, message);
+    public Messages persist(DummyCSVEntity csvEntity) {
+        return new Messages();
     }
 
     @Override
-    public RowResult<DummyCSVEntity> persist(DummyCSVEntity csvEntity) {
-        return new RowResult(csvEntity);
+    public Messages validate(DummyCSVEntity csvEntity) {
+        return new Messages(message);
     }
 }
 
@@ -38,12 +39,12 @@ class MigrationFailedEntityPersister implements EntityPersister<DummyCSVEntity> 
     }
 
     @Override
-    public RowResult<DummyCSVEntity> validate(DummyCSVEntity csvEntity) {
-        return new RowResult(csvEntity);
+    public Messages persist(DummyCSVEntity csvEntity) {
+        return new Messages(e);
     }
 
     @Override
-    public RowResult<DummyCSVEntity> persist(DummyCSVEntity csvEntity) {
-        return new RowResult(csvEntity, e);
+    public Messages validate(DummyCSVEntity csvEntity) {
+        return new Messages();
     }
 }

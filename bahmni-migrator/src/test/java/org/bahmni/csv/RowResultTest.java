@@ -14,9 +14,9 @@ public class RowResultTest {
     }
 
     @Test
-    public void isSuccessful_returns_true_for_empty_errormessage() {
-        RowResult successfulRow = new RowResult(new DummyCSVEntity("1", "name"), "");
-        Assert.assertTrue("isSuccessful() should be true, as there is no Error Message", successfulRow.isSuccessful());
+    public void isSuccessful_returns_false_for_empty_errormessage() {
+        RowResult rowResult = new RowResult(new DummyCSVEntity("1", "name"), "");
+        Assert.assertFalse("isSuccessful() should be true, as there is no Error Message", rowResult.isSuccessful());
     }
 
     @Test
