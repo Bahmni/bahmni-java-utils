@@ -1,7 +1,6 @@
 package org.bahmni.csv.column;
 
 import org.bahmni.csv.annotation.CSVRepeatingHeaders;
-import org.bahmni.csv.exception.MigrationException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -20,8 +19,9 @@ public class RepeatingCSVColumns {
         String[] repeatingHeaderColumnNames = annotation.names();
         Class valueClassType = annotation.type();
 
-        int currentHeaderPosition = getPosition(repeatingHeaderColumnNames[0], 0);
-        while (currentHeaderPosition < this.headerNames.length) {
+        Integer currentHeaderPosition = getPosition(repeatingHeaderColumnNames[0], 0);
+        Integer endPosition = getEndPosition(repeatingHeaderColumnNames[repeatingHeaderColumnNames.length - 1]);
+        while (currentHeaderPosition != null && endPosition != null && currentHeaderPosition <= endPosition) {
             Object value = valueClassType.newInstance();
             Field[] valueFields = valueClassType.getDeclaredFields();
             for (Field valueField : valueFields) {
@@ -33,16 +33,25 @@ public class RepeatingCSVColumns {
         }
         field.setAccessible(true);
         field.set(entity, values);
-
     }
 
-    protected int getPosition(String headerValueInClass, int startIndex) {
+    protected Integer getPosition(String headerValueInClass, int startIndex) {
         for (int i = startIndex; i < headerNames.length; i++) {
             String headerName = headerNames[i];
-            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase()))
+            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase())) {
                 return i;
+            }
         }
-        throw new MigrationException("No Column found in the csv file. " + headerValueInClass);
+        return null;
     }
 
+    protected Integer getEndPosition(String headerValueInClass) {
+        for (int i = headerNames.length - 1; i >= 0; i--) {
+            String headerName = headerNames[i];
+            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase())) {
+                return i;
+            }
+        }
+        return null;
+    }
 }

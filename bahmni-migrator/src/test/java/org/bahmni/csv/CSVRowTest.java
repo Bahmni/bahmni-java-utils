@@ -90,14 +90,28 @@ public class CSVRowTest {
 
     @Test
     public void parse_a_row_with_repeating_header_columns() throws Exception {
-        String[] headerRows = new String[]{"Id", "Name", "key", "Value", "key", "Value"};
-        String[] aRow = new String[]{"1", "bahmniUser", "key1", "Value1", "key2", "Value2"};
+        String[] headerRows = new String[]{"Id", "key", "Value", "key", "Value", "Name"};
+        String[] aRow = new String[]{"1", "key1", "Value1", "key2", "Value2", "bahmniUser"};
         CSVRow<DummyCSVEntityWithRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRepeatingValues.class);
         DummyCSVEntityWithRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
 
+        assertEquals("1", aDummyEntity.id);
+        assertEquals("bahmniUser", aDummyEntity.name);
         assertEquals(2, aDummyEntity.keyValues.size());
         assertEquals(new DummyKeyValue("key1", "Value1"), aDummyEntity.keyValues.get(0));
         assertEquals(new DummyKeyValue("key2", "Value2"), aDummyEntity.keyValues.get(1));
+    }
+
+    @Test
+    public void parse_a_row_without_repeating_header_column_for_class_containing_repeating_header_fields() throws Exception {
+        String[] headerRows = new String[]{"Id", "Name"};
+        String[] aRow = new String[]{"1", "bahmniUser"};
+        CSVRow<DummyCSVEntityWithRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRepeatingValues.class);
+        DummyCSVEntityWithRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
+
+        assertEquals(0, aDummyEntity.keyValues.size());
+        assertEquals("1", aDummyEntity.id);
+        assertEquals("bahmniUser", aDummyEntity.name);
     }
 
     @Test
