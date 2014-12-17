@@ -41,4 +41,13 @@ public class RowResultTest {
         String[] rowWithErrorColumn = validationFailedRow.getRowWithErrorColumn();
         Assert.assertEquals("validation error", rowWithErrorColumn[rowWithErrorColumn.length - 1]);
     }
+
+    @Test
+    public void getRowWithErrorColumn_returns_inner_error_message() {
+        RowResult validationFailedRow = new RowResult(new DummyCSVEntity("1", "name"), new Exception(new Exception(new FileNotFoundException("file not found"))));
+        String[] rowWithErrorColumn = validationFailedRow.getRowWithErrorColumn();
+        Assert.assertTrue("validation error message should have inner exception message",
+                rowWithErrorColumn[rowWithErrorColumn.length - 1].contains("file not found"));
+    }
+
 }
