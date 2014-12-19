@@ -90,7 +90,7 @@ public class CSVRowTest {
 
     @Test
     public void parse_a_row_with_repeating_header_columns() throws Exception {
-        String[] headerRows = new String[]{"Id", "key", "Value", "key", "Value", "Name"};
+        String[] headerRows = new String[]{"Id", "some-key", "Value", "some-key", "Value", "Name"};
         String[] aRow = new String[]{"1", "key1", "Value1", "key2", "Value2", "bahmniUser"};
         CSVRow<DummyCSVEntityWithRepeatingValues> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRepeatingValues.class);
         DummyCSVEntityWithRepeatingValues aDummyEntity = entityCSVRow.getEntity(aRow);
@@ -188,7 +188,7 @@ public class CSVRowTest {
         public String id;
         @CSVHeader(name = "name")
         public String name;
-        @CSVRepeatingHeaders(names = {"key", "value"}, type = DummyKeyValue.class)
+        @CSVRepeatingHeaders(names = {"some-key", "value"}, type = DummyKeyValue.class)
         public List<DummyKeyValue> keyValues;
 
         public DummyCSVEntityWithRepeatingValues() {
@@ -244,7 +244,9 @@ public class CSVRowTest {
     }
 
     public static class DummyKeyValue {
+        @CSVHeader(name = "some-key")
         public String key;
+
         public String value;
 
         public DummyKeyValue() {

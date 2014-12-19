@@ -1,5 +1,6 @@
 package org.bahmni.csv.column;
 
+import org.bahmni.csv.annotation.CSVHeader;
 import org.bahmni.csv.annotation.CSVRepeatingHeaders;
 
 import java.lang.reflect.Field;
@@ -14,6 +15,7 @@ public class RepeatingCSVColumns {
     }
 
     public void setValue(Object entity, Field field, String[] aRow) throws IllegalAccessException, InstantiationException {
+
         List values = new ArrayList<>();
         CSVRepeatingHeaders annotation = field.getAnnotation(CSVRepeatingHeaders.class);
         String[] repeatingHeaderColumnNames = annotation.names();
@@ -26,7 +28,7 @@ public class RepeatingCSVColumns {
             Field[] valueFields = valueClassType.getDeclaredFields();
             for (Field valueField : valueFields) {
                 valueField.setAccessible(true);
-                valueField.set(value, aRow[getPosition(valueField.getName(), currentHeaderPosition)]);
+                valueField.set(value, aRow[getPosition(getFieldName(valueField), currentHeaderPosition)]);
             }
             values.add(value);
             currentHeaderPosition += valueFields.length;
@@ -35,10 +37,18 @@ public class RepeatingCSVColumns {
         field.set(entity, values);
     }
 
+    private String getFieldName(Field valueField) {
+        String fieldName = valueField.getName();
+        CSVHeader csvHeaderAnnotation = valueField.getAnnotation(CSVHeader.class);
+        if(csvHeaderAnnotation != null) {
+            fieldName = csvHeaderAnnotation.name();
+        }
+        return fieldName;
+    }
+
     protected Integer getPosition(String headerValueInClass, int startIndex) {
         for (int i = startIndex; i < headerNames.length; i++) {
-            String headerName = headerNames[i];
-            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase())) {
+            if (headerNames[i].toLowerCase().equalsIgnoreCase(headerValueInClass.toLowerCase())) {
                 return i;
             }
         }
@@ -47,8 +57,7 @@ public class RepeatingCSVColumns {
 
     protected Integer getEndPosition(String headerValueInClass) {
         for (int i = headerNames.length - 1; i >= 0; i--) {
-            String headerName = headerNames[i];
-            if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase())) {
+            if (headerNames[i].toLowerCase().equalsIgnoreCase(headerValueInClass.toLowerCase())) {
                 return i;
             }
         }
