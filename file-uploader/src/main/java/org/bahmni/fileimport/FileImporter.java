@@ -23,7 +23,7 @@ public class FileImporter<T extends CSVEntity> {
         try {
             Importer importer = ImportRegistry.register(originalFileName, csvFile, persister, csvEntityClass, uploadedBy, numberOfThreads);
             importer.start(jdbcConnectionProvider, skipValidation);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error(e);
             return false;
         }
