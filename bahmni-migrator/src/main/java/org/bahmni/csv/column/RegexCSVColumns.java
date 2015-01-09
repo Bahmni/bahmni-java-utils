@@ -6,7 +6,9 @@ import org.bahmni.csv.exception.MigrationException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RegexCSVColumns {
     private String[] headerNames;
@@ -16,31 +18,47 @@ public class RegexCSVColumns {
     }
 
     public void setValue(Object entity, Field field, String[] aRow) throws IllegalAccessException {
-        List values = new ArrayList<>();
+        List<KeyValue> values = new ArrayList<>();
         CSVRegexHeader annotation = field.getAnnotation(CSVRegexHeader.class);
         String regexPattern = annotation.pattern();
 
-        List<String> matchingHeaders = getMatchingHeaders(this.headerNames, regexPattern);
-        for (String matchingHeader : matchingHeaders) {
-            KeyValue keyValue = new KeyValue();
-            keyValue.setKey(matchingHeader.replace(regexPattern.replace("*", ""), ""));
-            keyValue.setValue(aRow[getPosition(matchingHeader, 0)]);
-            values.add(keyValue);
+        for(String headerName: getMatchingHeaders(headerNames, regexPattern)){
+            values.addAll(createKeyValue(headerName, regexPattern, aRow));
         }
+
         field.setAccessible(true);
         field.set(entity, values);
     }
 
-    private List<String> getMatchingHeaders(String[] headerNames, String regexPattern) {
-        List<String> matchingHeaders = new ArrayList<>();
+    private Set<String> getMatchingHeaders(String[] headerNames, String regexPattern) {
+        Set<String> matchingHeaders = new HashSet<>();
         for (String headerName : headerNames) {
             if (headerName.matches(regexPattern) && !matchingHeaders.contains(headerName)) {
                 matchingHeaders.add(headerName);
-            } else if (matchingHeaders.contains(headerName)) {
-                throw new MigrationException(String.format("A header by name '%s' already exists. Header names must be unique", headerName));
             }
         }
         return matchingHeaders;
+    }
+
+
+    private List<KeyValue> createKeyValue(String headerName, String regexPattern, String[] aRow){
+        List<KeyValue> values = new ArrayList<>();
+
+        for(int i =0; i < headerNames.length;i++){
+            String name = headerNames[i];
+            if(name.toLowerCase().startsWith(headerName.toLowerCase())){
+                KeyValue keyValue = new KeyValue();
+                keyValue.setKey(headerName.replace(regexPattern.replace("*", ""), ""));
+                keyValue.setValue(aRow[i]);
+                values.add(keyValue);
+            }
+        }
+
+        if(values.isEmpty()){
+            throw new MigrationException("No Column found in the csv file. " + headerName);
+        }
+
+        return values;
     }
 
     protected int getPosition(String headerValueInClass, int startIndex) {
@@ -49,7 +67,7 @@ public class RegexCSVColumns {
             if (headerName.toLowerCase().startsWith(headerValueInClass.toLowerCase()))
                 return i;
         }
-        throw new MigrationException("No Column found in the csv file. " + headerValueInClass);
+        return -1;
     }
 
 }
