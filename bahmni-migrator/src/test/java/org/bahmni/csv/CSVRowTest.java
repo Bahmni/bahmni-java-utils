@@ -14,6 +14,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class CSVRowTest {
     @Rule
@@ -122,8 +123,8 @@ public class CSVRowTest {
         DummyCSVEntityWithRegex aDummyEntity = entityCSVRow.getEntity(aRow);
 
         assertEquals(2, aDummyEntity.observations.size());
-        assertEquals(new KeyValue("HEIGHT", "178"), aDummyEntity.observations.get(0));
-        assertEquals(new KeyValue("WEIGHT", "92"), aDummyEntity.observations.get(1));
+        aDummyEntity.observations.contains(new KeyValue("HEIGHT", "178"));
+        aDummyEntity.observations.contains(new KeyValue("WEIGHT", "92"));
 
         assertEquals(1, aDummyEntity.patientAttributes.size());
         assertEquals(new KeyValue("caste", "HUMAN"), aDummyEntity.patientAttributes.get(0));
@@ -131,16 +132,6 @@ public class CSVRowTest {
         assertEquals(2, aDummyEntity.diagnoses.size());
         assertEquals(new KeyValue("diagnosis1", "Cancer"), aDummyEntity.diagnoses.get(0));
         assertEquals(new KeyValue("diagnosis2", "Tubercolosis"), aDummyEntity.diagnoses.get(1));
-    }
-
-    @Test
-    public void throws_exception_for_non_unique_regex_header_columns() throws Exception {
-        String[] headerRows = new String[]{"id", "name", "diagnosis.diagnosis", "diagnosis.diagnosis"};
-        String[] aRow = new String[]{"1", "bahmniUser", "Cancer", "Tubercolosis"};
-        expectedException.expect(MigrationException.class);
-        expectedException.expectMessage("A header by name 'diagnosis.diagnosis' already exists. Header names must be unique");
-        CSVRow<DummyCSVEntityWithRegex> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntityWithRegex.class);
-        DummyCSVEntityWithRegex aDummyEntity = entityCSVRow.getEntity(aRow);
     }
 
     @Test
@@ -162,14 +153,15 @@ public class CSVRowTest {
         assertEquals(2, aDummyEntity.repeatingRegExes.size());
         assertEquals(2, aDummyEntity.repeatingRegExes.get(0).observations.size());
         assertEquals("20/5/2001", aDummyEntity.repeatingRegExes.get(0).encounterDate);
-        assertEquals(new KeyValue("HEIGHT", "178"), aDummyEntity.repeatingRegExes.get(0).observations.get(0));
-        assertEquals(new KeyValue("WEIGHT", "92"), aDummyEntity.repeatingRegExes.get(0).observations.get(1));
-        assertEquals(new KeyValue("diagnosis1", "Cancer"), aDummyEntity.repeatingRegExes.get(0).diagnoses.get(0));
-        assertEquals(new KeyValue("diagnosis2", "Malaria"), aDummyEntity.repeatingRegExes.get(0).diagnoses.get(1));
+
+        assertTrue(aDummyEntity.repeatingRegExes.get(0).observations.contains(new KeyValue("HEIGHT", "178")));
+        assertTrue(aDummyEntity.repeatingRegExes.get(0).observations.contains(new KeyValue("WEIGHT", "92")));
+        assertTrue(aDummyEntity.repeatingRegExes.get(0).diagnoses.contains(new KeyValue("diagnosis1", "Cancer")));
+        assertTrue(aDummyEntity.repeatingRegExes.get(0).diagnoses.contains(new KeyValue("diagnosis2", "Malaria")));
 
         assertEquals(1, aDummyEntity.repeatingRegExes.get(1).observations.size());
         assertEquals("25/5/2005", aDummyEntity.repeatingRegExes.get(1).encounterDate);
-        assertEquals(new KeyValue("Pulse", "72"), aDummyEntity.repeatingRegExes.get(1).observations.get(0));
+        assertTrue(aDummyEntity.repeatingRegExes.get(1).observations.contains(new KeyValue("Pulse", "72")));
     }
 
     @Test
