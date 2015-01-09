@@ -31,8 +31,8 @@ public class RepeatingRegexCSVColumns {
 
             String firstChildHeaderName = childHeaders.get(0);
             String lastChildHeaderName = childHeaders.get(childHeaders.size() - 1);
-            int firstChildIndex = getIndexFor(headerNames, counter, firstChildHeaderName);
-            int lastChildIndex = getIndexFor(headerNames, counter, lastChildHeaderName);
+            int firstChildIndex = getFirstIndexFor(headerNames, counter, firstChildHeaderName);
+            int lastChildIndex = getLastIndexFor(headerNames, counter, lastChildHeaderName);
 
             List<String> childRowValues = Arrays.asList(aRow).subList(firstChildIndex, lastChildIndex + 1);
 
@@ -64,7 +64,7 @@ public class RepeatingRegexCSVColumns {
         return childHeaderNames;
     }
 
-    private int getIndexFor(String[] headerNames, int counter, String firstChildHeaderName) {
+    private int getFirstIndexFor(String[] headerNames, int counter, String firstChildHeaderName) {
         int index = 0;
         for (String headerName : headerNames) {
             if (headerName.equalsIgnoreCase(REPEAT + counter + "." + firstChildHeaderName)) {
@@ -74,5 +74,18 @@ public class RepeatingRegexCSVColumns {
         }
         return -1;
     }
+
+    private int getLastIndexFor(String[] headerNames, int counter, String lastChildHeaderName) {
+        int selectedIndex = -1;
+        int index = 0;
+        for (String headerName : headerNames) {
+            if (headerName.equalsIgnoreCase(REPEAT + counter + "." + lastChildHeaderName)) {
+                selectedIndex  = index;
+            }
+            index++;
+        }
+        return selectedIndex;
+    }
+
 
 }
