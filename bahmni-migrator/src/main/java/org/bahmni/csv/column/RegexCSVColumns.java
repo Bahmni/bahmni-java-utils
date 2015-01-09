@@ -46,7 +46,7 @@ public class RegexCSVColumns {
 
         for(int i =0; i < headerNames.length;i++){
             String name = headerNames[i];
-            if(name.toLowerCase().startsWith(headerName.toLowerCase())){
+            if(name.toLowerCase().equals(headerName.toLowerCase())){
                 KeyValue keyValue = new KeyValue();
                 keyValue.setKey(headerName.replace(regexPattern.replace("*", ""), ""));
                 keyValue.setValue(aRow[i]);
