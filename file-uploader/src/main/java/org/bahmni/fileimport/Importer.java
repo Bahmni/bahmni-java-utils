@@ -3,9 +3,7 @@ package org.bahmni.fileimport;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
-import org.bahmni.fileimport.dao.JDBCConnectionProvider;
-
-import java.io.File;
+import org.bahmni.module.common.db.JDBCConnectionProvider;
 
 // This is an abstraction over a thread
 class Importer<T extends CSVEntity> {

@@ -1,9 +1,14 @@
 package org.bahmni.fileimport;
 
 import org.apache.log4j.Logger;
-import org.bahmni.csv.*;
+import org.bahmni.csv.CSVEntity;
+import org.bahmni.csv.CSVFile;
+import org.bahmni.csv.EntityPersister;
+import org.bahmni.csv.MigrateResult;
+import org.bahmni.csv.Migrator;
+import org.bahmni.csv.MigratorBuilder;
 import org.bahmni.fileimport.dao.ImportStatusDao;
-import org.bahmni.fileimport.dao.JDBCConnectionProvider;
+import org.bahmni.module.common.db.JDBCConnectionProvider;
 
 import java.sql.SQLException;
 

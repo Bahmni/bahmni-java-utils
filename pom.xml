@@ -18,6 +18,7 @@
         <module>visit-squasher</module>
         <module>font-transformer</module>
         <module>openmrs-connector</module>
+        <module>common</module>
     </modules>
 
     <build>
