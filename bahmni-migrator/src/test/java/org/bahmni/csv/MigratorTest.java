@@ -108,10 +108,7 @@ public class MigratorTest {
     }
 
     private Stages<DummyCSVEntity> getOneStage() {
-        Stage<DummyCSVEntity> validationStage = Stage.VALIDATION;
-        validationStage.setInputCSVFile(mockInputFile);
-        validationStage.setNumberOfThreads(1);
-        validationStage.setErrorFile(this.mockValidationErrorFile);
+        Stage<DummyCSVEntity> validationStage = Stage.validation(mockValidationErrorFile, 1, mockInputFile);
 
         Stages<DummyCSVEntity> allStages = new Stages<>();
         allStages.addStage(validationStage);
@@ -120,15 +117,8 @@ public class MigratorTest {
     }
 
     private Stages<DummyCSVEntity> getTwoStages() {
-        Stage<DummyCSVEntity> validationStage = Stage.VALIDATION;
-        validationStage.setInputCSVFile(mockInputFile);
-        validationStage.setNumberOfThreads(1);
-        validationStage.setErrorFile(this.mockValidationErrorFile);
-
-        Stage<DummyCSVEntity> migrationStage = Stage.MIGRATION;
-        migrationStage.setInputCSVFile(mockInputFile);
-        migrationStage.setNumberOfThreads(1);
-        migrationStage.setErrorFile(this.mockMigrationErrorFile);
+        Stage<DummyCSVEntity> validationStage = Stage.validation(mockValidationErrorFile, 1, mockInputFile);
+        Stage<DummyCSVEntity> migrationStage = Stage.migration(mockMigrationErrorFile, 1, mockInputFile);
 
         Stages<DummyCSVEntity> allStages = new Stages<>();
         allStages.addStage(validationStage);

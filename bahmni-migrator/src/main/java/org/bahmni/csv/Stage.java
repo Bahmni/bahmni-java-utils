@@ -10,25 +10,30 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Stage<T extends CSVEntity> {
-    static final Stage VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE = new Stage("validation");
-    static final Stage VALIDATION = new Stage("validation");
-    static final Stage MIGRATION = new Stage("migration");
+    public static final String VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME = "validation.err";
+    public static final String VALIDATION_STAGENAME = "validation";
+    public static final String MIGRATION_STAGENAME = "migration";
 
     private String stageName;
-    private int numberOfThreads;
-    private CSVFile errorFile;
-    private CSVFile inputCSVFile;
 
-    private static Logger logger = Logger.getLogger(Stage.class);
+    private int numberOfThreads;
+    private CSVFile inputCSVFile;
+    private CSVFile errorFile;
+
     private ExecutorService executorService;
 
-    private Stage(String stageName) {
+    private static Logger logger = Logger.getLogger(Stage.class);
+
+    private Stage(String stageName, CSVFile<T> errorFile, int numberOfThreads, CSVFile inputCSVFile) {
         this.stageName = stageName;
+        this.errorFile = errorFile;
+        this.numberOfThreads = numberOfThreads;
+        this.inputCSVFile = inputCSVFile;
     }
 
     public Callable<RowResult> getCallable(EntityPersister entityPersister, CSVEntity csvEntity) {
         // TODO : Mujir - can we do this more elegantly? If not for csvEntity we could inject Callable by constructor
-        if (this == Stage.VALIDATION || this == Stage.VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE)
+        if (this.stageName == VALIDATION_STAGENAME || this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME)
             return new ValidationCallable(entityPersister, csvEntity);
 
         return new MigrationCallable(entityPersister, csvEntity);
@@ -55,7 +60,7 @@ public class Stage<T extends CSVEntity> {
                 RowResult<T> rowResult = result.get();
                 stageResult.addResult(rowResult);
 
-                if (this == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE && rowResult.isSuccessful())
+                if (this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME && rowResult.isSuccessful())
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
 
                 if (!rowResult.isSuccessful()) {
@@ -76,7 +81,7 @@ public class Stage<T extends CSVEntity> {
             logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
             closeResources();
 
-            if (this == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE && !stageResult.hasFailed())
+            if (this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME && !stageResult.hasFailed())
                 errorFile.delete();
         }
         return stageResult;
@@ -86,18 +91,6 @@ public class Stage<T extends CSVEntity> {
         if (executorService != null) executorService.shutdownNow();
         if (inputCSVFile != null) inputCSVFile.close();
         if (errorFile != null) errorFile.close();
-    }
-
-    void setErrorFile(CSVFile<T> errorFile) {
-        this.errorFile = errorFile;
-    }
-
-    void setNumberOfThreads(int numberOfThreads) {
-        this.numberOfThreads = numberOfThreads;
-    }
-
-    void setInputCSVFile(CSVFile inputCSVFile) {
-        this.inputCSVFile = inputCSVFile;
     }
 
     private static String getStackTrace(Throwable aThrowable) {
@@ -114,6 +107,18 @@ public class Stage<T extends CSVEntity> {
 
     String getName() {
         return stageName;
+    }
+
+    public static Stage validation(CSVFile errorFile, int numberOfThreads, CSVFile inputCSVFileLocation) {
+        return new Stage(VALIDATION_STAGENAME, errorFile, numberOfThreads, inputCSVFileLocation);
+    }
+
+    public static Stage validationWithAllRecordsInErrorFile(CSVFile errorFile, int numberOfThreads, CSVFile inputCSVFileLocation) {
+        return new Stage(VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME, errorFile, numberOfThreads, inputCSVFileLocation);
+    }
+
+    public static Stage migration(CSVFile errorFile, int numberOfThreads, CSVFile inputCSVFileLocation) {
+        return new Stage(MIGRATION_STAGENAME, errorFile, numberOfThreads, inputCSVFileLocation);
     }
 }
 
@@ -142,23 +147,26 @@ class BahmniThreadFactory implements ThreadFactory {
 }
 
 class StageBuilder<T extends CSVEntity> {
-    private Stage stage;
     private CSVFile<T> errorFile;
     private int numberOfThreads;
-    private CSVFile inputCSVFileLocation;
+    private CSVFile inputCSVFile;
+
+    private boolean isValidationWithAllErrors;
+    private boolean isValidation;
+    private boolean isMigration;
 
     public StageBuilder<T> validation() {
-        stage = Stage.VALIDATION;
+        isValidation = true;
         return this;
     }
 
     public StageBuilder<T> validationWithAllRecordsInErrorFile() {
-        stage = Stage.VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE;
+        isValidationWithAllErrors = true;
         return this;
     }
 
     public StageBuilder<T> migration() {
-        stage = Stage.MIGRATION;
+        isMigration = true;
         return this;
     }
 
@@ -167,20 +175,22 @@ class StageBuilder<T extends CSVEntity> {
         return this;
     }
 
-    public Stage build() {
-        stage.setErrorFile(errorFile);
-        stage.setNumberOfThreads(numberOfThreads);
-        stage.setInputCSVFile(inputCSVFileLocation);
-        return stage;
-    }
-
     public StageBuilder<T> withNumberOfThreads(int numberOfThreads) {
         this.numberOfThreads = numberOfThreads;
         return this;
     }
 
-    public StageBuilder withInputFile(CSVFile inputCSVFileLocation) {
-        this.inputCSVFileLocation = inputCSVFileLocation;
+    public StageBuilder withInputFile(CSVFile inputCSVFile) {
+        this.inputCSVFile = inputCSVFile;
         return this;
+    }
+
+    public Stage build() {
+        if (isValidationWithAllErrors)
+            return Stage.validationWithAllRecordsInErrorFile(errorFile, numberOfThreads, inputCSVFile);
+        else if (isValidation)
+            return Stage.validation(errorFile, numberOfThreads, inputCSVFile);
+        else
+            return Stage.migration(errorFile, numberOfThreads, inputCSVFile);
     }
 }

@@ -46,7 +46,7 @@ public class MigrateResult<T extends CSVEntity> {
     }
 
     public boolean isValidationStage() {
-        return stageName.equals(Stage.VALIDATION.getName());
+        return stageName.equals(Stage.VALIDATION_STAGENAME);
     }
 
     @Override
