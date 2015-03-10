@@ -3,14 +3,22 @@ package org.bahmni.csv;
 import org.apache.log4j.Logger;
 import org.bahmni.csv.exception.MigrationException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Stage<T extends CSVEntity> {
-    public static final String VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME = "validation.err";
+    public static final String VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME = "validate.e";
     public static final String VALIDATION_STAGENAME = "validation";
     public static final String MIGRATION_STAGENAME = "migration";
 
@@ -33,7 +41,7 @@ public class Stage<T extends CSVEntity> {
 
     public Callable<RowResult> getCallable(EntityPersister entityPersister, CSVEntity csvEntity) {
         // TODO : Mujir - can we do this more elegantly? If not for csvEntity we could inject Callable by constructor
-        if (this.stageName == VALIDATION_STAGENAME || this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME)
+        if (this.stageName.equals(VALIDATION_STAGENAME) || this.stageName.equals(VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME))
             return new ValidationCallable(entityPersister, csvEntity);
 
         return new MigrationCallable(entityPersister, csvEntity);
@@ -47,28 +55,48 @@ public class Stage<T extends CSVEntity> {
         try {
             inputCSVFile.openForRead();
 
-            CSVEntity csvEntity;
-            List<Future<RowResult>> results = new ArrayList<>();
-            while ((csvEntity = inputCSVFile.readEntity(csvEntityClass)) != null) {
-                Future<RowResult> rowResult = executorService.submit(getCallable(entityPersister, csvEntity));
-                results.add(rowResult);
-            }
+            CSVEntity csvEntity = inputCSVFile.readEntity(csvEntityClass);
+            boolean isErrorFileHeaderRecordWritten = false;
+            while (csvEntity != null) {
+                List<Future<RowResult>> results = new ArrayList<>();
 
-            // TODO : Mujir - if multiple jobs are submitted, and one of them fails fatally in code below,
-            // TODO : the executor service would get closed, and throw RejectedExecutionException
-            for (Future<RowResult> result : results) {
-                RowResult<T> rowResult = result.get();
-                stageResult.addResult(rowResult);
+                for (int i = 0; i <= numberOfThreads; i++) {
+                    if (csvEntity == null) {
+                        break;
+                    }
 
-                if (this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME && rowResult.isSuccessful())
-                    errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
+                    Future<RowResult> rowResult = executorService.submit(getCallable(entityPersister, csvEntity));
+                    results.add(rowResult);
 
-                if (!rowResult.isSuccessful()) {
-                    logger.info("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
-                    errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
-                    // TODO : Mujir - not entirely clean. Can this be merged with stageResult.addResult(rowResult); ????
-                    stageResult.setErrorFile(errorFile);
+                    csvEntity = inputCSVFile.readEntity(csvEntityClass);
                 }
+
+                // TODO : Mujir - if multiple jobs are submitted, and one of them fails fatally in code below,
+                // TODO : the executor service would get closed, and throw RejectedExecutionException
+                for (Future<RowResult> result : results) {
+                    RowResult<T> rowResult = result.get();
+                    stageResult.addResult(rowResult);
+
+                    if (this.stageName.equals(VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME) && rowResult.isSuccessful()) {
+                        addErrorHeader(isErrorFileHeaderRecordWritten, errorFile, inputCSVFile.getHeaderRow());
+                        isErrorFileHeaderRecordWritten = true;
+
+                        errorFile.writeARecord(rowResult);
+                    }
+
+                    if (!rowResult.isSuccessful()) {
+                        logger.info("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
+
+                        addErrorHeader(isErrorFileHeaderRecordWritten, errorFile, inputCSVFile.getHeaderRow());
+                        isErrorFileHeaderRecordWritten = true;
+
+                        errorFile.writeARecord(rowResult);
+                        // TODO : Mujir - not entirely clean. Can this be merged with stageResult.addResult(rowResult); ????
+                        stageResult.setErrorFile(errorFile);
+                    }
+                }
+
+                errorFile.close();
             }
 
         } catch (InterruptedException e) {
@@ -81,10 +109,16 @@ public class Stage<T extends CSVEntity> {
             logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
             closeResources();
 
-            if (this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME && !stageResult.hasFailed())
+            if (this.stageName.equals(VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME) && !stageResult.hasFailed())
                 errorFile.delete();
         }
         return stageResult;
+    }
+
+    private void addErrorHeader(boolean areErrorsFound, CSVFile errorFile, String[] headerRow) throws IOException {
+        if (!areErrorsFound) {
+            errorFile.writeHeaderRecord(headerRow);
+        }
     }
 
     public void closeResources() {

@@ -61,11 +61,11 @@ public class MigratorTest {
 
         verify(mockInputFile, times(1)).openForRead();
 
-        verify(mockValidationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("1", "dummyEntity1"), "validation failed"), headerRow);
-        verify(mockValidationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("2", "dummyEntity2"), "validation failed"), headerRow);
+        verify(mockValidationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("1", "dummyEntity1"), "validation failed"));
+        verify(mockValidationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("2", "dummyEntity2"), "validation failed"));
 
         verify(mockInputFile, times(1)).close();
-        verify(mockValidationErrorFile, times(1)).close();
+        verify(mockValidationErrorFile, times(2)).close();
     }
 
     @Test
@@ -88,12 +88,12 @@ public class MigratorTest {
 
         verify(mockInputFile, times(2)).openForRead();
 
-        verify(mockMigrationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("1", "dummyEntity1"), exception), headerRow);
-        verify(mockMigrationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("2", "dummyEntity2"), exception), headerRow);
+        verify(mockMigrationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("1", "dummyEntity1"), exception));
+        verify(mockMigrationErrorFile).writeARecord(new RowResult(new DummyCSVEntity("2", "dummyEntity2"), exception));
 
         verify(mockInputFile, times(2)).close();
-        verify(mockValidationErrorFile, times(1)).close();
-        verify(mockMigrationErrorFile, times(1)).close();
+        verify(mockValidationErrorFile, times(2)).close();
+        verify(mockMigrationErrorFile, times(2)).close();
     }
 
     @Test(expected = MigrationException.class)

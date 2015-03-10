@@ -21,9 +21,7 @@ public class MultiStageMigratorTest {
         List<StageResult> stageResults = multiStageMigrator.migrate(createMockCSVFile(), DummyCSVEntity.class);
         assertEquals(1, stageResults.size());
         assertEquals(5, stageResults.get(0).getSuccessCount());
-
     }
-
 
     @Test
     public void shouldInvokeTwoStageWithMultipleRows() throws IOException, InstantiationException, IllegalAccessException {
@@ -65,7 +63,6 @@ public class MultiStageMigratorTest {
         assertEquals(2, stageResults.size());
         assertEquals(5, stageResults.get(0).getSuccessCount());
         assertEquals(5, stageResults.get(1).getSuccessCount());
-
     }
 
     private CSVFile createMockCSVFile() throws IOException, IllegalAccessException, InstantiationException {
@@ -83,8 +80,6 @@ public class MultiStageMigratorTest {
                 .thenReturn(null);
         return mockInputFile;
     }
-
-
 
     private SimpleStage createDummyStage() {
         SimpleStage dummyStage = new SimpleStage<DummyCSVEntity>() {

@@ -5,10 +5,13 @@ import au.com.bytecode.opencsv.CSVWriter;
 import org.bahmni.csv.column.CSVColumns;
 import org.bahmni.csv.exception.MigrationException;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class CSVFile<T extends CSVEntity> {
     public static final char SEPARATOR = ',';
@@ -29,10 +32,6 @@ public class CSVFile<T extends CSVEntity> {
         csvWriter = new CSVWriter(writer, SEPARATOR);
     }
 
-    public String getBasePath() {
-        return basePath;
-    }
-
     public CSVFile(String basePath, String relativePath) {
         this.basePath = basePath;
         this.relativePath = relativePath;
@@ -47,6 +46,11 @@ public class CSVFile<T extends CSVEntity> {
         headerNames = csvReader.readNext();
     }
 
+    private void openForWrite() throws IOException {
+        File file = new File(basePath, relativePath);
+        csvWriter = new CSVWriter(new FileWriter(file, true));
+    }
+
     public T readEntity(Class<T> entityClass) throws IOException, InstantiationException, IllegalAccessException {
         if (csvReader == null)
             throw new MigrationException("Please open the CSVFile before reading it");
@@ -55,13 +59,30 @@ public class CSVFile<T extends CSVEntity> {
         return (T) tempCSVRow.getEntity(aRow);
     }
 
+    public void writeARecord(RowResult<T> aRow) throws IOException {
+        if (csvWriter == null) {
+            openForWrite();
+        }
+        csvWriter.writeNext(aRow.getRowWithErrorColumn());
+    }
+
     public void writeARecord(RowResult<T> aRow, String[] headerRow) throws IOException {
         if (csvWriter == null) {
             openForWrite();
             csvWriter.writeNext(headerRow);
         }
-
         csvWriter.writeNext(aRow.getRowWithErrorColumn());
+    }
+
+    public void writeHeaderRecord(String[] headerRow) throws IOException {
+        if (csvWriter == null) {
+            openForWrite();
+            csvWriter.writeNext(headerRow);
+        }
+    }
+
+    public String getBasePath() {
+        return basePath;
     }
 
     public void writeARecord(CSVEntity csvEntity) throws IOException {
@@ -74,15 +95,10 @@ public class CSVFile<T extends CSVEntity> {
         return outputStream;
     }
 
-    private void openForWrite() throws IOException {
-        File file = new File(basePath, relativePath);
-        csvWriter = new CSVWriter(new FileWriter(file));
-    }
-
     public void close() {
         try {
-            if (csvReader != null) csvReader.close();
-            if (csvWriter != null) csvWriter.close();
+            if (csvReader != null)  { csvReader.close(); csvReader = null; };
+            if (csvWriter != null)  { csvWriter.close(); csvWriter = null; };
         } catch (IOException e) {
             throw new MigrationException("Could not close file. " + e.getMessage(), e);
         }
