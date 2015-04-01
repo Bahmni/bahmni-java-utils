@@ -1,6 +1,6 @@
 package org.bahmni.csv;
 
-public class KeyValue {
+public class KeyValue implements Comparable<KeyValue> {
     private String key;
     private String value;
 
@@ -54,5 +54,10 @@ public class KeyValue {
                 "key='" + key + '\'' +
                 ", value='" + value + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(KeyValue other) {
+        return getKey().compareTo(other.getKey());
     }
 }

@@ -6,6 +6,7 @@ import org.bahmni.csv.exception.MigrationException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ public class RegexCSVColumns {
         }
 
         field.setAccessible(true);
+        Collections.sort(values);
         field.set(entity, values);
     }
 
