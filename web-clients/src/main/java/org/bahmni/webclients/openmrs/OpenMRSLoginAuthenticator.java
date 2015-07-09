@@ -13,7 +13,8 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.webclients.*;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.annotate.*;
+import org.codehaus.jackson.map.*;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -60,7 +61,9 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             }
             logger.info(String.format("Authentication response: %s", responseText));
             EntityUtils.consume(entity);
-            OpenMRSAuthenticationResponse openMRSResponse = new ObjectMapper().readValue(responseText, OpenMRSAuthenticationResponse.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            OpenMRSAuthenticationResponse openMRSResponse = objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
             confirmAuthenticated(openMRSResponse);
 
             ClientCookies clientCookies = new ClientCookies();
