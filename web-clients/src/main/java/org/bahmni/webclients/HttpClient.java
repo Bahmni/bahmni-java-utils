@@ -4,6 +4,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
+import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,14 +83,6 @@ public class HttpClient {
     }
 
     private String asString(HttpResponse httpResponse) throws IOException {
-        InputStream content = httpResponse.getEntity().getContent();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-        StringBuilder stringBuilder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line).append(System.getProperty("line.separator"));
-        }
-
-        return stringBuilder.toString();
+        return EntityUtils.toString(httpResponse.getEntity());
     }
 }
