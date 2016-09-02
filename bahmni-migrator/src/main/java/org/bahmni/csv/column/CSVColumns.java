@@ -39,12 +39,19 @@ public class CSVColumns<T extends CSVEntity> {
         if (headerColumnNotFoundForMandatoryColumn(headerAnnotation, position))
             throw new MigrationException("No Column found in the csv file. " + headerAnnotation.name());
 
+        if (headerColumnValueNotFoundForMandatoryColumn(aRow,position))
+            throw new MigrationException("No Value found in the csv file for the column " + headerAnnotation.name());
+
         String value = aRow[position];
         field.set(entity, value != null ? value.trim() : value);
     }
 
     private boolean headerColumnNotFoundForMandatoryColumn(CSVHeader headerAnnotation, int position) {
         return position < 0 && !headerAnnotation.optional();
+    }
+
+    private boolean headerColumnValueNotFoundForMandatoryColumn(String[] row, int position) {
+     return position < 0 || position >= row.length;
     }
 
     private boolean headerColumnNotFoundForOptionalColumn(CSVHeader headerAnnotation, int position) {

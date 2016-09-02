@@ -62,6 +62,16 @@ public class CSVRowTest {
     }
 
     @Test
+    public void throws_exception_for_missing_value_for_mandatory_column() throws Exception {
+        String[] headerRows = new String[]{"id"};
+        String[] aRow = new String[]{};
+        expectedException.expect(MigrationException.class);
+        expectedException.expectMessage("No Value found in the csv file for the column");
+        CSVRow<DummyCSVEntity> entityCSVRow = new CSVRow<>(new CSVColumns(headerRows), DummyCSVEntity.class);
+        DummyCSVEntity aDummyEntity = entityCSVRow.getEntity(aRow);
+    }
+
+    @Test
     public void trim_non_null_values() throws InstantiationException, IllegalAccessException {
         String[] headerRows = new String[]{"id", "name"};
         String[] aRow = {"1", "     bahmniUser      "};
