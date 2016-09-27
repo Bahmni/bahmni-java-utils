@@ -32,7 +32,7 @@ public class HttpClientInternal {
     }
 
     public HttpResponse get(HttpRequestDetails requestDetails, HttpHeaders httpHeaders) {
-        defaultHttpClient = (connectionManager == null) ? new DefaultHttpClient() : new DefaultHttpClient(new PoolingClientConnectionManager());
+        defaultHttpClient = (connectionManager == null) ? new DefaultHttpClient() : new DefaultHttpClient(connectionManager);
         defaultHttpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, readTimeout);
         defaultHttpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectTimeout);
 
