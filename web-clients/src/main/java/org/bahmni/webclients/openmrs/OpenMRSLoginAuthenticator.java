@@ -55,6 +55,9 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
 
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity entity = response.getEntity();
+            if(response.getStatusLine().getStatusCode() ==204) {
+                throw new WebClientsException("Two factor authentication is enabled, Please enable required privilege for the user");
+            }
             if (entity != null) {
                 InputStream content = entity.getContent();
                 responseText = IOUtils.toString(content);
