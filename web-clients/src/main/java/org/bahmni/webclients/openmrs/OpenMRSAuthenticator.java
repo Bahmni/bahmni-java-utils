@@ -1,5 +1,6 @@
 package org.bahmni.webclients.openmrs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -13,7 +14,6 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.bahmni.webclients.WebClientsException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.InputStream;
 

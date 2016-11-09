@@ -1,5 +1,7 @@
 package org.bahmni.webclients.openmrs;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -12,9 +14,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.bahmni.webclients.*;
-import org.codehaus.jackson.annotate.*;
-import org.codehaus.jackson.map.*;
+import org.bahmni.webclients.Authenticator;
+import org.bahmni.webclients.ClientCookies;
+import org.bahmni.webclients.ConnectionDetails;
+import org.bahmni.webclients.HttpHeaders;
+import org.bahmni.webclients.HttpRequestDetails;
+import org.bahmni.webclients.WebClientsException;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -65,7 +70,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             logger.info(String.format("Authentication response: %s", responseText));
             EntityUtils.consume(entity);
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             OpenMRSAuthenticationResponse openMRSResponse = objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
             confirmAuthenticated(openMRSResponse);
 
