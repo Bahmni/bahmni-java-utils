@@ -74,7 +74,7 @@
         <repository>
             <id>repo.mybahmni.org</id>
             <name>bahmni-artifactory-snapshots</name>
-            <url>s3://repo.mybahmni.org/snapshot</url>
+            <url>s3://repo.mybahmni.org/artifactory/snapshot</url>
         </repository>
         <repository>
             <id>apache-maven-release</id>
@@ -95,7 +95,7 @@
         <snapshotRepository>
             <id>repo.mybahmni.org</id>
             <name>bahmni-artifactory-snapshots</name>
-            <url>s3://repo.mybahmni.org/snapshot</url>
+            <url>s3://repo.mybahmni.org/artifactory/snapshot</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
