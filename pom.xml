@@ -77,11 +77,6 @@
             <url>s3://repo.mybahmni.org/snapshot</url>
         </repository>
         <repository>
-            <id>bahmni-artifactory</id>
-            <name>bahmni-artifactory-snapshots</name>
-            <url>http://bahmnirepo.thoughtworks.com/artifactory/libs-snapshot-local</url>
-        </repository>
-        <repository>
             <id>apache-maven-release</id>
             <name>Apache Maven Release Repository</name>
             <url>https://repository.apache.org/content/repositories/releases</url>
