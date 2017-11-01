@@ -6,6 +6,7 @@ import org.bahmni.csv.column.CSVColumns;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -43,7 +44,8 @@ public class CSVFile<T extends CSVEntity> {
         if (!file.exists())
             throw new MigrationException("Input CSV file does not exist. File - " + file.getAbsolutePath());
 
-        csvReader = new CSVReader(new FileReader(file), SEPARATOR, '"', '\0');
+        InputStream inputStream = new FileInputStream(file);
+        csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8.name()), ',', '\"', '\u0000');
         headerNames = csvReader.readNext();
     }
 
