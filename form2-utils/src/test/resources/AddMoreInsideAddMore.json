@@ -1,0 +1,87 @@
+{
+  "name": "AddMoreInsideAddMore",
+  "id": 35,
+  "uuid": "3748a899-c77d-411b-8d5b-9952640c07aa",
+  "defaultLocale": "en",
+  "controls": [
+    {
+      "type": "section",
+      "label": {
+        "translationKey": "SECTION_2",
+        "type": "label",
+        "value": "First Section",
+        "id": "2"
+      },
+      "properties": {
+        "addMore": true,
+        "location": {
+          "column": 0,
+          "row": 0
+        }
+      },
+      "id": "2",
+      "controls": [
+        {
+          "type": "section",
+          "label": {
+            "translationKey": "SECTION_4",
+            "type": "label",
+            "value": "Inside Section",
+            "id": "4"
+          },
+          "properties": {
+            "addMore": true,
+            "location": {
+              "column": 0,
+              "row": 0
+            }
+          },
+          "id": "4",
+          "controls": [
+            {
+              "type": "obsControl",
+              "label": {
+                "translationKey": "HEIGHT_(CM)_5",
+                "id": "5",
+                "units": "(cm)",
+                "type": "label",
+                "value": "Height (cm)"
+              },
+              "properties": {
+                "mandatory": false,
+                "notes": false,
+                "addMore": false,
+                "hideLabel": false,
+                "controlEvent": false,
+                "location": {
+                  "column": 0,
+                  "row": 0
+                },
+                "abnormal": false
+              },
+              "id": "5",
+              "concept": {
+                "name": "Height (cm)",
+                "uuid": "abd2d3bf-6c2a-40df-ae0c-35e46f58e1e9",
+                "datatype": "Numeric",
+                "conceptClass": "Misc",
+                "conceptHandler": null,
+                "answers": [],
+                "properties": {
+                  "allowDecimal": true
+                }
+              },
+              "units": "cm",
+              "hiNormal": null,
+              "lowNormal": null,
+              "hiAbsolute": 260,
+              "lowAbsolute": 20
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {},
+  "translationsUrl": "/openmrs/ws/rest/v1/bahmniie/form/translations"
+}

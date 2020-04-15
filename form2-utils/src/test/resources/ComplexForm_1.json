@@ -1,0 +1,228 @@
+{
+  "name": "ComplexForm",
+  "id": 3,
+  "uuid": "b0d80608-6344-4977-a3a8-e09e2e5ca014",
+  "defaultLocale": "en",
+  "controls": [
+    {
+      "type": "section",
+      "label": {
+        "translationKey": "SECTION_1",
+        "type": "label",
+        "value": "Section",
+        "id": "1"
+      },
+      "properties": {
+        "addMore": false,
+        "location": {
+          "column": 0,
+          "row": 0
+        }
+      },
+      "id": "1",
+      "controls": [
+        {
+          "type": "obsControl",
+          "label": {
+            "translationKey": "DATE_8",
+            "id": "8",
+            "units": "",
+            "type": "label",
+            "value": "Date"
+          },
+          "properties": {
+            "mandatory": false,
+            "notes": false,
+            "addMore": false,
+            "hideLabel": false,
+            "controlEvent": false,
+            "location": {
+              "column": 0,
+              "row": 0
+            },
+            "allowFutureDates": false
+          },
+          "id": "8",
+          "concept": {
+            "name": "Date",
+            "uuid": "e605731b-2e81-41a9-8446-2ed442c339e2",
+            "datatype": "Date",
+            "conceptClass": "Misc",
+            "conceptHandler": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": null
+            }
+          },
+          "units": null,
+          "hiNormal": null,
+          "lowNormal": null,
+          "hiAbsolute": null,
+          "lowAbsolute": null
+        }
+      ]
+    },
+    {
+      "type": "obsGroupControl",
+      "label": {
+        "translationKey": "BMI_DATA_4",
+        "type": "label",
+        "value": "BMI Data",
+        "id": "4"
+      },
+      "properties": {
+        "addMore": false,
+        "location": {
+          "column": 0,
+          "row": 1
+        }
+      },
+      "id": "4",
+      "concept": {
+        "name": "BMI Data",
+        "uuid": "2c5bbbbf-f34d-4590-b624-9f17b75b7f00",
+        "datatype": "N/A",
+        "conceptClass": "Concept Details",
+        "conceptHandler": null,
+        "set": true,
+        "setMembers": [
+          {
+            "name": "BMI",
+            "uuid": "c367d9ee-3f10-11e4-adec-0800271c1b75",
+            "datatype": "Numeric",
+            "conceptClass": "Computed",
+            "conceptHandler": null,
+            "units": null,
+            "hiNormal": null,
+            "lowNormal": null,
+            "hiAbsolute": null,
+            "lowAbsolute": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": true
+            }
+          },
+          {
+            "name": "BMI ABNORMAL",
+            "uuid": "c3843f1d-9835-47e8-842b-d51e57781585",
+            "datatype": "Boolean",
+            "conceptClass": "Abnormal",
+            "conceptHandler": null,
+            "units": null,
+            "hiNormal": null,
+            "lowNormal": null,
+            "hiAbsolute": null,
+            "lowAbsolute": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": null
+            }
+          }
+        ]
+      },
+      "controls": [
+        {
+          "type": "obsControl",
+          "label": {
+            "translationKey": "BMI_5",
+            "id": "5",
+            "units": "",
+            "type": "label",
+            "value": "BMI"
+          },
+          "properties": {
+            "mandatory": false,
+            "notes": false,
+            "addMore": false,
+            "hideLabel": false,
+            "controlEvent": false,
+            "location": {
+              "row": 0,
+              "column": 0
+            },
+            "abnormal": false
+          },
+          "id": "5",
+          "concept": {
+            "name": "BMI",
+            "uuid": "c367d9ee-3f10-11e4-adec-0800271c1b75",
+            "datatype": "Numeric",
+            "conceptClass": "Computed",
+            "conceptHandler": null,
+            "units": null,
+            "hiNormal": null,
+            "lowNormal": null,
+            "hiAbsolute": null,
+            "lowAbsolute": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": true
+            }
+          },
+          "units": null,
+          "hiNormal": null,
+          "lowNormal": null,
+          "hiAbsolute": null,
+          "lowAbsolute": null
+        },
+        {
+          "options": [
+            {
+              "name": "Yes",
+              "translationKey": "BOOLEAN_YES",
+              "value": true
+            },
+            {
+              "name": "No",
+              "translationKey": "BOOLEAN_NO",
+              "value": false
+            }
+          ],
+          "type": "obsControl",
+          "label": {
+            "translationKey": "BMI_ABNORMAL_6",
+            "id": "6",
+            "units": "",
+            "type": "label",
+            "value": "BMI ABNORMAL"
+          },
+          "properties": {
+            "mandatory": false,
+            "notes": false,
+            "addMore": false,
+            "hideLabel": false,
+            "controlEvent": false,
+            "location": {
+              "row": 1,
+              "column": 0
+            }
+          },
+          "id": "6",
+          "concept": {
+            "name": "BMI ABNORMAL",
+            "uuid": "c3843f1d-9835-47e8-842b-d51e57781585",
+            "datatype": "Boolean",
+            "conceptClass": "Abnormal",
+            "conceptHandler": null,
+            "units": null,
+            "hiNormal": null,
+            "lowNormal": null,
+            "hiAbsolute": null,
+            "lowAbsolute": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": null
+            }
+          },
+          "units": null,
+          "hiNormal": null,
+          "lowNormal": null,
+          "hiAbsolute": null,
+          "lowAbsolute": null
+        }
+      ]
+    }
+  ],
+  "events": {},
+  "translationsUrl": "/openmrs/ws/rest/v1/bahmniie/form/translations"
+}

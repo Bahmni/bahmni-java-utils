@@ -1,0 +1,245 @@
+{
+  "name": "AddMoreInsideMultipleSections",
+  "id": 38,
+  "uuid": "0ce6fd46-26d0-4c3a-8e03-aa901be5db0f",
+  "defaultLocale": "en",
+  "controls": [
+    {
+      "type": "section",
+      "label": {
+        "translationKey": "SECTION_1",
+        "type": "label",
+        "value": "First Section",
+        "id": "1"
+      },
+      "properties": {
+        "addMore": false,
+        "location": {
+          "column": 0,
+          "row": 0
+        }
+      },
+      "id": "1",
+      "controls": [
+        {
+          "type": "obsControl",
+          "label": {
+            "translationKey": "WEIGHT_(KG)_2",
+            "id": "2",
+            "units": "(kg)",
+            "type": "label",
+            "value": "Weight (kg)"
+          },
+          "properties": {
+            "mandatory": false,
+            "notes": false,
+            "addMore": false,
+            "hideLabel": false,
+            "controlEvent": false,
+            "location": {
+              "column": 0,
+              "row": 0
+            },
+            "abnormal": false
+          },
+          "id": "2",
+          "concept": {
+            "name": "Weight (kg)",
+            "uuid": "01c5bbf3-a537-41ec-87f9-b9798aa4aed5",
+            "datatype": "Numeric",
+            "conceptClass": "Misc",
+            "conceptHandler": null,
+            "answers": [],
+            "properties": {
+              "allowDecimal": true
+            }
+          },
+          "units": "kg",
+          "hiNormal": null,
+          "lowNormal": null,
+          "hiAbsolute": 700,
+          "lowAbsolute": 0.5
+        },
+        {
+          "type": "section",
+          "label": {
+            "translationKey": "SECTION_3",
+            "type": "label",
+            "value": "Second Section Add More",
+            "id": "3"
+          },
+          "properties": {
+            "addMore": true,
+            "location": {
+              "column": 0,
+              "row": 1
+            }
+          },
+          "id": "3",
+          "controls": [
+            {
+              "type": "obsControl",
+              "label": {
+                "translationKey": "CD4_DATE_4",
+                "id": "4",
+                "units": "",
+                "type": "label",
+                "value": "CD4 date"
+              },
+              "properties": {
+                "mandatory": false,
+                "notes": false,
+                "addMore": false,
+                "hideLabel": false,
+                "controlEvent": false,
+                "location": {
+                  "column": 0,
+                  "row": 0
+                },
+                "allowFutureDates": false
+              },
+              "id": "4",
+              "concept": {
+                "name": "CD4 date",
+                "uuid": "10fa46ef-d267-4553-8727-c6b5b840c636",
+                "description": {
+                  "value": "If date is not known exactly then use the first day of the month ( if month unknown then use July)",
+                  "translationKey": "CD4_DATE_4_DESC"
+                },
+                "datatype": "Date",
+                "conceptClass": "Finding",
+                "conceptHandler": null,
+                "answers": [],
+                "properties": {
+                  "allowDecimal": null
+                }
+              },
+              "units": null,
+              "hiNormal": null,
+              "lowNormal": null,
+              "hiAbsolute": null,
+              "lowAbsolute": null
+            },
+            {
+              "type": "section",
+              "label": {
+                "translationKey": "SECTION_5",
+                "type": "label",
+                "value": "Third Section",
+                "id": "5"
+              },
+              "properties": {
+                "addMore": false,
+                "location": {
+                  "column": 0,
+                  "row": 1
+                }
+              },
+              "id": "5",
+              "controls": [
+                {
+                  "type": "obsControl",
+                  "label": {
+                    "translationKey": "FOLLOWUP,_VISIT_DATE_7",
+                    "id": "7",
+                    "units": "",
+                    "type": "label",
+                    "value": "Followup, Visit Date"
+                  },
+                  "properties": {
+                    "mandatory": false,
+                    "notes": false,
+                    "addMore": false,
+                    "hideLabel": false,
+                    "controlEvent": false,
+                    "location": {
+                      "column": 0,
+                      "row": 0
+                    },
+                    "allowFutureDates": false
+                  },
+                  "id": "7",
+                  "concept": {
+                    "name": "Followup, Visit Date",
+                    "uuid": "c5abb504-588d-4b18-b572-3bf92b207a06",
+                    "datatype": "Date",
+                    "conceptClass": "Misc",
+                    "conceptHandler": null,
+                    "answers": [],
+                    "properties": {
+                      "allowDecimal": null
+                    }
+                  },
+                  "units": null,
+                  "hiNormal": null,
+                  "lowNormal": null,
+                  "hiAbsolute": null,
+                  "lowAbsolute": null
+                },
+                {
+                  "type": "section",
+                  "label": {
+                    "translationKey": "SECTION_8",
+                    "type": "label",
+                    "value": "Inner Section Add more",
+                    "id": "8"
+                  },
+                  "properties": {
+                    "addMore": true,
+                    "location": {
+                      "column": 0,
+                      "row": 1
+                    }
+                  },
+                  "id": "8",
+                  "controls": [
+                    {
+                      "type": "obsControl",
+                      "label": {
+                        "translationKey": "HEIGHT_(CM)_9",
+                        "id": "9",
+                        "units": "(cm)",
+                        "type": "label",
+                        "value": "Height (cm)"
+                      },
+                      "properties": {
+                        "mandatory": false,
+                        "notes": false,
+                        "addMore": false,
+                        "hideLabel": false,
+                        "controlEvent": false,
+                        "location": {
+                          "column": 0,
+                          "row": 1
+                        },
+                        "abnormal": false
+                      },
+                      "id": "9",
+                      "concept": {
+                        "name": "Height (cm)",
+                        "uuid": "abd2d3bf-6c2a-40df-ae0c-35e46f58e1e9",
+                        "datatype": "Numeric",
+                        "conceptClass": "Misc",
+                        "conceptHandler": null,
+                        "answers": [],
+                        "properties": {
+                          "allowDecimal": true
+                        }
+                      },
+                      "units": "cm",
+                      "hiNormal": null,
+                      "lowNormal": null,
+                      "hiAbsolute": 260,
+                      "lowAbsolute": 20
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "translationsUrl": "/openmrs/ws/rest/v1/bahmniie/form/translations"
+}

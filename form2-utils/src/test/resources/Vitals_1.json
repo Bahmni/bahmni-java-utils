@@ -1,0 +1,49 @@
+{
+  "name": "Vitals",
+  "id": 279,
+  "uuid": "540fea28-be74-4bd4-87fb-e4b086f4f214",
+  "defaultLocale": "en",
+  "controls": [
+    {
+      "type": "obsControl",
+      "label": {
+        "translationKey": "HEIGHT_1",
+        "id": "1",
+        "units": "(cm)",
+        "type": "label",
+        "value": "Height"
+      },
+      "properties": {
+        "mandatory": false,
+        "notes": false,
+        "addMore": false,
+        "hideLabel": false,
+        "controlEvent": false,
+        "location": {
+          "column": 0,
+          "row": 0
+        },
+        "abnormal": false
+      },
+      "id": "1",
+      "concept": {
+        "name": "Height",
+        "uuid": "841410a0-a101-48c3-ace0-0a08bd36e756",
+        "datatype": "Numeric",
+        "conceptClass": "Finding",
+        "conceptHandler": null,
+        "answers": [],
+        "properties": {
+          "allowDecimal": true
+        }
+      },
+      "units": "cm",
+      "hiNormal": null,
+      "lowNormal": null,
+      "hiAbsolute": null,
+      "lowAbsolute": null
+    }
+  ],
+  "events": {},
+  "translationsUrl": "/openmrs/ws/rest/v1/bahmniie/form/translations"
+}

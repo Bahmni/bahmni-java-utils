@@ -20,6 +20,7 @@
         <module>openmrs-connector</module>
         <module>common</module>
         <module>bahmni-extension</module>
+        <module>form2-utils</module>
     </modules>
 
     <build>

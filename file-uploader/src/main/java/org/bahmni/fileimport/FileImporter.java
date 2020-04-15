@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
-import org.bahmni.module.common.db.JDBCConnectionProvider;
+import org.bahmni.form2.common.db.JDBCConnectionProvider;
 
 // External API to start the csv file import.
 public class FileImporter<T extends CSVEntity> {
