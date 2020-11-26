@@ -1,4 +1,4 @@
-package org.bahmni.form2.common.db;
+package org.bahmni.common.db;
 
 import java.sql.Connection;
 
