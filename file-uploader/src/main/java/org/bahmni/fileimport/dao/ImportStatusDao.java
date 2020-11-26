@@ -3,7 +3,7 @@ package org.bahmni.fileimport.dao;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.MigrateResult;
 import org.bahmni.fileimport.ImportStatus;
-import org.bahmni.form2.common.db.JDBCConnectionProvider;
+import org.bahmni.common.db.JDBCConnectionProvider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

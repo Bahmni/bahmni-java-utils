@@ -8,7 +8,7 @@ import org.bahmni.csv.MigrateResult;
 import org.bahmni.csv.Migrator;
 import org.bahmni.csv.MigratorBuilder;
 import org.bahmni.fileimport.dao.ImportStatusDao;
-import org.bahmni.form2.common.db.JDBCConnectionProvider;
+import org.bahmni.common.db.JDBCConnectionProvider;
 
 import java.sql.SQLException;
 
