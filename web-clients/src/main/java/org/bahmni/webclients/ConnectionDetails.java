@@ -1,6 +1,6 @@
 package org.bahmni.webclients;
 
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 public class ConnectionDetails {
     private String authUrl;
@@ -8,7 +8,7 @@ public class ConnectionDetails {
     private String password;
     private int connectionTimeout;
     private int readTimeout;
-    private ClientConnectionManager connectionManager;
+    private PoolingHttpClientConnectionManager connectionManager;
 
     public ConnectionDetails(String authUrl, String userId, String password, int connectionTimeout, int readTimeout) {
         this.authUrl = authUrl;
@@ -18,7 +18,7 @@ public class ConnectionDetails {
         this.readTimeout = readTimeout;
     }
 
-    public ConnectionDetails(String authUrl, String userId, String password, int connectionTimeout, int readTimeout, ClientConnectionManager connectionManager) {
+    public ConnectionDetails(String authUrl, String userId, String password, int connectionTimeout, int readTimeout, PoolingHttpClientConnectionManager connectionManager) {
         this.authUrl = authUrl;
         this.userId = userId;
         this.password = password;
@@ -48,7 +48,7 @@ public class ConnectionDetails {
         return authUrl;
     }
 
-    public ClientConnectionManager getConnectionManager() {
+    public PoolingHttpClientConnectionManager getConnectionManager() {
         return connectionManager;
     }
 }
