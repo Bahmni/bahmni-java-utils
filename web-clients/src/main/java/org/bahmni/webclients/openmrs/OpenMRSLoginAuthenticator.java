@@ -5,29 +5,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.bahmni.webclients.Authenticator;
-import org.bahmni.webclients.ClientCookies;
-import org.bahmni.webclients.ConnectionDetails;
-import org.bahmni.webclients.HttpHeaders;
-import org.bahmni.webclients.HttpRequestDetails;
-import org.bahmni.webclients.WebClientsException;
+import org.bahmni.webclients.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 public class OpenMRSLoginAuthenticator implements Authenticator {
     private static Logger logger = Logger.getLogger(OpenMRSLoginAuthenticator.class);
     private final String SESSION_ID_KEY = "JSESSIONID";
-
+    CloseableHttpClient httpClient;
 
     private ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
@@ -47,18 +50,24 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
     @Override
     public HttpRequestDetails refreshRequestDetails(URI uri) {
         String responseText = null;
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+
         try {
-            httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, authenticationDetails.getReadTimeout());
-            httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, authenticationDetails.getConnectionTimeout());
 
             HttpGet httpGet = new HttpGet(authenticationDetails.getAuthUrl());
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(authenticationDetails.getConnectionTimeout())
+                    .setSocketTimeout(60000)
+                    .setConnectionRequestTimeout(authenticationDetails.getReadTimeout())
+                    .build();
+            httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(requestConfig)
+                    .build();
 
             setCredentials(httpGet);
 
             logger.info(String.format("Executing request: %s", httpGet.getRequestLine()));
 
-            HttpResponse response = httpClient.execute(httpGet);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             if(response.getStatusLine().getStatusCode() ==204) {
                 throw new WebClientsException("Two factor authentication is enabled, Please enable required privilege for the user");
@@ -83,14 +92,23 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
         } catch (Exception e) {
             throw new WebClientsException(e);
         } finally {
-            httpClient.getConnectionManager().shutdown();
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     protected void setCredentials(HttpGet httpGet) throws AuthenticationException {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(authenticationDetails.getUserId(), authenticationDetails.getPassword());
-        BasicScheme scheme = new BasicScheme();
-        Header authorizationHeader = scheme.authenticate(credentials, httpGet);
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(AuthScope.ANY, credentials);
+        HttpClientContext context = HttpClientContext.create();
+        context.setCookieStore(new BasicCookieStore());
+        context.setCredentialsProvider(credsProvider);
+        Header authorizationHeader = new BasicScheme(StandardCharsets.UTF_8).authenticate(credentials , httpGet, context);
+       // Header authorizationHeader = scheme.authenticate(credentials, httpGet);
         httpGet.setHeader(authorizationHeader);
     }
 

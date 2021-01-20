@@ -3,18 +3,20 @@ package org.bahmni.webclients;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ public class OpenElisAuthenticator implements Authenticator {
     private static Logger logger = Logger.getLogger(OpenElisAuthenticator.class);
     private final ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
+    CloseableHttpClient httpClient;
 
     public OpenElisAuthenticator(ConnectionDetails authenticationDetails) {
         this.authenticationDetails = authenticationDetails;
@@ -38,18 +41,21 @@ public class OpenElisAuthenticator implements Authenticator {
 
     @Override
     public HttpRequestDetails refreshRequestDetails(URI uri) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
+
             CookieStore cookieStore = new BasicCookieStore();
             HttpContext httpContext = new BasicHttpContext();
-            httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-
-            httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, authenticationDetails.getReadTimeout());
-            httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, authenticationDetails.getConnectionTimeout());
-
+            httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
             HttpPost httpPost = new HttpPost(uri);
 
             logger.info(String.format("Executing request: %s", httpPost.getRequestLine()));
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(authenticationDetails.getReadTimeout())
+                    .setSocketTimeout(60000)
+                    .build();
+            httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(requestConfig)
+                    .build();
 
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("loginName", authenticationDetails.getUserId()));
@@ -76,7 +82,11 @@ public class OpenElisAuthenticator implements Authenticator {
         } catch (Exception e) {
             throw new WebClientsException(e);
         } finally {
-            httpClient.getConnectionManager().shutdown();
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

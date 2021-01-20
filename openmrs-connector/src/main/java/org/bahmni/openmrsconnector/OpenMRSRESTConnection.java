@@ -1,13 +1,13 @@
 package org.bahmni.openmrsconnector;
 
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 public class OpenMRSRESTConnection {
     private String server;
     private String userId;
     private String password;
 
-    private static BASE64Encoder base64Encoder = new BASE64Encoder();
+    private static Base64.Encoder base64Encoder = Base64.getEncoder();
 
     public OpenMRSRESTConnection(String server, String userId, String password) {
         this.server = server;
@@ -32,6 +32,6 @@ public class OpenMRSRESTConnection {
     }
 
     public String encodedLogin() {
-        return base64Encoder.encode((userId + ":" + password).getBytes());
+        return base64Encoder.encodeToString((userId + ":" + password).getBytes());
     }
 }
