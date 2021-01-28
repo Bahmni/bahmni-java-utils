@@ -56,7 +56,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             HttpGet httpGet = new HttpGet(authenticationDetails.getAuthUrl());
             RequestConfig requestConfig = RequestConfig.custom()
                     .setConnectTimeout(authenticationDetails.getConnectionTimeout())
-                    .setSocketTimeout(60000)
+                    .setSocketTimeout(authenticationDetails.getReadTimeout())
                     .setConnectionRequestTimeout(authenticationDetails.getReadTimeout())
                     .build();
             httpClient = HttpClientBuilder.create()
