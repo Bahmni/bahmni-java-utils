@@ -50,8 +50,8 @@ public class OpenElisAuthenticator implements Authenticator {
 
             logger.info(String.format("Executing request: %s", httpPost.getRequestLine()));
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setConnectTimeout(authenticationDetails.getReadTimeout())
-                    .setSocketTimeout(60000)
+                    .setConnectTimeout(authenticationDetails.getConnectionTimeout())
+                    .setSocketTimeout(authenticationDetails.getReadTimeout())
                     .build();
             httpClient = HttpClientBuilder.create()
                     .setDefaultRequestConfig(requestConfig)
