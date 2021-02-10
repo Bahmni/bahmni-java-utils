@@ -11,6 +11,7 @@ import org.mockito.Mock;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -190,5 +191,15 @@ public class FormFieldPathServiceImplTest {
         final String heightObsFormFieldPath = formFieldPathService.getFormFieldPath(asList("SameLevelSection",
                 "Second Section With Add More", "Height (cm)"));
         assertEquals("SameLevelSection.1/4-0/6-0", heightObsFormFieldPath);
+    }
+
+    @Test
+    public void shouldReturnMultiSelectAttributeOfHIVTestObsControl() {
+
+        when(form2Service.getFormPath("MultiSelectTest")).thenReturn("src/test/resources/MultiSelect.json");
+        when(form2Service.getFormLatestVersion("MultiSelectTest")).thenReturn(1);
+        final boolean isMultiSelectObs = formFieldPathService.isMultiSelectObs(asList("MultiSelectTest", "HIV Infection History", "WHO Stage Conditions"));
+
+        assertTrue(isMultiSelectObs);
     }
 }

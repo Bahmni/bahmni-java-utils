@@ -10,4 +10,11 @@ public interface FormFieldPathService {
      * @return form field path Eg: Vitals.1/2-0
      */
     String getFormFieldPath(List<String> orderedControlNames);
+
+    /**
+     * @param orderedControlNames Eg: Vitals, BMI, Height as list items when Height
+     *                            control is under BMI section and form name is Vitals
+     * @return true when obs is multi select; otherwise false
+     */
+    boolean isMultiSelectObs(List<String> orderedControlNames);
 }
