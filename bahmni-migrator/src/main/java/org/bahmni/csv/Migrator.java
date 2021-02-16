@@ -42,7 +42,7 @@ public class Migrator<T extends CSVEntity> {
             throw e;
         } catch (Exception e) {
             logger.error(getStackTrace(e));
-            if((e.toString().startsWith("java.lang"))){
+            if( e.toString().startsWith("java.lang") && allStages.getStages() != null && allStages.getStages().size()>=0){
                 int failedRowNumber = allStages.getStages().get(0).getFailedRowNumber();
                 throw new MigrationException("One or more column values missing or incorrect in row number " + failedRowNumber);
             }else {
