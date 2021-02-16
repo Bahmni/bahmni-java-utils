@@ -19,6 +19,7 @@ public class Stage<T extends CSVEntity> {
     private int numberOfThreads;
     private CSVFile inputCSVFile;
     private CSVFile errorFile;
+    private int failedRowNumber;
 
     private ExecutorService executorService;
 
@@ -29,6 +30,14 @@ public class Stage<T extends CSVEntity> {
         this.errorFile = errorFile;
         this.numberOfThreads = numberOfThreads;
         this.inputCSVFile = inputCSVFile;
+    }
+
+    public int getFailedRowNumber(){
+        return failedRowNumber;
+    }
+
+    public void setFailedRowNumber(int failedRowNumber) {
+        this.failedRowNumber = failedRowNumber;
     }
 
     public Callable<RowResult> getCallable(EntityPersister entityPersister, CSVEntity csvEntity) {
@@ -44,11 +53,11 @@ public class Stage<T extends CSVEntity> {
         MigrateResult<T> stageResult = new MigrateResult<>(stageName);
 
         executorService = Executors.newFixedThreadPool(numberOfThreads, new BahmniThreadFactory());
+        List<Future<RowResult>> results = new ArrayList<>();
         try {
             inputCSVFile.openForRead();
 
             CSVEntity csvEntity;
-            List<Future<RowResult>> results = new ArrayList<>();
             while ((csvEntity = inputCSVFile.readEntity(csvEntityClass)) != null) {
                 Future<RowResult> rowResult = executorService.submit(getCallable(entityPersister, csvEntity));
                 results.add(rowResult);
@@ -79,6 +88,8 @@ public class Stage<T extends CSVEntity> {
             throw new MigrationException("Could not execute threads", e);
         } finally {
             logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
+            int failedRowNum = results.size() + 1;
+            this.setFailedRowNumber(failedRowNum);
             closeResources();
 
             if (this.stageName == VALIDATION_WITH_ALL_RECORDS_IN_ERROR_FILE_STAGENAME && !stageResult.hasFailed())

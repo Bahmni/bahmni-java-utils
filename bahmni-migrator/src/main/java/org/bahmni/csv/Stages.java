@@ -28,4 +28,8 @@ class Stages<T extends CSVEntity>  {
         }
 
     }
+
+    public List<Stage<T>> getStages() {
+        return stages;
+    }
 }
