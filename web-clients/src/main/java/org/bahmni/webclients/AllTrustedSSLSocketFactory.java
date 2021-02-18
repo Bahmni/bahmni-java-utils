@@ -1,7 +1,6 @@
 package org.bahmni.webclients;
 
-import org.apache.http.conn.ssl.SSLSocketFactory;
-
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -9,7 +8,7 @@ import java.security.cert.X509Certificate;
 
 public class AllTrustedSSLSocketFactory {
 
-	public SSLSocketFactory getSSLSocketFactory(){
+	public SSLConnectionSocketFactory getSSLSocketFactory(){
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 			@Override
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -28,12 +27,12 @@ public class AllTrustedSSLSocketFactory {
 
 		} };
 
-		SSLSocketFactory socketFactory = null;
+		SSLConnectionSocketFactory socketFactory = null;
 
 		try{
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			socketFactory = new SSLSocketFactory(sc, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			socketFactory = new SSLConnectionSocketFactory(sc, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 		}catch(Exception ex){
 			throw new WebClientsException(ex);
 		}
