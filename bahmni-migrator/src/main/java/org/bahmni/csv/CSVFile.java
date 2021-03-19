@@ -45,7 +45,7 @@ public class CSVFile<T extends CSVEntity> {
             throw new MigrationException("Input CSV file does not exist. File - " + file.getAbsolutePath());
 
         InputStream inputStream = new FileInputStream(file);
-        csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8.name()), ',', '\"', '\u0000');
+        csvReader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8.name()), ',', '\"', '\\');
         headerNames = csvReader.readNext();
     }
 
