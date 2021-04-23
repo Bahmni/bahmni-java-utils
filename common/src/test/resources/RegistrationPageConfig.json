@@ -1,0 +1,21 @@
+{
+  "id": "bahmni.registration",
+  "instanceOf":"bahmni.template.registration",
+  "description": "Bahmni Patient Registration App",
+
+  "config" : {
+    "mandatoryPersonAttributes": [
+      "Admission date"
+    ],
+    "patientInformation": {
+      "admissiondetails": {
+        "title": "Admission details",
+        "translationKey": "REGISTRATION_ADMISSION_DETAILS",
+        "attributes": [
+          "Admission date"
+        ],
+        "expanded": true
+      }
+    }
+  }
+}
