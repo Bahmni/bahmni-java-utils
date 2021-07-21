@@ -1,6 +1,7 @@
 package org.bahmni.csv;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.PrintWriter;
@@ -14,7 +15,7 @@ public class Migrator<T extends CSVEntity> {
     private Stages<T> allStages;
     private final EntityPersister entityPersister;
 
-    private static Logger logger = Logger.getLogger(Migrator.class);
+    private static Logger logger = LogManager.getLogger(Migrator.class);
 
     public Migrator(EntityPersister entityPersister, Stages allStages, Class<T> entityClass) {
         this(entityPersister, allStages, entityClass, true);

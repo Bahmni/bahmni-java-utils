@@ -1,6 +1,7 @@
 package org.bahmni.fileexport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.fileexport.exception.FileExportException;
@@ -11,7 +12,7 @@ import java.util.List;
 
 // External API to start the csv file export.
 public class FileExporter<T extends CSVEntity> {
-    private static Logger logger = Logger.getLogger(FileExporter.class);
+    private static Logger logger = LogManager.getLogger(FileExporter.class);
 
     public ByteArrayOutputStream exportCSV(List<T> csvEntities, ByteArrayOutputStream outputStream) throws IOException {
         CSVFile<T> csvFile = new CSVFile<T>(outputStream);

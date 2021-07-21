@@ -12,13 +12,14 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.webclients.WebClientsException;
 
 import java.io.InputStream;
 
 public class OpenMRSAuthenticator {
-    private static Logger logger = Logger.getLogger(OpenMRSAuthenticator.class);
+    private static Logger logger = LogManager.getLogger(OpenMRSAuthenticator.class);
     private String authURL;
     private int connectionTimeout;
     private int readTimeout;

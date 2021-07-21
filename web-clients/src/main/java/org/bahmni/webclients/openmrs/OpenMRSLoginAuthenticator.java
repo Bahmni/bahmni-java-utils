@@ -19,7 +19,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.webclients.*;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 public class OpenMRSLoginAuthenticator implements Authenticator {
-    private static Logger logger = Logger.getLogger(OpenMRSLoginAuthenticator.class);
+    private static Logger logger = LogManager.getLogger(OpenMRSLoginAuthenticator.class);
     private final String SESSION_ID_KEY = "JSESSIONID";
     CloseableHttpClient httpClient;
 

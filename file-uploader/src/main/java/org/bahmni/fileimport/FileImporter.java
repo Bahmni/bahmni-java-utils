@@ -1,6 +1,7 @@
 package org.bahmni.fileimport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
@@ -8,7 +9,7 @@ import org.bahmni.common.db.JDBCConnectionProvider;
 
 // External API to start the csv file import.
 public class FileImporter<T extends CSVEntity> {
-    private static Logger logger = Logger.getLogger(FileImporter.class);
+    private static Logger logger = LogManager.getLogger(FileImporter.class);
 
     public boolean importCSV(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy) {
         return importCSV(originalFileName, csvFile, persister, csvEntityClass, jdbcConnectionProvider, uploadedBy, false, 5);
