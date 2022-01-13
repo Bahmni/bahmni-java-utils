@@ -18,7 +18,7 @@ public class FileExporter<T extends CSVEntity> {
         CSVFile<T> csvFile = new CSVFile<T>(outputStream);
         for (T csvEntity : csvEntities) {
             try {
-                logger.info("Writing record" + csvEntity.toString());
+                logger.info("Writing record {}", csvEntity.toString());
                 csvFile.writeARecord(csvEntity);
             } catch (IOException e) {
                 throw new FileExportException("Cannot create file");

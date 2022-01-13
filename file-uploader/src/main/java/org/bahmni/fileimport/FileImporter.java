@@ -20,7 +20,7 @@ public class FileImporter<T extends CSVEntity> {
     }
 
     public boolean importCSV(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation, int numberOfThreads) {
-        logger.info("Starting file import thread for " + csvFile.getAbsolutePath());
+        logger.info("Starting file import thread for {}", csvFile.getAbsolutePath());
         try {
             Importer importer = ImportRegistry.register(originalFileName, csvFile, persister, csvEntityClass, uploadedBy, numberOfThreads);
             importer.start(jdbcConnectionProvider, skipValidation);
@@ -28,7 +28,7 @@ public class FileImporter<T extends CSVEntity> {
             logger.error(e);
             return false;
         }
-        logger.info("Initiated upload in background for " + csvFile.getAbsolutePath());
+        logger.info("Initiated upload in background for {}", csvFile.getAbsolutePath());
         return true;
     }
 

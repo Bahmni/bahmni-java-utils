@@ -48,13 +48,13 @@ public class MultiStageMigrator<T extends CSVEntity> {
                 } else {
                     stageResult = stage.execute(csvRowsForNextStage);
                 }
-                logger.info("Invoking stage " + stageName + " with row count: " + csvRowsForNextStage.size());
+                logger.info("Invoking stage {} with row count: {}", stageName, csvRowsForNextStage.size());
 
                 stageResults.add(stageResult);
                 csvRowsForNextStage = removeFailedRows(stageResult.getAllCsvEntities(), stageResult.getFailedCSVEntities());
             }
         } catch (MigrationException me) {
-            logger.error("Aborting! Migration Exception was thrown while executing stage '" + stageName + "': " + me.getMessage());
+            logger.error("Aborting! Migration Exception was thrown while executing stage '{}': {} ", stageName, me.getMessage());
         } catch (InterruptedException e) {
             //TODO
             e.printStackTrace();

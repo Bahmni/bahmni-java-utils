@@ -99,7 +99,7 @@ public class OpenMRSRestService {
         String referencesURL = openMRSRESTConnection.getRestApiUrl() + urlSuffix;
         HttpEntity requestEntity = new HttpEntity<MultiValueMap>(new LinkedMultiValueMap<String, String>(), requestHeaders);
         ResponseEntity<String> exchange = restTemplate.exchange(new URI(referencesURL), method, requestEntity, String.class);
-        logger.debug("(" + urlSuffix + ") - " + exchange.getBody());
+        logger.debug("({}) - {}", urlSuffix, exchange.getBody());
         return exchange.getBody();
     }
 

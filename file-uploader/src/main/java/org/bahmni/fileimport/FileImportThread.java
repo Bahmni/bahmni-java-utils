@@ -64,12 +64,11 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
             MigrateResult migrateResult = migrator.migrate();
             getNewImportStatusDao().saveFinished(csvFile, csvEntityClass.getSimpleName(), migrateResult);
 
-            logger.info("Migration was " + (migrateResult.hasFailed() ? "unsuccessful" : "successful"));
-            logger.info("Stage : " + migrateResult.getStageName() + ". Success count : " + migrateResult.numberOfSuccessfulRecords() +
-                    ". Fail count : " + migrateResult.numberOfFailedRecords());
+            logger.info("Migration was {}", (migrateResult.hasFailed() ? "unsuccessful" : "successful"));
+            logger.info("Stage : {}. Success count : {}. Fail count : {}", migrateResult.getStageName(), migrateResult.numberOfSuccessfulRecords(), migrateResult.numberOfFailedRecords());
 
         } catch (Throwable e) {
-            logger.error("There was an error during migration. " + e.getMessage(), e);
+            logger.error("There was an error during migration. {}", e.getMessage(), e);
             try {
                 getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), e);
                 migrator.shutdown();

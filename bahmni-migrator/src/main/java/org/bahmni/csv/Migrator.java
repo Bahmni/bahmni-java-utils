@@ -36,7 +36,7 @@ public class Migrator<T extends CSVEntity> {
                 if (abortIfValidationFails && stageResult.hasFailed()) {
                     return stageResult;
                 }
-                logger.info(">>> " + stageResult);
+                logger.info(">>> {}", stageResult);
             }
         } catch(MigrationException e) {
             logger.error(getStackTrace(e));
