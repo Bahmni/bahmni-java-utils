@@ -1,6 +1,7 @@
 package org.bahmni.csv;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.*;
@@ -23,7 +24,7 @@ public class Stage<T extends CSVEntity> {
 
     private ExecutorService executorService;
 
-    private static Logger logger = Logger.getLogger(Stage.class);
+    private static Logger logger = LogManager.getLogger(Stage.class);
 
     private Stage(String stageName, CSVFile<T> errorFile, int numberOfThreads, CSVFile inputCSVFile) {
         this.stageName = stageName;
@@ -49,7 +50,7 @@ public class Stage<T extends CSVEntity> {
     }
 
     public MigrateResult<T> run(EntityPersister entityPersister, Class<T> csvEntityClass) throws IOException, IllegalAccessException, InstantiationException {
-        logger.info("Starting " + stageName + " Stage with file - " + inputCSVFile.getAbsolutePath());
+        logger.info("Starting {} Stage with file - {}", stageName, inputCSVFile.getAbsolutePath());
         MigrateResult<T> stageResult = new MigrateResult<>(stageName);
 
         executorService = Executors.newFixedThreadPool(numberOfThreads, new BahmniThreadFactory());
@@ -73,7 +74,7 @@ public class Stage<T extends CSVEntity> {
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
 
                 if (!rowResult.isSuccessful()) {
-                    logger.info("Failed for record - " + rowResult.getRowWithErrorColumnAsString());
+                    logger.info("Failed for record - {}", rowResult.getRowWithErrorColumnAsString());
                     errorFile.writeARecord(rowResult, inputCSVFile.getHeaderRow());
                     // TODO : Mujir - not entirely clean. Can this be merged with stageResult.addResult(rowResult); ????
                     stageResult.setErrorFile(errorFile);
@@ -81,13 +82,13 @@ public class Stage<T extends CSVEntity> {
             }
 
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted exception. " + getStackTrace(e));
+            logger.error("Thread interrupted exception. {}", getStackTrace(e));
             throw new MigrationException("Could not execute threads", e);
         } catch (ExecutionException e) {
-            logger.error("Could not execute threads. " + getStackTrace(e));
+            logger.error("Could not execute threads. {}", getStackTrace(e));
             throw new MigrationException("Could not execute threads", e);
         } finally {
-            logger.info("Stage : " + stageName + ". Successful records count : " + stageResult.numberOfSuccessfulRecords() + ". Failed records count : " + stageResult.numberOfFailedRecords());
+            logger.info("Stage : {}. Successful records count : {}. Failed records count : {}", stageName, stageResult.numberOfSuccessfulRecords(), stageResult.numberOfFailedRecords());
             int failedRowNum = results.size() + 1;
             this.setFailedRowNumber(failedRowNum);
             closeResources();

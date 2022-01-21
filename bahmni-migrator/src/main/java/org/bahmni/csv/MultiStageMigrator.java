@@ -1,6 +1,7 @@
 package org.bahmni.csv;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class MultiStageMigrator<T extends CSVEntity> {
 
     private CSVFile csvFile = null;
     private List<SimpleStage> stageList = null;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private Logger logger = LogManager.getLogger(this.getClass().getName());
 
     public MultiStageMigrator() {
         stageList = new ArrayList<>();
@@ -47,13 +48,13 @@ public class MultiStageMigrator<T extends CSVEntity> {
                 } else {
                     stageResult = stage.execute(csvRowsForNextStage);
                 }
-                logger.info("Invoking stage " + stageName + " with row count: " + csvRowsForNextStage.size());
+                logger.info("Invoking stage {} with row count: {}", stageName, csvRowsForNextStage.size());
 
                 stageResults.add(stageResult);
                 csvRowsForNextStage = removeFailedRows(stageResult.getAllCsvEntities(), stageResult.getFailedCSVEntities());
             }
         } catch (MigrationException me) {
-            logger.error("Aborting! Migration Exception was thrown while executing stage '" + stageName + "': " + me.getMessage());
+            logger.error("Aborting! Migration Exception was thrown while executing stage '{}': {} ", stageName, me.getMessage());
         } catch (InterruptedException e) {
             //TODO
             e.printStackTrace();

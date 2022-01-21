@@ -4,7 +4,8 @@ import org.apache.http.HttpVersion;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.webclients.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class OpenMRSIT {
-    private static Logger logger = Logger.getLogger(OpenMRSIT.class);
+    private static Logger logger = LogManager.getLogger(OpenMRSIT.class);
     private OpenMRSAuthenticator openMRSAuthenticator;
     private String authURL;
 

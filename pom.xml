@@ -9,7 +9,9 @@
     <version>0.94-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Bahmni Java Utilities</name>
-
+    <properties>
+        <log4j.version>2.17.1</log4j.version>
+    </properties>
     <modules>
         <module>bahmni-migrator</module>
         <module>web-clients</module>

@@ -1,6 +1,7 @@
 package org.bahmni.fileimport;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
@@ -25,7 +26,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     private String uploadedBy;
     private boolean skipValidation;
 
-    private static Logger logger = Logger.getLogger(FileImportThread.class);
+    private static Logger logger = LogManager.getLogger(FileImportThread.class);
     private Migrator migrator;
 
     public FileImportThread(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation, int numberOfThreads) {
@@ -63,12 +64,11 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
             MigrateResult migrateResult = migrator.migrate();
             getNewImportStatusDao().saveFinished(csvFile, csvEntityClass.getSimpleName(), migrateResult);
 
-            logger.info("Migration was " + (migrateResult.hasFailed() ? "unsuccessful" : "successful"));
-            logger.info("Stage : " + migrateResult.getStageName() + ". Success count : " + migrateResult.numberOfSuccessfulRecords() +
-                    ". Fail count : " + migrateResult.numberOfFailedRecords());
+            logger.info("Migration was {}", (migrateResult.hasFailed() ? "unsuccessful" : "successful"));
+            logger.info("Stage : {}. Success count : {}. Fail count : {}", migrateResult.getStageName(), migrateResult.numberOfSuccessfulRecords(), migrateResult.numberOfFailedRecords());
 
         } catch (Throwable e) {
-            logger.error("There was an error during migration. " + e.getMessage(), e);
+            logger.error("There was an error during migration. {}", e.getMessage(), e);
             try {
                 getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), e);
                 migrator.shutdown();

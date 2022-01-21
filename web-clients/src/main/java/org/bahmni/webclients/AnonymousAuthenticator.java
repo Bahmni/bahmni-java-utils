@@ -10,13 +10,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.util.List;
 
 public class AnonymousAuthenticator implements Authenticator {
-    private static Logger logger = Logger.getLogger(AnonymousAuthenticator.class);
+    private static Logger logger = LogManager.getLogger(AnonymousAuthenticator.class);
     private final String SESSION_ID_KEY = "JSESSIONID";
     private final ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
