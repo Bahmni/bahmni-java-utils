@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bahmni-java-utils</artifactId>
         <groupId>org.bahmni.module</groupId>
-        <version>0.94-SNAPSHOT</version>
+        <version>0.94</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -27,12 +27,19 @@
         <dependency>
             <groupId>org.bahmni.module</groupId>
             <artifactId>bahmni-migrator</artifactId>
-            <version>0.94-SNAPSHOT</version>
+            <version>0.94</version>
         </dependency>
         <dependency>
             <groupId>org.bahmni.module</groupId>
             <artifactId>common</artifactId>
-            <version>0.94-SNAPSHOT</version>
+            <version>0.94</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bahmni.module</groupId>
+            <artifactId>bahmni-migrator</artifactId>
+            <version>0.94</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>
@@ -44,13 +51,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bahmni.module</groupId>
-            <artifactId>bahmni-migrator</artifactId>
-            <version>0.94-SNAPSHOT</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>
