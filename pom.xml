@@ -6,9 +6,11 @@
 
     <groupId>org.bahmni.module</groupId>
     <artifactId>bahmni-java-utils</artifactId>
-    <version>0.94-SNAPSHOT</version>
+    <version>0.94.0</version>
     <packaging>pom</packaging>
     <name>Bahmni Java Utilities</name>
+    <description>Various functional utilities needed by bahmni</description>
+    <url>https://github.com/bahmni/bahmni-java-utils</url>
     <properties>
         <log4j.version>2.17.1</log4j.version>
     </properties>
@@ -24,6 +26,29 @@
         <module>bahmni-extension</module>
         <module>form2-utils</module>
     </modules>
+
+    <scm>
+        <url>https://github.com/bahmni/bahmni-java-utils</url>
+        <connection>scm:git:git@github.com:bahmni/bahmni-java-utils.git</connection>
+        <developerConnection>scm:https://github.com/Bahmni/bahmni-java-utils.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>1</id>
+            <name>bahmni</name>
+            <email>infrastructure@bahmni.org</email>
+            <organization>Bahmni.org</organization>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.txt</url>
+        </license>
+    </licenses>
 
     <build>
         <pluginManagement>
@@ -75,7 +100,44 @@
                         <skipStaging>true</skipStaging>
                     </configuration>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <extensions>
@@ -85,9 +147,90 @@
                 <version>1.2.1</version>
             </extension>
         </extensions>
-
-
     </build>
+
+    <profiles>
+        <profile>
+            <id>IT</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <argLine>-Xmx512m</argLine>
+                                    <includes>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
@@ -98,14 +241,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-<!--        <repository>-->
-<!--            <id>repo.mybahmni.org</id>-->
-<!--            <name>bahmni-artifactory-snapshots</name>-->
-<!--            <url>http://repo.mybahmni.org.s3.amazonaws.com/artifactory/snapshot</url>-->
-<!--            <snapshots>-->
-<!--                <updatePolicy>always</updatePolicy>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
         <repository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
@@ -149,6 +284,10 @@
             <id>nexus-sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>nexus-sonatype</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
     </distributionManagement>
 
 </project>

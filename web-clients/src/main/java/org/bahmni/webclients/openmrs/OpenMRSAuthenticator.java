@@ -32,10 +32,10 @@ public class OpenMRSAuthenticator {
 
     /**
      *
-     * @param user     in plain text
+     * @param user in plain text
      * @param password in plain text
+     * @param objectMapper
      * @return JSessionId value
-     * @throws AuthenticationException, IOException
      */
     public OpenMRSAuthenticationResponse authenticate(String user, String password, ObjectMapper objectMapper) {
         String responseText = null;
