@@ -230,6 +230,16 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>github</id>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>bahmni-core-snapshot</name>
+                    <url>https://maven.pkg.github.com/Bahmni/bahmni-core</url>
+                </repository>
+            </distributionManagement>
+        </profile>
     </profiles>
 
     <repositories>

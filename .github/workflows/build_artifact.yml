@@ -1,4 +1,4 @@
-name: Build OpenMRS Distro Bahmni
+name: Build and Upload Bahmni-java-utils artifact
 
 on:
   push:
@@ -19,5 +19,8 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean install
+          mvn clean package -DattachMuleSources -Pgithub deploy
+        env:
+          GITHUB_USER_REF: ${{ secrets.DOCKER_HUB_USERNAME }}
+          GITHUB_TOKEN_REF: ${{ secrets.GITHUB_TOKEN }}
 
