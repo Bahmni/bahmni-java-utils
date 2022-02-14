@@ -14,7 +14,7 @@ env:
   EVENT_TYPE: bahmni-java-utils-trigger
 
 jobs:
-  build-and-test-package:
+  build-and-deploy-package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,14 +22,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-
+          server-id: nexus-sonatype
+          server-username: GITHUB_USER_REF
+          server-password: GITHUB_TOKEN_REF
       - name: Build with Maven
-        run: |
-          mvn clean install
-
+        run: mvn clean -U deploy -DskipTests=true
+        env:
+          GITHUB_USER_REF: ${{ secrets.NEXUS_USERNAME }}
+          GITHUB_TOKEN_REF: ${{ secrets.NEXUS_PASSWORD }}
   trigger:
     name: Trigger Workflows
-    needs: build-and-test-package
+    needs: build-and-deploy-package
     runs-on: ubuntu-latest
     strategy:
       matrix:

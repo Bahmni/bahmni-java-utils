@@ -230,32 +230,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>github</id>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>bahmni-core-snapshot</name>
-                    <url>https://maven.pkg.github.com/Bahmni/bahmni-java-utils</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-        <profile>
-            <id>mybahmni-s3</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>nexus-sonatype</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>nexus-sonatype</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-                </repository>
-            </distributionManagement>
-        </profile>
     </profiles>
 
     <repositories>
@@ -305,5 +279,15 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-sonatype</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
 </project>
 
