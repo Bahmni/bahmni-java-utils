@@ -1,12 +1,13 @@
 package org.bahmni.webclients;
 
 import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-//@Ignore
+@Ignore
 public class HttpClientIT {
     @Test
     public void shouldBeAbleToReachOpenMRS() throws URISyntaxException {

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.bahmni.webclients.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -18,6 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Ignore
 public class OpenMRSIT {
     private static Logger logger = LogManager.getLogger(OpenMRSIT.class);
     private OpenMRSAuthenticator openMRSAuthenticator;
