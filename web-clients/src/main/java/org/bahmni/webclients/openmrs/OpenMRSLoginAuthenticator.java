@@ -31,8 +31,6 @@ import java.nio.charset.StandardCharsets;
 public class OpenMRSLoginAuthenticator implements Authenticator {
     private static Logger logger = LogManager.getLogger(OpenMRSLoginAuthenticator.class);
     private final String SESSION_ID_KEY = "JSESSIONID";
-    CloseableHttpClient httpClient;
-
     private ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
 
@@ -51,23 +49,18 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
     @Override
     public HttpRequestDetails refreshRequestDetails(URI uri) {
         String responseText = null;
-
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(authenticationDetails.getConnectionTimeout())
+                .setSocketTimeout(authenticationDetails.getReadTimeout())
+                .setConnectionRequestTimeout(authenticationDetails.getReadTimeout())
+                .build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        HttpGet httpGet = new HttpGet(authenticationDetails.getAuthUrl());
         try {
-
-            HttpGet httpGet = new HttpGet(authenticationDetails.getAuthUrl());
-            RequestConfig requestConfig = RequestConfig.custom()
-                    .setConnectTimeout(authenticationDetails.getConnectionTimeout())
-                    .setSocketTimeout(authenticationDetails.getReadTimeout())
-                    .setConnectionRequestTimeout(authenticationDetails.getReadTimeout())
-                    .build();
-            httpClient = HttpClientBuilder.create()
-                    .setDefaultRequestConfig(requestConfig)
-                    .build();
-
             setCredentials(httpGet);
-
             logger.info(String.format("Executing request: %s", httpGet.getRequestLine()));
-
             CloseableHttpResponse response = httpClient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             if(response.getStatusLine().getStatusCode() ==204) {
@@ -83,13 +76,10 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             OpenMRSAuthenticationResponse openMRSResponse = objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
             confirmAuthenticated(openMRSResponse);
-
             ClientCookies clientCookies = new ClientCookies();
             clientCookies.put(SESSION_ID_KEY, openMRSResponse.getSessionId());
-
             previousSuccessfulRequest = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
             return previousSuccessfulRequest;
-
         } catch (Exception e) {
             throw new WebClientsException(e);
         } finally {
