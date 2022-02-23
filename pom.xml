@@ -6,7 +6,7 @@
 
     <groupId>org.bahmni.module</groupId>
     <artifactId>bahmni-java-utils</artifactId>
-    <version>0.95.0-SNAPSHOT</version>
+    <version>0.94.0</version>
     <packaging>pom</packaging>
     <name>Bahmni Java Utilities</name>
     <description>Various functional utilities needed by bahmni</description>
@@ -17,7 +17,7 @@
     <modules>
         <module>bahmni-migrator</module>
         <module>web-clients</module>
-        <module>mail-appender</module>  
+        <module>mail-appender</module>
         <module>file-uploader</module>
         <module>visit-squasher</module>
         <module>font-transformer</module>
