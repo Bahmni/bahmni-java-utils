@@ -1,5 +1,8 @@
 package org.bahmni.webclients.openmrs;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class OpenMRSAuthenticationResponse {
     private String sessionId;
     private boolean authenticated;
