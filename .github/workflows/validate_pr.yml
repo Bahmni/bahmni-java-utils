@@ -1,7 +1,9 @@
 name: Validate PR
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - BAH-1382
 
 jobs:
   build-test-package:
