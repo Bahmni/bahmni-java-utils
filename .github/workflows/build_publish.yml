@@ -1,16 +1,12 @@
-name: Build and Deploy
+name: Build and Publish package
 on:
-  on:
-    workflow_run:
-      workflows: [Validate PR]
-      types:
-        - completed
-
+  push:
+    branches: [ master ]
+  
 jobs:
-  build-deploy-package:
-    name: Build and deploy package
+  build-publish-package:
+    name: Build and Publish package
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
