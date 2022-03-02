@@ -6,6 +6,7 @@ on:
 
 jobs:
   build-test-package:
+    name: Build and Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,5 +15,5 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Build with Maven
-        run: mvn clean -U install
+      - name: Build and Package with Maven
+        run: mvn clean -U package

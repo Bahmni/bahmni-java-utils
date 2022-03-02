@@ -1,7 +1,7 @@
 name: Build and Publish package
 on:
   push:
-    branches: [ master ]
+    branches: [ master, BAH-1382 ]
   
 jobs:
   build-publish-package:
@@ -14,10 +14,10 @@ jobs:
         with:
           java-version: 1.8
           server-id: nexus-sonatype
-          server-username: GITHUB_USER_REF
-          server-password: GITHUB_TOKEN_REF
+          server-username: NEXUS_USERNAME
+          server-password: NEXUS_PASSWORD
       - name: Build and deploy with Maven
         run: mvn clean -U deploy
         env:
-          GITHUB_USER_REF: ${{ secrets.NEXUS_USERNAME }}
-          GITHUB_TOKEN_REF: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
