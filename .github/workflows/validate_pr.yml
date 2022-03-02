@@ -16,4 +16,4 @@ jobs:
           java-version: 1.8
 
       - name: Build and Package with Maven
-        run: mvn clean -U install
+        run: mvn --no-transfer-progress clean -U install
