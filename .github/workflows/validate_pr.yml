@@ -16,4 +16,4 @@ jobs:
           java-version: 1.8
 
       - name: Build and Package with Maven
-        run: mvn clean -U package
+        run: mvn clean -U install
