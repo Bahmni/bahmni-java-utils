@@ -1,8 +1,7 @@
 name: Validate PR
 on:
-  pull_request:
-    branches:
-      - master
+  push:
+    branches: [ master, gha-refactor ]
 
 jobs:
   build-test-package:
@@ -16,4 +15,4 @@ jobs:
           java-version: 1.8
 
       - name: Build and Package with Maven
-        run: mvn --no-transfer-progress clean -U install
+        run: ./mvnw --no-transfer-progress clean -U install

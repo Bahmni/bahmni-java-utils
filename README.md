@@ -7,3 +7,12 @@ This repository has various functional utilities needed by bahmni:
 2. CSV File Uploader
 3. Email Appender
 4. Web Client Tools
+
+
+
+To Build and Package, run:
+```
+./mvnw --no-transfer-progress clean -U install
+```
+
+
