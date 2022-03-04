@@ -12,7 +12,7 @@ This repository has various functional utilities needed by bahmni:
 
 To Build and Package, run:
 ```
-./mvnw --no-transfer-progress clean -U install
+./mvnw clean install
 ```
 
 
