@@ -1,7 +1,7 @@
 name: Validate PR
 on:
-  push:
-    branches: [ master, gha-refactor ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build-test-package:
