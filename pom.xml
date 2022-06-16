@@ -234,6 +234,14 @@
 
     <repositories>
         <repository>
+            <id>openmrs-repo</id>
+            <name>OpenMRS Nexus Repository</name>
+            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+            <releases>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
             <name>Repository for dependencies</name>
