@@ -44,16 +44,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>openmrs-repo</id>
-            <name>OpenMRS Nexus Repository</name>
-            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-            <releases>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-        </repository>
-    </repositories>
-
 </project>
