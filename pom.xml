@@ -6,7 +6,7 @@
 
     <groupId>org.bahmni.module</groupId>
     <artifactId>bahmni-java-utils</artifactId>
-    <version>0.94.3.1-SNAPSHOT</version>
+    <version>0.94.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Bahmni Java Utilities</name>
     <description>Various functional utilities needed by bahmni</description>
