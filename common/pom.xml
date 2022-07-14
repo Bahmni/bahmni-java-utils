@@ -15,7 +15,8 @@
         <dependency>
             <groupId>org.openmrs.api</groupId>
             <artifactId>openmrs-api</artifactId>
-            <version>1.12.0</version>
+            <version>${openmrs.version}</version>
+            <scope>provided</scope>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -43,16 +44,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>openmrs-repo</id>
-            <name>OpenMRS Nexus Repository</name>
-            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-            <releases>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-        </repository>
-    </repositories>
-
 </project>

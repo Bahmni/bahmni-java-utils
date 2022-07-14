@@ -6,6 +6,7 @@ import org.bahmni.form2.utils.ResourceUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +59,7 @@ public class Form2ServiceImplTest {
         String formNameAndVersionSql = "SELECT name , MAX(version) as version FROM form GROUP BY name";
         List<Object[]> formRow = new ArrayList<>();
         formRow.add(Arrays.asList("Vitals", "3").toArray());
-        final SQLQuery sqlQuery = mock(SQLQuery.class);
+        final NativeQuery sqlQuery = mock(NativeQuery.class);
         when(session.createSQLQuery(formNameAndVersionSql)).thenReturn(sqlQuery);
         when(sqlQuery.list()).thenReturn(formRow);
 
@@ -72,7 +73,7 @@ public class Form2ServiceImplTest {
 
         String formNameAndVersionSql = "SELECT name , MAX(version) as version FROM form GROUP BY name";
 
-        final SQLQuery sqlQuery = mock(SQLQuery.class);
+        final NativeQuery sqlQuery = mock(NativeQuery.class);
         when(session.createSQLQuery(formNameAndVersionSql)).thenReturn(sqlQuery);
         when(sqlQuery.list()).thenReturn(new ArrayList<>());
 
@@ -97,7 +98,7 @@ public class Form2ServiceImplTest {
     private void addTestMocksBehavior() {
         List<Object[]> formRow = new ArrayList<>();
         formRow.add(Arrays.asList("", "Vitals", "", "/home/bahmni/clinical_forms/Vitals_1.json").toArray());
-        final SQLQuery sqlQuery = mock(SQLQuery.class);
+        final NativeQuery sqlQuery = mock(NativeQuery.class);
         when(session.createSQLQuery(anyString())).thenReturn(sqlQuery);
         when(sqlQuery.list()).thenReturn(formRow);
     }
@@ -132,7 +133,7 @@ public class Form2ServiceImplTest {
         String formNameAndVersionSql = "SELECT name , MAX(version) as version FROM form GROUP BY name";
         List<Object[]> formRow = new ArrayList<>();
         formRow.add(Arrays.asList("Vitals", "3").toArray());
-        final SQLQuery sqlQuery = mock(SQLQuery.class);
+        final NativeQuery sqlQuery = mock(NativeQuery.class);
         when(session.createSQLQuery(formNameAndVersionSql)).thenReturn(sqlQuery);
         when(sqlQuery.list()).thenReturn(formRow);
 
