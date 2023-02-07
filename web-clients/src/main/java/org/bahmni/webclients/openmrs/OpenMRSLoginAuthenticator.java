@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OpenMRSLoginAuthenticator implements Authenticator {
     private static Logger logger = LogManager.getLogger(OpenMRSLoginAuthenticator.class);
@@ -77,7 +79,7 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
             OpenMRSAuthenticationResponse openMRSResponse = objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
             confirmAuthenticated(openMRSResponse);
             ClientCookies clientCookies = new ClientCookies();
-            clientCookies.put(SESSION_ID_KEY, openMRSResponse.getSessionId());
+            clientCookies.put(SESSION_ID_KEY, ExtractStringUsingRegex(response.getHeaders("Set-Cookie")[0].getValue()));
             previousSuccessfulRequest = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
             return previousSuccessfulRequest;
         } catch (Exception e) {
@@ -89,6 +91,14 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String ExtractStringUsingRegex(String Cookie){
+        if (Cookie == null) return null;
+        Pattern pattern = Pattern.compile("\\bJSESSIONID=([A-Z0-9]{32})");
+        Matcher matcher = pattern.matcher(Cookie);
+        if (matcher.find()) return matcher.group(1);
+        throw new WebClientsException("No Matching SessionID in the Response Cookie");
     }
 
     protected void setCredentials(HttpGet httpGet) throws AuthenticationException {
