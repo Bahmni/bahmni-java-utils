@@ -2,8 +2,8 @@ package org.bahmni.openmrsconnector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.openmrsconnector.response.AuthenticationResponse;
 import org.bahmni.openmrsconnector.response.Resource;
 import org.bahmni.openmrsconnector.response.ResourceResponse;
@@ -27,7 +27,7 @@ public class OpenMRSRestService {
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Log log = LogFactory.getLog(OpenMRSRestService.class);
     private String sessionId;
-    private static Logger logger = LogManager.getLogger(OpenMRSRestService.class);
+    private static Logger logger = LoggerFactory.getLogger(OpenMRSRestService.class);
     private AllPatientAttributeTypes allPatientAttributeTypes;
     private OpenMRSRESTConnection openMRSRESTConnection;
     private Map<String, String> allEncounterTypes;

@@ -1,7 +1,7 @@
 package org.bahmni.csv;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.csv.exception.MigrationException;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class MultiStageMigrator<T extends CSVEntity> {
 
     private CSVFile csvFile = null;
     private List<SimpleStage> stageList = null;
-    private Logger logger = LogManager.getLogger(this.getClass().getName());
+    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public MultiStageMigrator() {
         stageList = new ArrayList<>();

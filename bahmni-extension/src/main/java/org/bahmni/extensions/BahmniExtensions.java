@@ -1,8 +1,8 @@
 package org.bahmni.extensions;
 
 import groovy.lang.GroovyClassLoader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.common.ApplicationDataDirectory;
 import org.bahmni.common.ApplicationDataDirectoryImpl;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.io.IOException;
 @Component
 public class BahmniExtensions {
 
-    private static final Logger log = LogManager.getLogger(BahmniExtensions.class);
+    private static final Logger log = LoggerFactory.getLogger(BahmniExtensions.class);
     public static final String GROOVY_EXTENSION = ".groovy";
 
     private GroovyClassLoader groovyClassLoader;

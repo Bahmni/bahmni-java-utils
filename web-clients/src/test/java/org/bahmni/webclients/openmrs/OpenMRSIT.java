@@ -4,8 +4,8 @@ import org.apache.http.HttpVersion;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.webclients.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class OpenMRSIT {
     private static final String BAHMNI_SERVER_BASE_URL = "https://qa-02.hip.bahmni-covid19.in";
     private static final String PATIENT_UUID = "0004b3c5-7ca1-4d54-b212-fe63afb8b2da";
-    private static Logger logger = LogManager.getLogger(OpenMRSIT.class);
+    private static Logger logger = LoggerFactory.getLogger(OpenMRSIT.class);
     private OpenMRSAuthenticator openMRSAuthenticator;
     private String authURL;
 
