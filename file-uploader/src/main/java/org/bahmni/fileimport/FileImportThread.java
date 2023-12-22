@@ -1,7 +1,7 @@
 package org.bahmni.fileimport;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.csv.CSVEntity;
 import org.bahmni.csv.CSVFile;
 import org.bahmni.csv.EntityPersister;
@@ -26,7 +26,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
     private String uploadedBy;
     private boolean skipValidation;
 
-    private static Logger logger = LogManager.getLogger(FileImportThread.class);
+    private static Logger logger = LoggerFactory.getLogger(FileImportThread.class);
     private Migrator migrator;
 
     public FileImportThread(String originalFileName, CSVFile csvFile, EntityPersister<T> persister, Class csvEntityClass, JDBCConnectionProvider jdbcConnectionProvider, String uploadedBy, boolean skipValidation, int numberOfThreads) {
@@ -73,7 +73,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
                 getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), e);
                 migrator.shutdown();
             } catch (SQLException e1) {
-                logger.error(e1);
+                logger.error(String.valueOf(e1));
             }
         } finally {
             ImportRegistry.unregister(csvFile);
@@ -85,7 +85,7 @@ class FileImportThread<T extends CSVEntity> implements Runnable {
         try {
             getNewImportStatusDao().saveFatalError(csvFile, csvEntityClass.getSimpleName(), "Server shutdown");
         } catch (SQLException e1) {
-            logger.error(e1);
+            logger.error(String.valueOf(e1));
         }
     }
 

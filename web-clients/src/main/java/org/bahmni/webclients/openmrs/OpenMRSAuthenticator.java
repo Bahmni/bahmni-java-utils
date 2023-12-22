@@ -17,15 +17,15 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bahmni.webclients.WebClientsException;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public class OpenMRSAuthenticator {
-    private static Logger logger = LogManager.getLogger(OpenMRSAuthenticator.class);
+    private static Logger logger = LoggerFactory.getLogger(OpenMRSAuthenticator.class);
     private String authURL;
     private int connectionTimeout;
     private int readTimeout;

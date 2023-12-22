@@ -14,8 +14,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenElisAuthenticator implements Authenticator {
-    private static Logger logger = LogManager.getLogger(OpenElisAuthenticator.class);
+    private static Logger logger = LoggerFactory.getLogger(OpenElisAuthenticator.class);
     private final ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
     CloseableHttpClient httpClient;
