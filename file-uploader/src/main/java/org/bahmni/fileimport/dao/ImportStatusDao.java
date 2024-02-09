@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ImportStatusDao {
     private static final String IN_PROGRESS = "IN_PROGRESS";
@@ -91,13 +92,14 @@ public class ImportStatusDao {
         saveFatalError(csvFile, type, getStackTrace(exception));
     }
 
-    public List<ImportStatus> getImportStatusFromDate(Date fromDate) throws SQLException {
+    public List<ImportStatus> getImportStatusFromDate(Date fromDate) throws SQLException, InterruptedException {
         Connection connection = jdbcConnectionProvider.getConnection();
         PreparedStatement statement = null;
         List<ImportStatus> importStatuses = new ArrayList<>();
         try {
-            statement = connection.prepareStatement("select id, original_file_name, saved_file_name, error_file_name, type, status, successful_records, failed_records, stage_name, uploaded_by, start_time, end_time, stack_trace from import_status where start_time >= ? order by start_time desc");
+            statement = connection.prepareStatement("select id, original_file_name, saved_file_name, error_file_name, type, status, successful_records, failed_records, stage_name, uploaded_by, start_time, end_time, stack_trace from import_status where start_time >= ? AND start_time IS NOT NULL order by start_time desc");
             statement.setDate(1, new java.sql.Date(fromDate.getTime()));
+            TimeUnit.MILLISECONDS.sleep(500);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 importStatuses.add(new ImportStatus(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3),
