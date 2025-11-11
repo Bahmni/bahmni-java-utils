@@ -47,11 +47,27 @@ public class HttpClient {
         try {
             HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri), httpHeaders);
 
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
-                    httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-                httpClientInternal.closeConnection();
-                httpClientInternal = httpClientInternal.createNew();
+            if (isAuthFailure(httpResponse)) {
+                reInitializeClient();
                 httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri), httpHeaders);
+            }
+
+            checkSanityOfResponse(httpResponse);
+            return asString(httpResponse);
+        } catch (IOException e) {
+            throw new WebClientsException(e);
+        } finally {
+            httpClientInternal.closeConnection();
+        }
+    }
+
+    private String post(URI uri, String body, HttpHeaders httpHeaders) {
+        try {
+            HttpResponse httpResponse = httpClientInternal.post(authenticator.getRequestDetails(uri), body, httpHeaders);
+
+            if (isAuthFailure(httpResponse)) {
+                reInitializeClient();
+                httpResponse = httpClientInternal.post(authenticator.refreshRequestDetails(uri), body, httpHeaders);
             }
 
             checkSanityOfResponse(httpResponse);
@@ -70,6 +86,16 @@ public class HttpClient {
         return objectMapper.readValue(response, returnType);
     }
 
+    public <T, R> R post(String url, T payload, Class<R> returnType) throws IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("Accept", "application/json");
+        httpHeaders.put("Content-Type", "application/json");
+        String body = objectMapper.writeValueAsString(payload);
+        String response = post(URI.create(url), body, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+
+    }
+
     private void checkSanityOfResponse(HttpResponse httpResponse) {
         StatusLine statusLine = httpResponse.getStatusLine();
         int statusCode = statusLine.getStatusCode();
@@ -81,5 +107,15 @@ public class HttpClient {
 
     private String asString(HttpResponse httpResponse) throws IOException {
         return EntityUtils.toString(httpResponse.getEntity());
+    }
+
+    private boolean isAuthFailure(HttpResponse httpResponse) {
+        return httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED ||
+                httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN;
+    }
+
+    private void reInitializeClient() {
+        httpClientInternal.closeConnection();
+        httpClientInternal = httpClientInternal.createNew();
     }
 }
