@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 public class SaleOrderContext {
 
-    private final String orderUuid;
     private final String patientUuid;
     private final String encounterUuid;
 }
