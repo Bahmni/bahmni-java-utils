@@ -27,6 +27,7 @@
         <module>common</module>
         <module>bahmni-extension</module>
         <module>form2-utils</module>
+        <module>odoo-connect-extensions</module>
     </modules>
 
     <scm>
