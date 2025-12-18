@@ -99,9 +99,16 @@ public class HttpClient {
     private void checkSanityOfResponse(HttpResponse httpResponse) {
         StatusLine statusLine = httpResponse.getStatusLine();
         int statusCode = statusLine.getStatusCode();
-        if (statusCode < 200 || statusCode >= 300) throw new WebClientsException("Bad response code of " + statusCode);
-
         HttpEntity entity = httpResponse.getEntity();
+        if (statusCode < 200 || statusCode >= 300) {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                throw new WebClientsException("Unable to read response entity", e);
+            }
+            throw new WebClientsException("Bad response code of " + statusCode);
+        }
+
         if (entity == null) throw new WebClientsException("Cannot read response");
     }
 
