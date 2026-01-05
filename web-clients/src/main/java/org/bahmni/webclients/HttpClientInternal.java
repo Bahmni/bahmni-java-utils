@@ -3,7 +3,9 @@ package org.bahmni.webclients;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -83,6 +85,36 @@ public class HttpClientInternal {
         }
     }
 
+    public HttpResponse put(HttpRequestDetails requestDetails, String body, HttpHeaders httpHeaders) {
+        initializeClient();
+        HttpPut httpPut = new HttpPut(requestDetails.getUri());
+        requestDetails.addDetailsTo(httpPut);
+        httpHeaders.addTo(httpPut);
+        if (body != null) {
+            httpPut.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
+        }
+        try {
+            return closeableHttpClient.execute(httpPut);
+        } catch (IOException e) {
+            throw new WebClientsException("Error executing request", e);
+        }
+    }
+
+    public HttpResponse patch(HttpRequestDetails requestDetails, String body, HttpHeaders httpHeaders) {
+        initializeClient();
+        HttpPatch httpPatch = new HttpPatch(requestDetails.getUri());
+        requestDetails.addDetailsTo(httpPatch);
+        httpHeaders.addTo(httpPatch);
+        if (body != null) {
+            httpPatch.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
+        }
+        try {
+            return closeableHttpClient.execute(httpPatch);
+        } catch (IOException e) {
+            throw new WebClientsException("Error executing request", e);
+        }
+    }
+
     private void initializeClient(){
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(readTimeout)
@@ -98,4 +130,3 @@ public class HttpClientInternal {
     }
 
 }
-

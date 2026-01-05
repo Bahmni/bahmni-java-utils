@@ -79,6 +79,42 @@ public class HttpClient {
         }
     }
 
+    private String put(URI uri, String body, HttpHeaders httpHeaders) {
+        try {
+            HttpResponse httpResponse = httpClientInternal.put(authenticator.getRequestDetails(uri), body, httpHeaders);
+
+            if (isAuthFailure(httpResponse)) {
+                reInitializeClient();
+                httpResponse = httpClientInternal.put(authenticator.refreshRequestDetails(uri), body, httpHeaders);
+            }
+
+            checkSanityOfResponse(httpResponse);
+            return asString(httpResponse);
+        } catch (IOException e) {
+            throw new WebClientsException(e);
+        } finally {
+            httpClientInternal.closeConnection();
+        }
+    }
+
+    private String patch(URI uri, String body, HttpHeaders httpHeaders) {
+        try {
+            HttpResponse httpResponse = httpClientInternal.patch(authenticator.getRequestDetails(uri), body, httpHeaders);
+
+            if (isAuthFailure(httpResponse)) {
+                reInitializeClient();
+                httpResponse = httpClientInternal.patch(authenticator.refreshRequestDetails(uri), body, httpHeaders);
+            }
+
+            checkSanityOfResponse(httpResponse);
+            return asString(httpResponse);
+        } catch (IOException e) {
+            throw new WebClientsException(e);
+        } finally {
+            httpClientInternal.closeConnection();
+        }
+    }
+
     public <T> T get(String url, Class<T> returnType) throws IOException {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.put("Accept", "application/json");
@@ -92,6 +128,26 @@ public class HttpClient {
         httpHeaders.put("Content-Type", "application/json");
         String body = objectMapper.writeValueAsString(payload);
         String response = post(URI.create(url), body, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+
+    }
+
+    public <T, R> R put(String url, T payload, Class<R> returnType) throws IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("Accept", "application/json");
+        httpHeaders.put("Content-Type", "application/json");
+        String body = objectMapper.writeValueAsString(payload);
+        String response = put(URI.create(url), body, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+
+    }
+
+    public <T, R> R patch(String url, T payload, Class<R> returnType) throws IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("Accept", "application/json");
+        httpHeaders.put("Content-Type", "application/json");
+        String body = objectMapper.writeValueAsString(payload);
+        String response = patch(URI.create(url), body, httpHeaders);
         return objectMapper.readValue(response, returnType);
 
     }
