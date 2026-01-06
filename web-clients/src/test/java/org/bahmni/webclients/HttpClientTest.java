@@ -483,4 +483,40 @@ public class HttpClientTest {
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
         authenticatingWebClient.patch(uri.toString(), request, TestResponse.class);
     }
+
+    @Test
+    public void shouldUseProvidedHttpHeadersForPut() throws IOException {
+        String responseJson = "{\"result\":\"updated\",\"success\":true}";
+        TestRequest request = new TestRequest("test", 123);
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("Content-Type", "application/fhir+json");
+        headers.put("Accept", "application/fhir+json");
+        
+        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+        
+        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
+        TestResponse response = authenticatingWebClient.put(uri.toString(), request, headers, TestResponse.class);
+
+        verify(webClient).put(any(HttpRequestDetails.class), anyString(), eq(headers));
+        assertEquals("updated", response.getResult());
+    }
+
+    @Test
+    public void shouldUseProvidedHttpHeadersForPatch() throws IOException {
+        String responseJson = "{\"result\":\"patched\",\"success\":true}";
+        TestRequest request = new TestRequest("test", 456);
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("Content-Type", "application/json-patch+json");
+        headers.put("If-Match", "W/\"1\"");
+        
+        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+        
+        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
+        TestResponse response = authenticatingWebClient.patch(uri.toString(), request, headers, TestResponse.class);
+
+        verify(webClient).patch(any(HttpRequestDetails.class), anyString(), eq(headers));
+        assertEquals("patched", response.getResult());
+    }
 }

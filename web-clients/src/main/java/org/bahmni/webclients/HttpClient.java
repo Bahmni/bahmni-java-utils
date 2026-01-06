@@ -136,20 +136,26 @@ public class HttpClient {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.put("Accept", "application/json");
         httpHeaders.put("Content-Type", "application/json");
+        return put(url, payload, httpHeaders, returnType);
+    }
+
+    public <T, R> R put(String url, T payload, HttpHeaders httpHeaders, Class<R> returnType) throws IOException {
         String body = objectMapper.writeValueAsString(payload);
         String response = put(URI.create(url), body, httpHeaders);
         return objectMapper.readValue(response, returnType);
-
     }
 
     public <T, R> R patch(String url, T payload, Class<R> returnType) throws IOException {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.put("Accept", "application/json");
         httpHeaders.put("Content-Type", "application/json");
+        return patch(url, payload, httpHeaders, returnType);
+    }
+
+    public <T, R> R patch(String url, T payload, HttpHeaders httpHeaders, Class<R> returnType) throws IOException {
         String body = objectMapper.writeValueAsString(payload);
         String response = patch(URI.create(url), body, httpHeaders);
         return objectMapper.readValue(response, returnType);
-
     }
 
     private void checkSanityOfResponse(HttpResponse httpResponse) {
