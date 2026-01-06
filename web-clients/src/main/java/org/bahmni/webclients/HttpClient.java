@@ -44,41 +44,36 @@ public class HttpClient {
     }
 
     public <T> T get(String url, Class<T> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
+        HttpHeaders httpHeaders = getDefaultHeaders();
         String response = executeWithAuthRetry(HttpMethod.GET, URI.create(url), null, httpHeaders);
         return objectMapper.readValue(response, returnType);
     }
 
     public <T, R> R post(String url, T payload, Class<R> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
-        httpHeaders.put("Content-Type", "application/json");
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
         String response = executeWithAuthRetry(HttpMethod.POST, URI.create(url), payload, httpHeaders);
         return objectMapper.readValue(response, returnType);
 
     }
 
     public <T, R> R put(String url, T payload, Class<R> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
-        httpHeaders.put("Content-Type", "application/json");
-        return put(url, payload, httpHeaders, returnType);
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return put(url, payload, returnType, httpHeaders);
     }
 
-    public <T, R> R put(String url, T payload, HttpHeaders httpHeaders, Class<R> returnType) throws IOException {
+    public <T, R> R put(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
         String response = executeWithAuthRetry(HttpMethod.PUT, URI.create(url), payload, httpHeaders);
         return objectMapper.readValue(response, returnType);
     }
 
     public <T, R> R patch(String url, T payload, Class<R> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
-        httpHeaders.put("Content-Type", "application/json");
-        return patch(url, payload, httpHeaders, returnType);
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return patch(url, payload, returnType, httpHeaders);
     }
 
-    public <T, R> R patch(String url, T payload, HttpHeaders httpHeaders, Class<R> returnType) throws IOException {
+    public <T, R> R patch(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
         String response = executeWithAuthRetry(HttpMethod.PATCH, URI.create(url), payload, httpHeaders);
         return objectMapper.readValue(response, returnType);
     }

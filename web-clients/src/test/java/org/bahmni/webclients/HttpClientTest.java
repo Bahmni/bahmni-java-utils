@@ -8,6 +8,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class HttpClientTest {
     @Test
     public void shouldReturnContentFromWebClientResponse() {
         String expectedResponseContent = "good response";
-        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(expectedResponseContent));
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
 
         String response = authenticatingWebClient.get(uri);
@@ -51,7 +53,8 @@ public class HttpClientTest {
     @Test
     public void shouldWorkWithoutAnAuthenticator() {
         String expectedResponseContent = "good response";
-        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(expectedResponseContent));
         HttpClient authenticatingWebClient = new HttpClient(webClient);
 
         String response = authenticatingWebClient.get(uri);
@@ -69,14 +72,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(uri)).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(uri)).thenReturn(secondRequestDetails);
 
-        when(webClient.get(eq(firstRequestDetails), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
-        when(webClient.get(eq(secondRequestDetails), any(HttpHeaders.class))).thenReturn(okResponse(expectedResponseContent));
+        when(webClient.execute(eq(HttpMethod.GET), eq(firstRequestDetails), isNull(), any(HttpHeaders.class)))
+                .thenReturn(unAuthorizedResponse());
+        when(webClient.execute(eq(HttpMethod.GET), eq(secondRequestDetails), isNull(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(expectedResponseContent));
         when(webClient.createNew()).thenReturn(webClient);
 
         String response = authenticatingWebClient.get(uri);
 
-        verify(webClient).get(eq(firstRequestDetails), any(HttpHeaders.class));
-        verify(webClient).get(eq(secondRequestDetails), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.GET), eq(firstRequestDetails), isNull(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.GET), eq(secondRequestDetails), isNull(), any(HttpHeaders.class));
         assertThat(response, containsString(expectedResponseContent));
     }
 
@@ -89,8 +94,8 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(uri)).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(uri)).thenReturn(secondRequestDetails);
 
-        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
-        when(webClient.get(any(HttpRequestDetails.class), any(HttpHeaders.class))).thenReturn(unAuthorizedResponse());
+        when(webClient.execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class)))
+                .thenReturn(unAuthorizedResponse());
         when(webClient.createNew()).thenReturn(webClient);
 
         authenticatingWebClient.get(uri);
@@ -155,11 +160,10 @@ public class HttpClientTest {
 
     @Test
     public void shouldReturnContentFromPostRequest() throws IOException {
-        String requestJson = "{\"name\":\"test\",\"value\":123}";
         String responseJson = "{\"result\":\"success\",\"success\":true}";
         TestRequest request = new TestRequest("test", 123);
         
-        when(webClient.post(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -174,14 +178,13 @@ public class HttpClientTest {
         String responseJson = "{\"result\":\"processed\",\"success\":true}";
         TestRequest request = new TestRequest("testData", 456);
         
-        when(webClient.post(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
         TestResponse response = authenticatingWebClient.post(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).post(any(HttpRequestDetails.class), contains("testData"), any(HttpHeaders.class));
-        verify(webClient).post(any(HttpRequestDetails.class), contains("456"), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class));
         assertEquals("processed", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -197,16 +200,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.post(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
-        when(webClient.post(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.post(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).post(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).post(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.POST), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.POST), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("success", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -222,16 +225,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.post(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(forbiddenResponse());
-        when(webClient.post(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.post(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).post(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).post(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.POST), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.POST), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("success", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -246,7 +249,7 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.post(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
         when(webClient.createNew()).thenReturn(webClient);
 
@@ -257,7 +260,7 @@ public class HttpClientTest {
     public void shouldThrowExceptionOnBadResponseCodeForPost() throws IOException {
         TestRequest request = new TestRequest("test", 222);
         
-        when(webClient.post(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(serverErrorResponse());
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -269,7 +272,7 @@ public class HttpClientTest {
         String responseJson = "{\"result\":\"updated\",\"success\":true}";
         TestRequest request = new TestRequest("test", 123);
         
-        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -284,14 +287,13 @@ public class HttpClientTest {
         String responseJson = "{\"result\":\"processed\",\"success\":true}";
         TestRequest request = new TestRequest("updateData", 456);
         
-        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
         TestResponse response = authenticatingWebClient.put(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).put(any(HttpRequestDetails.class), contains("updateData"), any(HttpHeaders.class));
-        verify(webClient).put(any(HttpRequestDetails.class), contains("456"), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class));
         assertEquals("processed", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -307,16 +309,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.put(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
-        when(webClient.put(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.put(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).put(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).put(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PUT), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PUT), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("updated", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -332,16 +334,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.put(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(forbiddenResponse());
-        when(webClient.put(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.put(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).put(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).put(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PUT), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PUT), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("updated", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -356,7 +358,7 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
         when(webClient.createNew()).thenReturn(webClient);
 
@@ -367,7 +369,7 @@ public class HttpClientTest {
     public void shouldThrowExceptionOnBadResponseCodeForPut() throws IOException {
         TestRequest request = new TestRequest("test", 222);
         
-        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(serverErrorResponse());
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -379,7 +381,7 @@ public class HttpClientTest {
         String responseJson = "{\"result\":\"patched\",\"success\":true}";
         TestRequest request = new TestRequest("test", 123);
         
-        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -394,14 +396,13 @@ public class HttpClientTest {
         String responseJson = "{\"result\":\"processed\",\"success\":true}";
         TestRequest request = new TestRequest("patchData", 456);
         
-        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
         TestResponse response = authenticatingWebClient.patch(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).patch(any(HttpRequestDetails.class), contains("patchData"), any(HttpHeaders.class));
-        verify(webClient).patch(any(HttpRequestDetails.class), contains("456"), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class));
         assertEquals("processed", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -417,16 +418,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.patch(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
-        when(webClient.patch(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.patch(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).patch(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).patch(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PATCH), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PATCH), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("patched", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -442,16 +443,16 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.patch(eq(firstRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(forbiddenResponse());
-        when(webClient.patch(eq(secondRequestDetails), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         when(webClient.createNew()).thenReturn(webClient);
 
         TestResponse response = authenticatingWebClient.patch(uri.toString(), request, TestResponse.class);
 
-        verify(webClient).patch(eq(firstRequestDetails), anyString(), any(HttpHeaders.class));
-        verify(webClient).patch(eq(secondRequestDetails), anyString(), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PATCH), eq(firstRequestDetails), any(String.class), any(HttpHeaders.class));
+        verify(webClient).execute(eq(HttpMethod.PATCH), eq(secondRequestDetails), any(String.class), any(HttpHeaders.class));
         assertEquals("patched", response.getResult());
         assertEquals(true, response.isSuccess());
     }
@@ -466,7 +467,7 @@ public class HttpClientTest {
         when(authenticator.getRequestDetails(any(URI.class))).thenReturn(firstRequestDetails);
         when(authenticator.refreshRequestDetails(any(URI.class))).thenReturn(secondRequestDetails);
 
-        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(unAuthorizedResponse());
         when(webClient.createNew()).thenReturn(webClient);
 
@@ -477,7 +478,7 @@ public class HttpClientTest {
     public void shouldThrowExceptionOnBadResponseCodeForPatch() throws IOException {
         TestRequest request = new TestRequest("test", 222);
         
-        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(serverErrorResponse());
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
@@ -491,15 +492,20 @@ public class HttpClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Content-Type", "application/fhir+json");
         headers.put("Accept", "application/fhir+json");
+        ArgumentCaptor<HttpHeaders> headersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);
         
-        when(webClient.put(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
-        TestResponse response = authenticatingWebClient.put(uri.toString(), request, headers, TestResponse.class);
+        TestResponse response = authenticatingWebClient.put(uri.toString(), request, TestResponse.class, headers);
 
-        verify(webClient).put(any(HttpRequestDetails.class), anyString(), eq(headers));
+        verify(webClient).execute(eq(HttpMethod.PUT), any(HttpRequestDetails.class), any(String.class), headersCaptor.capture());
         assertEquals("updated", response.getResult());
+
+        HttpHeaders mergedHeaders = headersCaptor.getValue();
+        assertEquals("application/fhir+json", mergedHeaders.get("Content-Type"));
+        assertEquals("application/fhir+json", mergedHeaders.get("Accept"));
     }
 
     @Test
@@ -509,14 +515,20 @@ public class HttpClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.put("Content-Type", "application/json-patch+json");
         headers.put("If-Match", "W/\"1\"");
+        ArgumentCaptor<HttpHeaders> headersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);
         
-        when(webClient.patch(any(HttpRequestDetails.class), anyString(), any(HttpHeaders.class)))
+        when(webClient.execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
                 .thenReturn(okResponse(responseJson));
         
         HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
-        TestResponse response = authenticatingWebClient.patch(uri.toString(), request, headers, TestResponse.class);
+        TestResponse response = authenticatingWebClient.patch(uri.toString(), request, TestResponse.class, headers);
 
-        verify(webClient).patch(any(HttpRequestDetails.class), anyString(), eq(headers));
+        verify(webClient).execute(eq(HttpMethod.PATCH), any(HttpRequestDetails.class), any(String.class), headersCaptor.capture());
         assertEquals("patched", response.getResult());
+
+        HttpHeaders mergedHeaders = headersCaptor.getValue();
+        assertEquals("application/json-patch+json", mergedHeaders.get("Content-Type"));
+        assertEquals("application/json", mergedHeaders.get("Accept"));
+        assertEquals("W/\"1\"", mergedHeaders.get("If-Match"));
     }
 }
