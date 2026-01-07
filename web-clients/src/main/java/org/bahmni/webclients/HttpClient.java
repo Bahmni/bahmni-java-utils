@@ -40,60 +40,69 @@ public class HttpClient {
     }
 
     public String get(URI uri) {
-        return get(uri, new HttpHeaders());
-    }
-
-    private String get(URI uri, HttpHeaders httpHeaders) {
-        try {
-            HttpResponse httpResponse = httpClientInternal.get(authenticator.getRequestDetails(uri), httpHeaders);
-
-            if (isAuthFailure(httpResponse)) {
-                reInitializeClient();
-                httpResponse = httpClientInternal.get(authenticator.refreshRequestDetails(uri), httpHeaders);
-            }
-
-            checkSanityOfResponse(httpResponse);
-            return asString(httpResponse);
-        } catch (IOException e) {
-            throw new WebClientsException(e);
-        } finally {
-            httpClientInternal.closeConnection();
-        }
-    }
-
-    private String post(URI uri, String body, HttpHeaders httpHeaders) {
-        try {
-            HttpResponse httpResponse = httpClientInternal.post(authenticator.getRequestDetails(uri), body, httpHeaders);
-
-            if (isAuthFailure(httpResponse)) {
-                reInitializeClient();
-                httpResponse = httpClientInternal.post(authenticator.refreshRequestDetails(uri), body, httpHeaders);
-            }
-
-            checkSanityOfResponse(httpResponse);
-            return asString(httpResponse);
-        } catch (IOException e) {
-            throw new WebClientsException(e);
-        } finally {
-            httpClientInternal.closeConnection();
-        }
+        return executeWithAuthRetry(HttpMethod.GET, uri, null, new HttpHeaders());
     }
 
     public <T> T get(String url, Class<T> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
-        String response = get(URI.create(url), httpHeaders);
+        HttpHeaders httpHeaders = getDefaultHeaders();
+        return get(url, returnType, httpHeaders);
+    }
+
+    public <T> T get(String url, Class<T> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getDefaultHeaders(), httpHeaders);
+        String response = executeWithAuthRetry(HttpMethod.GET, URI.create(url), null, httpHeaders);
         return objectMapper.readValue(response, returnType);
     }
 
     public <T, R> R post(String url, T payload, Class<R> returnType) throws IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.put("Accept", "application/json");
-        httpHeaders.put("Content-Type", "application/json");
-        String body = objectMapper.writeValueAsString(payload);
-        String response = post(URI.create(url), body, httpHeaders);
-        return objectMapper.readValue(response, returnType);
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return post(url, payload, returnType, httpHeaders);
+    }
 
+    public <T, R> R post(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
+        String response = executeWithAuthRetry(HttpMethod.POST, URI.create(url), payload, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+    }
+
+    public <T, R> R put(String url, T payload, Class<R> returnType) throws IOException {
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return put(url, payload, returnType, httpHeaders);
+    }
+
+    public <T, R> R put(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
+        String response = executeWithAuthRetry(HttpMethod.PUT, URI.create(url), payload, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+    }
+
+    public <T, R> R patch(String url, T payload, Class<R> returnType) throws IOException {
+        HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return patch(url, payload, returnType, httpHeaders);
+    }
+
+    public <T, R> R patch(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
+        String response = executeWithAuthRetry(HttpMethod.PATCH, URI.create(url), payload, httpHeaders);
+        return objectMapper.readValue(response, returnType);
+    }
+
+    private <T> String executeWithAuthRetry(HttpMethod httpMethod, URI uri, T payload, HttpHeaders httpHeaders) {
+        try {
+            HttpResponse httpResponse = httpClientInternal.execute(httpMethod, authenticator.getRequestDetails(uri), payload, httpHeaders);
+
+            if (isAuthFailure(httpResponse)) {
+                reInitializeClient();
+                httpResponse = httpClientInternal.execute(httpMethod, authenticator.refreshRequestDetails(uri), payload, httpHeaders);
+            }
+
+            checkSanityOfResponse(httpResponse);
+            return asString(httpResponse);
+        } catch (IOException e) {
+            throw new WebClientsException(e);
+        } finally {
+            httpClientInternal.closeConnection();
+        }
     }
 
     private void checkSanityOfResponse(HttpResponse httpResponse) {
@@ -124,5 +133,24 @@ public class HttpClient {
     private void reInitializeClient() {
         httpClientInternal.closeConnection();
         httpClientInternal = httpClientInternal.createNew();
+    }
+
+    private HttpHeaders getDefaultHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.put("Accept", "application/json");
+        return httpHeaders;
+    }
+
+    private HttpHeaders getPostPutPatchDefaultHeaders() {
+        HttpHeaders httpHeaders = getDefaultHeaders();
+        httpHeaders.put("Content-Type", "application/json");
+        return httpHeaders;
+    }
+
+    private HttpHeaders getMergedHeaders(HttpHeaders base, HttpHeaders custom) {
+        HttpHeaders merged = new HttpHeaders();
+        if (base != null) merged.putAll(base);
+        if (custom != null) merged.putAll(custom);
+        return merged;
     }
 }

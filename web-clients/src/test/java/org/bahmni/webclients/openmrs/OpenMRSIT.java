@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ public class OpenMRSIT {
         goodResponse.setEntity(getGoodResponseData());
 
         HttpClientInternal mockHttpClientInternal = mock(HttpClientInternal.class);
-        when(mockHttpClientInternal.get(any(HttpRequestDetails.class))).thenReturn(goodResponse);
+        when(mockHttpClientInternal.execute(HttpMethod.GET, any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class))).thenReturn(goodResponse);
 
         HttpRequestDetails goodRequestWithAuthenticationDetails = new HttpRequestDetails(uri);
         Authenticator mockAuthenticator = mock(Authenticator.class);
