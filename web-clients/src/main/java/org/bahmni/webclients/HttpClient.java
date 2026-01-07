@@ -45,15 +45,24 @@ public class HttpClient {
 
     public <T> T get(String url, Class<T> returnType) throws IOException {
         HttpHeaders httpHeaders = getDefaultHeaders();
+        return get(url, returnType, httpHeaders);
+    }
+
+    public <T> T get(String url, Class<T> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getDefaultHeaders(), httpHeaders);
         String response = executeWithAuthRetry(HttpMethod.GET, URI.create(url), null, httpHeaders);
         return objectMapper.readValue(response, returnType);
     }
 
     public <T, R> R post(String url, T payload, Class<R> returnType) throws IOException {
         HttpHeaders httpHeaders = getPostPutPatchDefaultHeaders();
+        return post(url, payload, returnType, httpHeaders);
+    }
+
+    public <T, R> R post(String url, T payload, Class<R> returnType, HttpHeaders httpHeaders) throws IOException {
+        httpHeaders = getMergedHeaders(getPostPutPatchDefaultHeaders(), httpHeaders);
         String response = executeWithAuthRetry(HttpMethod.POST, URI.create(url), payload, httpHeaders);
         return objectMapper.readValue(response, returnType);
-
     }
 
     public <T, R> R put(String url, T payload, Class<R> returnType) throws IOException {

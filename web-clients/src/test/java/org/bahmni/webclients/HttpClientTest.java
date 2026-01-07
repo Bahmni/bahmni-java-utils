@@ -486,6 +486,76 @@ public class HttpClientTest {
     }
 
     @Test
+    public void shouldUseDefaultHeadersWhenNoCustomHeadersProvided() throws IOException {
+        String responseJson = "{\"result\":\"success\",\"success\":true}";
+        TestRequest request = new TestRequest("test", 123);
+        ArgumentCaptor<HttpHeaders> headersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);
+        
+       when(webClient.execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+
+        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
+      
+        authenticatingWebClient.get(uri.toString(), TestResponse.class);
+        verify(webClient).execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), headersCaptor.capture());
+        HttpHeaders getHeaders = headersCaptor.getValue();
+        assertEquals("application/json", getHeaders.get("Accept"));
+        
+        authenticatingWebClient.post(uri.toString(), request, TestResponse.class);
+        verify(webClient).execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), headersCaptor.capture());
+        HttpHeaders postHeaders = headersCaptor.getValue();
+        assertEquals("application/json", postHeaders.get("Accept"));
+        assertEquals("application/json", postHeaders.get("Content-Type"));
+    }
+
+    @Test
+    public void shouldUseProvidedHttpHeadersForGet() throws IOException {
+        String responseJson = "{\"result\":\"fetched\",\"success\":true}";
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("Accept", "application/fhir+json");
+        headers.put("X-Custom-Header", "custom-value");
+        ArgumentCaptor<HttpHeaders> headersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);
+
+        when(webClient.execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+
+        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
+        TestResponse response = authenticatingWebClient.get(uri.toString(), TestResponse.class, headers);
+
+        verify(webClient).execute(eq(HttpMethod.GET), any(HttpRequestDetails.class), isNull(), headersCaptor.capture());
+        assertEquals("fetched", response.getResult());
+
+        HttpHeaders mergedHeaders = headersCaptor.getValue();
+        assertEquals("application/fhir+json", mergedHeaders.get("Accept"));
+        assertEquals("custom-value", mergedHeaders.get("X-Custom-Header"));
+    }
+
+    @Test
+    public void shouldUseProvidedHttpHeadersForPost() throws IOException {
+        String responseJson = "{\"result\":\"created\",\"success\":true}";
+        TestRequest request = new TestRequest("test", 123);
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("Content-Type", "application/fhir+json");
+        headers.put("Accept", "application/fhir+json");
+        ArgumentCaptor<HttpHeaders> headersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);
+
+        when(webClient.execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), any(HttpHeaders.class)))
+                .thenReturn(okResponse(responseJson));
+
+        HttpClient authenticatingWebClient = new HttpClient(webClient, authenticator);
+        TestResponse response = authenticatingWebClient.post(uri.toString(), request, TestResponse.class, headers);
+
+        verify(webClient).execute(eq(HttpMethod.POST), any(HttpRequestDetails.class), any(String.class), headersCaptor.capture());
+        assertEquals("created", response.getResult());
+
+        HttpHeaders mergedHeaders = headersCaptor.getValue();
+        assertEquals("application/fhir+json", mergedHeaders.get("Content-Type"));
+        assertEquals("application/fhir+json", mergedHeaders.get("Accept"));
+    }
+
+    @Test
     public void shouldUseProvidedHttpHeadersForPut() throws IOException {
         String responseJson = "{\"result\":\"updated\",\"success\":true}";
         TestRequest request = new TestRequest("test", 123);
