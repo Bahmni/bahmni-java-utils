@@ -48,8 +48,12 @@
 
     <licenses>
         <license>
-            <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
-            <url>https://www.gnu.org/licenses/agpl-3.0.txt</url>
+            <name>Mozilla Public License Version 2.0</name>
+            <url>https://www.mozilla.org/en-US/MPL/2.0/</url>
+        </license>
+        <license>
+            <name>Healthcare Disclaimer</name>
+            <url>https://www.bahmni.org/license</url>
         </license>
     </licenses>
 
