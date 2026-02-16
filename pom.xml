@@ -46,13 +46,9 @@
         </developer>
     </developers>
 
-    <licenses>
+    <licenses> 
         <license>
-            <name>Mozilla Public License Version 2.0</name>
-            <url>https://www.mozilla.org/en-US/MPL/2.0/</url>
-        </license>
-        <license>
-            <name>Healthcare Disclaimer</name>
+            <name>Mozilla Public License Version 2.0 with HD</name>
             <url>https://www.bahmni.org/license</url>
         </license>
     </licenses>
