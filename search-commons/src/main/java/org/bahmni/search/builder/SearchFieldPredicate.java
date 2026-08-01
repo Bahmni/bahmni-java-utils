@@ -11,14 +11,14 @@ package org.bahmni.search.builder;
 import org.bahmni.search.model.ConditionOperator;
 import org.bahmni.search.model.FieldComparator;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
 @FunctionalInterface
 public interface SearchFieldPredicate {
 
-    Predicate build(CriteriaBuilder criteriaBuilder, From<?, ?> root,
-                    String fieldName, FieldComparator comparator,
-                    String value, ConditionOperator operator);
+    Predicate build(QueryContext<?> queryContext,
+                    String fieldName,
+                    FieldComparator comparator,
+                    String value,
+                    ConditionOperator operator);
 }
