@@ -73,6 +73,10 @@ public abstract class AbstractCriteriaBuilder<T> {
                 return cb.greaterThan((Path<Date>) fieldPath, parseDate(value));
             case LT:
                 return cb.lessThan((Path<Date>) fieldPath, parseDate(value));
+            case GE:
+                return cb.greaterThanOrEqualTo((Path<Date>) fieldPath, parseDate(value));
+            case LE:
+                return cb.lessThanOrEqualTo((Path<Date>) fieldPath, parseDate(value));
             default:
                 throw new InvalidSearchCriteriaException(
                         "Unsupported comparator: " + comparator,

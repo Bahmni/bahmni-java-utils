@@ -13,7 +13,7 @@ import org.bahmni.search.exceptions.SearchResponseErrorStatus;
 
 public enum FieldComparator {
 
-    EQ, GT, LT;
+    EQ, GT, LT, GE, LE;
 
     public static FieldComparator resolve(String value) {
         if (value == null) return null;
@@ -21,7 +21,7 @@ public enum FieldComparator {
             return FieldComparator.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidSearchCriteriaException(
-                    "Unknown comparator: '" + value + "'. Supported: eq, gt, lt",
+                    "Unknown comparator: '" + value + "'. Supported: eq, gt, lt, ge, le",
                     SearchResponseErrorStatus.BAD_REQUEST);
         }
     }
