@@ -17,7 +17,7 @@ import java.util.Set;
 public enum FieldType {
 
     STRING(EnumSet.of(FieldComparator.EQ)),
-    DATE(EnumSet.of(FieldComparator.GT, FieldComparator.LT));
+    DATE(EnumSet.of(FieldComparator.GT, FieldComparator.LT, FieldComparator.GE, FieldComparator.LE));
 
     private final Set<FieldComparator> supportedComparators;
 
