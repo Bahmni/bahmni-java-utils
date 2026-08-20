@@ -59,7 +59,7 @@ public final class SearchCriteriaValidationUtils {
         }
     }
 
-    public static void validateMeta(SearchRequestMeta meta) {
+    public static void validateMeta(String entity, SearchRequestMeta meta) {
         if (meta == null) {
             return;
         }
@@ -70,7 +70,7 @@ public final class SearchCriteriaValidationUtils {
         validateLimit(pagination.getLimit());
         validateSortOrder(pagination.getSortOrder());
         validateDirection(pagination.getDirection());
-        validateCursor(pagination.getCursor(), pagination.getDirection());
+        validateCursor(entity, pagination.getCursor(), pagination.getDirection());
     }
 
     private static void validateLimit(Integer limit) {
@@ -97,9 +97,9 @@ public final class SearchCriteriaValidationUtils {
         }
     }
 
-    private static void validateCursor(String cursor, String direction) {
+    private static void validateCursor(String entity, String cursor, String direction) {
         if (cursor != null && !cursor.isEmpty()) {
-            CursorCodec.decode(cursor);
+            CursorCodec.decode(entity, cursor);
             if (direction == null || direction.isEmpty()) {
                 throw new InvalidSearchCriteriaException(
                         "'meta.pagination.direction' is required when 'cursor' is provided",
