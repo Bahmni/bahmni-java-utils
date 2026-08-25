@@ -1,3 +1,11 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at https://www.bahmni.org/license/mplv2hd.
+ *
+ * Copyright (C) 2026 OpenMRS Inc.
+ */
+
 package org.bahmni.search.pagination;
 
 import org.bahmni.search.cursor.CursorCodec;
@@ -11,7 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public final class PaginationHelper {
 
@@ -122,9 +133,9 @@ public final class PaginationHelper {
             return fallback;
         }
         if (value <= 0) {
-            throw new InvalidSearchCriteriaException(
-                    String.format("Global property '%s' must be a positive number, but was '%s'.", propertyName, rawValue),
-                    SearchResponseErrorStatus.BAD_REQUEST);
+            log.warn("Global property '{}' must be a positive number, but was '{}'. Using fallback {}.",
+                    propertyName, rawValue, fallback);
+            return fallback;
         }
         return value;
     }
@@ -140,8 +151,7 @@ public final class PaginationHelper {
     }
 
     public static <T> PageResult<T> paginate(String entity, List<T> rawResults,
-            IdExtractor<T> idExtractor, ResolvedPagination resolved) {
-        boolean hasMore = hasMore(rawResults.size(), resolved.getEffectiveLimit());
+            IdExtractor<T> idExtractor, ResolvedPagination resolved, boolean hasMore) {
         List<T> items = trimToPageAndReorder(rawResults, resolved.getEffectiveLimit(), resolved.isPrev());
 
         PaginationResponse paginationResponse = items.isEmpty()
@@ -154,6 +164,30 @@ public final class PaginationHelper {
 
         return new PageResult<>(items, paginationResponse);
     }
+
+    public static <T, K> List<T> reorderByIds(List<T> items, List<K> orderedIds, Function<T, K> keyExtractor) {
+        Map<K, Integer> positionByKey = new HashMap<>(orderedIds.size());
+        for (int i = 0; i < orderedIds.size(); i++) {
+            positionByKey.put(orderedIds.get(i), i);
+        }
+
+        List<T> result = new ArrayList<>(items);
+        result.sort((first, second) -> {
+            Integer firstPosition = positionOf(positionByKey, keyExtractor.apply(first));
+            Integer secondPosition = positionOf(positionByKey, keyExtractor.apply(second));
+            return Integer.compare(firstPosition, secondPosition);
+        });
+        return result;
+    }
+
+    private static <K> Integer positionOf(Map<K, Integer> positionByKey, K key) {
+        Integer position = positionByKey.get(key);
+        if (position == null) {
+            throw new IllegalStateException("Item with id " + key + " was not found in the ordered id list");
+        }
+        return position;
+    }
+
 
     public interface TotalCountSupplier {
         long count();

@@ -1,3 +1,11 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at https://www.bahmni.org/license/mplv2hd.
+ *
+ * Copyright (C) 2026 OpenMRS Inc.
+ */
+
 package org.bahmni.search.validation;
 
 import org.bahmni.search.cursor.CursorCodec;
@@ -105,6 +113,10 @@ public final class SearchCriteriaValidationUtils {
                         "'meta.pagination.direction' is required when 'cursor' is provided",
                         SearchResponseErrorStatus.BAD_REQUEST);
             }
+        } else if (direction != null && "prev".equalsIgnoreCase(direction)) {
+            throw new InvalidSearchCriteriaException(
+                    "'meta.pagination.cursor' is required when 'direction' is 'prev'",
+                    SearchResponseErrorStatus.BAD_REQUEST);
         }
     }
 
