@@ -14,15 +14,6 @@ import org.bahmni.search.exceptions.SearchResponseErrorStatus;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-/**
- * Encodes/decodes pagination cursors.
- * <p>
- * Cursors are namespaced by an {@code entity} identifier so that a cursor generated for one
- * entity (e.g. "patient") cannot be silently reused against a different entity's search
- * endpoint (e.g. "appointment"), even if the underlying numeric id happens to collide.
- * <p>
- * Encoded format (before base64url encoding): {@code <entity>:<id>}
- */
 public final class CursorCodec {
 
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
