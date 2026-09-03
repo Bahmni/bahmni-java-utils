@@ -6,7 +6,7 @@
 
     <groupId>org.bahmni.module</groupId>
     <artifactId>bahmni-java-utils</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <name>Bahmni Java Utilities</name>
     <description>Various functional utilities needed by bahmni</description>
@@ -49,7 +49,7 @@
 
     <licenses> 
         <license>
-            <name>Mozilla Public License Version 2.0 with HD</name>
+            <name>Mozilla Public License Version 2.0 with Healthcare Disclaimer</name>
             <url>https://www.bahmni.org/license/mplv2hd</url>
         </license>
     </licenses>
