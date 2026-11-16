@@ -16,7 +16,7 @@ public final class PropertyReader {
     private PropertyReader() {
     }
 
-    public static String optionalTrimmed(Properties properties, String key) {
+    public static String getTrimmedOrNull(Properties properties, String key) {
         String value = properties.getProperty(key);
         if (value == null || value.trim().isEmpty()) return null;
         return value.trim();

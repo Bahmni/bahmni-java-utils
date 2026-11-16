@@ -48,13 +48,13 @@ public class OpenMRSAuthenticator {
 
     private static boolean isOAuthEnabled(Properties properties) {
         if (properties == null) return false;
-        return "true".equalsIgnoreCase(PropertyReader.optionalTrimmed(properties, OAUTH2_ENABLED));
+        return "true".equalsIgnoreCase(PropertyReader.getTrimmedOrNull(properties, OAUTH2_ENABLED));
     }
 
     private static OAuthClientCredentials readOAuthCredentials(ConnectionDetails connectionDetails, Properties properties) {
-        String tokenUrl = PropertyReader.optionalTrimmed(properties, TOKEN_URL);
-        String clientId = PropertyReader.optionalTrimmed(properties, CLIENT_ID);
-        String clientSecret = PropertyReader.optionalTrimmed(properties, CLIENT_SECRET);
+        String tokenUrl = PropertyReader.getTrimmedOrNull(properties, TOKEN_URL);
+        String clientId = PropertyReader.getTrimmedOrNull(properties, CLIENT_ID);
+        String clientSecret = PropertyReader.getTrimmedOrNull(properties, CLIENT_SECRET);
         List<String> missing = new ArrayList<String>();
         if (tokenUrl == null) missing.add(TOKEN_URL);
         if (clientId == null) missing.add(CLIENT_ID);
@@ -62,12 +62,12 @@ public class OpenMRSAuthenticator {
         if (!missing.isEmpty()) {
             throw new WebClientsException(OAUTH2_ENABLED + " is true but required OAuth settings are missing: " + missing);
         }
-        return new OAuthClientCredentials(tokenUrl, clientId, clientSecret, PropertyReader.optionalTrimmed(properties, SCOPE),
+        return new OAuthClientCredentials(tokenUrl, clientId, clientSecret, PropertyReader.getTrimmedOrNull(properties, SCOPE),
                 connectionDetails.getConnectionTimeout(), connectionDetails.getReadTimeout(), readExpirySkewSeconds(properties));
     }
 
     private static int readExpirySkewSeconds(Properties properties) {
-        String value = PropertyReader.optionalTrimmed(properties, EXPIRY_SKEW_SECONDS);
+        String value = PropertyReader.getTrimmedOrNull(properties, EXPIRY_SKEW_SECONDS);
         if (value == null) return OAuthClientCredentials.DEFAULT_EXPIRY_SKEW_SECONDS;
         try {
             return Integer.parseInt(value);
