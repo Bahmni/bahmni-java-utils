@@ -9,7 +9,7 @@
 
 package org.bahmni.webclients;
 
-import org.bahmni.webclients.openmrs.OpenMRSLoginAuthenticator;
+import org.bahmni.webclients.openmrs.OpenMRSBasicLoginAuthenticator;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ class HttpClientIT {
     public void shouldBeAbleToReachOpenMRS() throws URISyntaxException {
 
         ConnectionDetails connectionDetails = new ConnectionDetails(BAHMNI_SERVER_BASE_URL + "openmrs/ws/rest/v1/session", "admin", "test", 10000, 20000);
-        HttpClient httpClient = new HttpClient(connectionDetails, new OpenMRSLoginAuthenticator(connectionDetails));
+        HttpClient httpClient = new HttpClient(connectionDetails, new OpenMRSBasicLoginAuthenticator(connectionDetails));
         System.out.println(httpClient.get(new URI(BAHMNI_SERVER_BASE_URL + "openmrs/ws/rest/v1/person/" + PATIENT_UUID + "?v=full")));
     }
 

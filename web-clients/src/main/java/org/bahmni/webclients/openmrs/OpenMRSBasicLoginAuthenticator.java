@@ -39,13 +39,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OpenMRSLoginAuthenticator implements Authenticator {
-    private static Logger logger = LoggerFactory.getLogger(OpenMRSLoginAuthenticator.class);
+public class OpenMRSBasicLoginAuthenticator implements Authenticator {
+    private static Logger logger = LoggerFactory.getLogger(OpenMRSBasicLoginAuthenticator.class);
     private final String SESSION_ID_KEY = "JSESSIONID";
     private ConnectionDetails authenticationDetails;
     private HttpRequestDetails previousSuccessfulRequest;
 
-    public OpenMRSLoginAuthenticator(ConnectionDetails authenticationDetails) {
+    public OpenMRSBasicLoginAuthenticator(ConnectionDetails authenticationDetails) {
         this.authenticationDetails = authenticationDetails;
     }
 
