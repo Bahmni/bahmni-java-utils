@@ -9,6 +9,8 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuthToken;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.webclients.WebClientsException;

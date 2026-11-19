@@ -9,6 +9,10 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuthToken;
+
+import org.bahmni.webclients.OAuth2ConnectionDetails;
+
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -30,7 +34,7 @@ public final class HttpOAuthTokenClient {
     private HttpOAuthTokenClient() {
     }
 
-    public static OAuthToken fetchToken(OAuthClientCredentials credentials) {
+    public static OAuthToken fetchToken(OAuth2ConnectionDetails credentials) {
         CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig(credentials)).build();
         try {
             HttpPost post = new HttpPost(credentials.getTokenUrl());
@@ -46,7 +50,7 @@ public final class HttpOAuthTokenClient {
         }
     }
 
-    private static OAuthToken execute(CloseableHttpClient httpClient, HttpPost post, OAuthClientCredentials credentials) throws IOException {
+    private static OAuthToken execute(CloseableHttpClient httpClient, HttpPost post, OAuth2ConnectionDetails credentials) throws IOException {
         CloseableHttpResponse response = httpClient.execute(post);
         try {
             int status = response.getStatusLine().getStatusCode();
@@ -63,7 +67,7 @@ public final class HttpOAuthTokenClient {
         }
     }
 
-    private static RequestConfig requestConfig(OAuthClientCredentials credentials) {
+    private static RequestConfig requestConfig(OAuth2ConnectionDetails credentials) {
         return RequestConfig.custom()
                 .setConnectTimeout(credentials.getConnectionTimeout())
                 .setSocketTimeout(credentials.getReadTimeout())

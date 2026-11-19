@@ -9,6 +9,10 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuthToken;
+
+import org.bahmni.webclients.OAuth2ConnectionDetails;
+
 import org.bahmni.webclients.WebClientsException;
 import org.junit.After;
 import org.junit.Before;
@@ -35,8 +39,8 @@ public class HttpOAuthTokenClientTest {
         server.stop();
     }
 
-    private OAuthClientCredentials credentials(String scope) {
-        return new OAuthClientCredentials(server.tokenUrl(), "odoo-connect-sa", "s3cr3t/+=", scope, 2000, 5000, 30);
+    private OAuth2ConnectionDetails credentials(String scope) {
+        return new OAuth2ConnectionDetails(null, server.tokenUrl(), "odoo-connect-sa", "s3cr3t/+=", scope, 2000, 5000, 30);
     }
 
     private OAuthToken fetch(String scope) {

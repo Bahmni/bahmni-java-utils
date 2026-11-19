@@ -9,6 +9,8 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuthToken;
+
 import org.bahmni.webclients.WebClientsException;
 import org.junit.Test;
 

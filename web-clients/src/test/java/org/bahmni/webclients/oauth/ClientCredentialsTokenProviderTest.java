@@ -9,6 +9,8 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuth2ConnectionDetails;
+
 import org.bahmni.webclients.WebClientsException;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +50,7 @@ public class ClientCredentialsTokenProviderTest {
 
     private ClientCredentialsTokenProvider provider() {
         return new ClientCredentialsTokenProvider(
-                new OAuthClientCredentials(server.tokenUrl(), "odoo-connect-sa", "secret", null, 2000, 5000, SKEW_SECONDS),
+                new OAuth2ConnectionDetails(null, server.tokenUrl(), "odoo-connect-sa", "secret", null, 2000, 5000, SKEW_SECONDS),
                 clock);
     }
 

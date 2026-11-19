@@ -9,11 +9,9 @@
 
 package org.bahmni.webclients.openmrs;
 
-import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpRequestDetails;
 import org.bahmni.webclients.WebClientsException;
-import org.bahmni.webclients.oauth.ClientCredentialsTokenProvider;
-import org.bahmni.webclients.oauth.OAuthClientCredentials;
+import org.bahmni.webclients.OAuth2ConnectionDetails;
 import org.bahmni.webclients.oauth.StubAuthServer;
 import org.junit.After;
 import org.junit.Before;
@@ -34,9 +32,9 @@ public class OpenMRSOAuthLoginAuthenticatorTest {
     @Before
     public void setUp() throws Exception {
         server = new StubAuthServer();
-        ConnectionDetails details = new ConnectionDetails(server.sessionUrl(), "", "", 2000, 5000);
-        OAuthClientCredentials credentials = new OAuthClientCredentials(server.tokenUrl(), "odoo-connect-sa", "secret", null, 2000, 5000, 30);
-        authenticator = new OpenMRSOAuthLoginAuthenticator(details, new ClientCredentialsTokenProvider(credentials));
+        OAuth2ConnectionDetails credentials = new OAuth2ConnectionDetails(server.sessionUrl(), server.tokenUrl(),
+                "odoo-connect-sa", "secret", null, 2000, 5000, 30);
+        authenticator = new OpenMRSOAuthLoginAuthenticator(credentials);
     }
 
     @After

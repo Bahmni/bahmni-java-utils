@@ -7,11 +7,12 @@
  */
 
 
-package org.bahmni.webclients.oauth;
+package org.bahmni.webclients;
 
-public class OAuthClientCredentials {
+public class OAuth2ConnectionDetails {
     public static final int DEFAULT_EXPIRY_SKEW_SECONDS = 30;
 
+    private final String authUrl;
     private final String tokenUrl;
     private final String clientId;
     private final String clientSecret;
@@ -20,8 +21,9 @@ public class OAuthClientCredentials {
     private final int readTimeout;
     private final int expirySkewSeconds;
 
-    public OAuthClientCredentials(String tokenUrl, String clientId, String clientSecret, String scope,
+    public OAuth2ConnectionDetails(String authUrl, String tokenUrl, String clientId, String clientSecret, String scope,
                                   int connectionTimeout, int readTimeout, int expirySkewSeconds) {
+        this.authUrl = authUrl;
         this.tokenUrl = tokenUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -29,6 +31,10 @@ public class OAuthClientCredentials {
         this.connectionTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
         this.expirySkewSeconds = expirySkewSeconds;
+    }
+
+    public String getAuthUrl() {
+        return authUrl;
     }
 
     public String getTokenUrl() {
@@ -61,6 +67,6 @@ public class OAuthClientCredentials {
 
     @Override
     public String toString() {
-        return "OAuthClientCredentials{tokenUrl='" + tokenUrl + "', clientId='" + clientId + "', clientSecret='****'}";
+        return "OAuth2ConnectionDetails{tokenUrl='" + tokenUrl + "', clientId='" + clientId + "', clientSecret='****'}";
     }
 }

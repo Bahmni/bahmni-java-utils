@@ -7,7 +7,7 @@
  */
 
 
-package org.bahmni.webclients.oauth;
+package org.bahmni.webclients;
 
 public class OAuthToken {
     private final String accessToken;

@@ -9,25 +9,28 @@
 
 package org.bahmni.webclients.oauth;
 
+import org.bahmni.webclients.OAuthToken;
+
+import org.bahmni.webclients.OAuth2ConnectionDetails;
+
 import java.time.Clock;
 
 
-public class ClientCredentialsTokenProvider implements OAuthTokenProvider {
-    private final OAuthClientCredentials credentials;
+public class ClientCredentialsTokenProvider {
+    private final OAuth2ConnectionDetails credentials;
     private final Clock clock;
     private String accessToken;
     private long refreshAtMillis;
 
-    public ClientCredentialsTokenProvider(OAuthClientCredentials credentials) {
+    public ClientCredentialsTokenProvider(OAuth2ConnectionDetails credentials) {
         this(credentials, Clock.systemUTC());
     }
 
-    ClientCredentialsTokenProvider(OAuthClientCredentials credentials, Clock clock) {
+    ClientCredentialsTokenProvider(OAuth2ConnectionDetails credentials, Clock clock) {
         this.credentials = credentials;
         this.clock = clock;
     }
 
-    @Override
     public synchronized String getAccessToken() {
         if (accessToken == null || clock.millis() >= refreshAtMillis) {
             cache(HttpOAuthTokenClient.fetchToken(credentials));
@@ -35,7 +38,6 @@ public class ClientCredentialsTokenProvider implements OAuthTokenProvider {
         return accessToken;
     }
 
-    @Override
     public synchronized void invalidate() {
         accessToken = null;
     }

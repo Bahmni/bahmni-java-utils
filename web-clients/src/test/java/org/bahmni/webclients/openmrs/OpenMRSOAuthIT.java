@@ -13,8 +13,7 @@ import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.bahmni.webclients.HttpRequestDetails;
-import org.bahmni.webclients.oauth.ClientCredentialsTokenProvider;
-import org.bahmni.webclients.oauth.OAuthClientCredentials;
+import org.bahmni.webclients.OAuth2ConnectionDetails;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,10 +42,9 @@ public class OpenMRSOAuthIT {
         String clientSecret = System.getProperty("it.oauth.client.secret");
         Assume.assumeTrue(sessionUrl != null && tokenUrl != null && clientId != null && clientSecret != null);
 
-        ConnectionDetails details = new ConnectionDetails(sessionUrl, "", "", 10000, 20000);
-        OAuthClientCredentials credentials = new OAuthClientCredentials(tokenUrl, clientId, clientSecret, null,
-                10000, 20000, OAuthClientCredentials.DEFAULT_EXPIRY_SKEW_SECONDS);
-        authenticator = new OpenMRSOAuthLoginAuthenticator(details, new ClientCredentialsTokenProvider(credentials));
+        OAuth2ConnectionDetails credentials = new OAuth2ConnectionDetails(sessionUrl, tokenUrl, clientId, clientSecret,
+                null, 10000, 20000, OAuth2ConnectionDetails.DEFAULT_EXPIRY_SKEW_SECONDS);
+        authenticator = new OpenMRSOAuthLoginAuthenticator(credentials);
     }
 
     @Test
