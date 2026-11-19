@@ -83,7 +83,7 @@ public class OpenMRSAuthenticator {
                 InputStream content = entity.getContent();
                 responseText = IOUtils.toString(content);
             }
-            logger.info("OMRS Authentication successful");
+            logger.debug("OMRS Authentication successful");
             EntityUtils.consume(entity);
 
             return objectMapper.readValue(responseText, OpenMRSAuthenticationResponse.class);
