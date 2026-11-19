@@ -9,8 +9,6 @@
 
 package org.bahmni.webclients.utils;
 
-import org.bahmni.webclients.OAuthToken;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bahmni.webclients.WebClientsException;
@@ -18,20 +16,18 @@ import org.bahmni.webclients.WebClientsException;
 import java.io.IOException;
 
 public final class OAuthTokenResponseParser {
-    public static final long DEFAULT_LIFETIME_SECONDS = 60;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private OAuthTokenResponseParser() {
     }
 
-    public static OAuthToken parseToken(String body, String tokenUrl) throws IOException {
+    public static String parseToken(String body, String tokenUrl) throws IOException {
         JsonNode json = OBJECT_MAPPER.readTree(body);
         JsonNode token = json == null ? null : json.get("access_token");
         if (token == null || token.asText().isEmpty()) {
             throw new WebClientsException(String.format("Token response from %s did not contain an access_token", tokenUrl));
         }
-        long lifetimeSeconds = json.has("expires_in") ? json.get("expires_in").asLong(DEFAULT_LIFETIME_SECONDS) : DEFAULT_LIFETIME_SECONDS;
-        return new OAuthToken(token.asText(), lifetimeSeconds);
+        return token.asText();
     }
 
     public static String describeError(String body) {

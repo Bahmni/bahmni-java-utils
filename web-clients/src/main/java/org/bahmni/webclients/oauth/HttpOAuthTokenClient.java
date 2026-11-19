@@ -9,8 +9,6 @@
 
 package org.bahmni.webclients.oauth;
 
-import org.bahmni.webclients.OAuthToken;
-
 import org.bahmni.webclients.OAuth2ConnectionDetails;
 
 import org.apache.http.HttpHeaders;
@@ -36,7 +34,7 @@ public final class HttpOAuthTokenClient {
     private HttpOAuthTokenClient() {
     }
 
-    public static OAuthToken fetchToken(OAuth2ConnectionDetails credentials) {
+    public static String fetchToken(OAuth2ConnectionDetails credentials) {
         CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig(credentials)).build();
         try {
             HttpPost post = new HttpPost(credentials.getTokenUrl());
@@ -52,7 +50,7 @@ public final class HttpOAuthTokenClient {
         }
     }
 
-    private static OAuthToken execute(CloseableHttpClient httpClient, HttpPost post, OAuth2ConnectionDetails credentials) throws IOException {
+    private static String execute(CloseableHttpClient httpClient, HttpPost post, OAuth2ConnectionDetails credentials) throws IOException {
         CloseableHttpResponse response = httpClient.execute(post);
         try {
             int status = response.getStatusLine().getStatusCode();
@@ -61,10 +59,11 @@ public final class HttpOAuthTokenClient {
                 throw new WebClientsException(String.format("Token request to %s for client '%s' failed with HTTP %d%s",
                         credentials.getTokenUrl(), credentials.getClientId(), status, OAuthTokenResponseParser.describeError(body)));
             }
-            OAuthToken token = OAuthTokenResponseParser.parseToken(body, credentials.getTokenUrl());
-            logger.info("Obtained OAuth access token for client '{}', valid for {}s", credentials.getClientId(), token.getExpiresInSeconds());
-            return token;
-        } finally {
+            String accessToken = OAuthTokenResponseParser.parseToken(body, credentials.getTokenUrl());
+            logger.info("Obtained OAuth access token for client '{}'", credentials.getClientId());
+            return accessToken;
+        }
+        finally {
             response.close();
         }
     }

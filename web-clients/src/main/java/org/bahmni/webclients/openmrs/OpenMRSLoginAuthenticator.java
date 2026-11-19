@@ -10,15 +10,9 @@
 package org.bahmni.webclients.openmrs;
 
 import org.apache.http.Header;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthenticationException;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.message.BasicHeader;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+
 import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ClientCookies;
 import org.bahmni.webclients.ConnectionDetails;
@@ -27,6 +21,7 @@ import org.bahmni.webclients.HttpRequestDetails;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class OpenMRSLoginAuthenticator implements Authenticator {
     private ConnectionDetails authenticationDetails;
@@ -47,19 +42,13 @@ public class OpenMRSLoginAuthenticator implements Authenticator {
     @Override
     public HttpRequestDetails refreshRequestDetails(URI uri) {
         ClientCookies clientCookies = OpenMRSSessionLogin.login(authenticationDetails.getAuthUrl(),
-                authenticationDetails.getConnectionTimeout(), authenticationDetails.getReadTimeout(), this::setCredentials);
+                authenticationDetails.getConnectionTimeout(), authenticationDetails.getReadTimeout(), setbasicAuthorizationHeader());
         previousSuccessfulRequest = new HttpRequestDetails(uri, clientCookies, new HttpHeaders());
         return previousSuccessfulRequest;
     }
 
-    protected void setCredentials(HttpGet httpGet) throws AuthenticationException {
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(authenticationDetails.getUserId(), authenticationDetails.getPassword());
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(AuthScope.ANY, credentials);
-        HttpClientContext context = HttpClientContext.create();
-        context.setCookieStore(new BasicCookieStore());
-        context.setCredentialsProvider(credsProvider);
-        Header authorizationHeader = new BasicScheme(StandardCharsets.UTF_8).authenticate(credentials, httpGet, context);
-        httpGet.setHeader(authorizationHeader);
+    private Header setbasicAuthorizationHeader() {
+        String credentials = authenticationDetails.getUserId() + ":" + authenticationDetails.getPassword();
+        return new BasicHeader(AUTHORIZATION, "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8)));
     }
 }

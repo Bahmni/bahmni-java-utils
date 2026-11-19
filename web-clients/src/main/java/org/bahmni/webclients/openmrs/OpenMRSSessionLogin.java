@@ -11,9 +11,11 @@ package org.bahmni.webclients.openmrs;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.Headers;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.auth.AuthenticationException;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -35,14 +37,10 @@ final class OpenMRSSessionLogin {
     private static final String SESSION_ID_KEY = "JSESSIONID";
     private static final Pattern SESSION_ID_PATTERN = Pattern.compile("\\bJSESSIONID=([A-Z0-9]{32})");
 
-    interface AuthorizationSetter {
-        void setAuthorization(HttpGet request) throws AuthenticationException;
-    }
-
     private OpenMRSSessionLogin() {
     }
 
-    static ClientCookies login(String sessionUrl, int connectionTimeout, int readTimeout, AuthorizationSetter authorization) {
+    static ClientCookies login(String sessionUrl, int connectionTimeout, int readTimeout, Header authorizationHeader) {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(connectionTimeout)
                 .setSocketTimeout(readTimeout)
@@ -53,7 +51,7 @@ final class OpenMRSSessionLogin {
                 .build();
         try {
             HttpGet httpGet = new HttpGet(sessionUrl);
-            authorization.setAuthorization(httpGet);
+            httpGet.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeader.getValue());
             logger.info(String.format("Executing request: %s", httpGet.getRequestLine()));
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 HttpEntity entity = response.getEntity();
