@@ -79,7 +79,6 @@ public class OpenMRSOAuthLoginAuthenticator implements Authenticator {
                 InputStream content = entity.getContent();
                 responseText = IOUtils.toString(content);
             }
-            logger.info(String.format("Authentication response: %s", responseText));
             EntityUtils.consume(entity);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
