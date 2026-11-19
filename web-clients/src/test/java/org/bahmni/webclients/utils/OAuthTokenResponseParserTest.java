@@ -9,8 +9,6 @@
 
 package org.bahmni.webclients.utils;
 
-import org.bahmni.webclients.OAuthToken;
-
 import org.bahmni.webclients.WebClientsException;
 import org.junit.Test;
 
@@ -24,16 +22,8 @@ public class OAuthTokenResponseParserTest {
     private static final String TOKEN_URL = "http://keycloak.test/token";
 
     @Test
-    public void parsesAccessTokenAndLifetime() throws IOException {
-        OAuthToken token = OAuthTokenResponseParser.parseToken("{\"access_token\":\"abc\",\"expires_in\":120}", TOKEN_URL);
-        assertEquals("abc", token.getAccessToken());
-        assertEquals(120, token.getExpiresInSeconds());
-    }
-
-    @Test
-    public void missingExpiresInDefaultsToSixtySeconds() throws IOException {
-        OAuthToken token = OAuthTokenResponseParser.parseToken("{\"access_token\":\"abc\"}", TOKEN_URL);
-        assertEquals(OAuthTokenResponseParser.DEFAULT_LIFETIME_SECONDS, token.getExpiresInSeconds());
+    public void parsesAccessToken() throws IOException {
+        assertEquals("abc", OAuthTokenResponseParser.parseToken("{\"access_token\":\"abc\",\"expires_in\":120}", TOKEN_URL));
     }
 
     @Test

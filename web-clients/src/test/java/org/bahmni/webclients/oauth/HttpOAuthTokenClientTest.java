@@ -9,8 +9,6 @@
 
 package org.bahmni.webclients.oauth;
 
-import org.bahmni.webclients.OAuthToken;
-
 import org.bahmni.webclients.OAuth2ConnectionDetails;
 
 import org.bahmni.webclients.WebClientsException;
@@ -43,16 +41,13 @@ public class HttpOAuthTokenClientTest {
         return new OAuth2ConnectionDetails(null, server.tokenUrl(), "odoo-connect-sa", "s3cr3t/+=", scope, 2000, 5000, 30);
     }
 
-    private OAuthToken fetch(String scope) {
+    private String fetch(String scope) {
         return HttpOAuthTokenClient.fetchToken(credentials(scope));
     }
 
     @Test
     public void fetchesTokenWithClientCredentialsGrantAndBasicClientAuth() {
-        OAuthToken token = fetch(null);
-
-        assertEquals("token-1", token.getAccessToken());
-        assertEquals(300, token.getExpiresInSeconds());
+        assertEquals("token-1", fetch(null));
         assertEquals("grant_type=client_credentials", server.tokenBodies.get(0));
         String expected = "Basic " + Base64.getEncoder().encodeToString("odoo-connect-sa:s3cr3t%2F%2B%3D".getBytes(StandardCharsets.UTF_8));
         assertEquals(expected, server.tokenAuthHeaders.get(0));
