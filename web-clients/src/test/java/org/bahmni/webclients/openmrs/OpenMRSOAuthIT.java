@@ -13,12 +13,13 @@ import org.bahmni.webclients.Authenticator;
 import org.bahmni.webclients.ConnectionDetails;
 import org.bahmni.webclients.HttpClient;
 import org.bahmni.webclients.HttpRequestDetails;
+import org.bahmni.webclients.oauth.ClientCredentialsTokenProvider;
+import org.bahmni.webclients.oauth.OAuthClientCredentials;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URI;
-import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,12 +43,10 @@ public class OpenMRSOAuthIT {
         String clientSecret = System.getProperty("it.oauth.client.secret");
         Assume.assumeTrue(sessionUrl != null && tokenUrl != null && clientId != null && clientSecret != null);
 
-        Properties properties = new Properties();
-        properties.setProperty("oauth2.enabled", "true");
-        properties.setProperty("openmrs.oauth.token.url", tokenUrl);
-        properties.setProperty("openmrs.oauth.client.id", clientId);
-        properties.setProperty("openmrs.oauth.client.secret", clientSecret);
-        authenticator = OpenMRSAuthenticator.getAuthenticator(new ConnectionDetails(sessionUrl, "", "", 10000, 20000), properties);
+        ConnectionDetails details = new ConnectionDetails(sessionUrl, "", "", 10000, 20000);
+        OAuthClientCredentials credentials = new OAuthClientCredentials(tokenUrl, clientId, clientSecret, null,
+                10000, 20000, OAuthClientCredentials.DEFAULT_EXPIRY_SKEW_SECONDS);
+        authenticator = new OpenMRSOAuthLoginAuthenticator(details, new ClientCredentialsTokenProvider(credentials));
     }
 
     @Test

@@ -38,13 +38,13 @@ public class OpenMRSIT {
     private static final String BAHMNI_SERVER_BASE_URL = "https://qa-02.hip.bahmni-covid19.in";
     private static final String PATIENT_UUID = "0004b3c5-7ca1-4d54-b212-fe63afb8b2da";
     private static Logger logger = LoggerFactory.getLogger(OpenMRSIT.class);
-    private OpenMRSLegacyLoginHelper openMRSAuthenticator;
+    private OpenMRSAuthenticator openMRSAuthenticator;
     private String authURL;
 
     @Before
     public void before() {
         authURL = BAHMNI_SERVER_BASE_URL + "/openmrs/ws/rest/v1/session";
-        openMRSAuthenticator = new OpenMRSLegacyLoginHelper(authURL, 10000, 20000);
+        openMRSAuthenticator = new OpenMRSAuthenticator(authURL, 10000, 20000);
     }
 
     @Test

@@ -17,7 +17,7 @@ import org.bahmni.webclients.oauth.OAuthTokenProvider;
 import java.net.URI;
 
 
-public class OpenMRSOAuthLoginAuthenticator extends OpenMRSBasicLoginAuthenticator {
+public class OpenMRSOAuthLoginAuthenticator extends OpenMRSLoginAuthenticator {
     private final OAuthTokenProvider tokenProvider;
     private volatile boolean sessionEstablishedBefore = false;
 
