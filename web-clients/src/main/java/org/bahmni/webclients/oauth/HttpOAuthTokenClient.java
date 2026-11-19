@@ -22,6 +22,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.bahmni.webclients.WebClientsException;
+import org.bahmni.webclients.utils.ClientCredentialsRequestUtils;
+import org.bahmni.webclients.utils.OAuthTokenResponseParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +40,9 @@ public final class HttpOAuthTokenClient {
         CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig(credentials)).build();
         try {
             HttpPost post = new HttpPost(credentials.getTokenUrl());
-            post.setHeader(HttpHeaders.AUTHORIZATION, ClientCredentialsRequest.authorizationHeader(credentials));
+            post.setHeader(HttpHeaders.AUTHORIZATION, ClientCredentialsRequestUtils.getAuthorizationHeader(credentials));
             post.setHeader(HttpHeaders.ACCEPT, "application/json");
-            post.setEntity(new UrlEncodedFormEntity(ClientCredentialsRequest.formParameters(credentials), StandardCharsets.UTF_8));
+            post.setEntity(new UrlEncodedFormEntity(ClientCredentialsRequestUtils.buildTokenRequestParameters(credentials), StandardCharsets.UTF_8));
             return execute(httpClient, post, credentials);
         } catch (IOException e) {
             throw new WebClientsException(String.format("Token request to %s for client '%s' failed: %s",

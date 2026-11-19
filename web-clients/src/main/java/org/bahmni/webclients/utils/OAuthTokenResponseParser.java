@@ -7,7 +7,7 @@
  */
 
 
-package org.bahmni.webclients.oauth;
+package org.bahmni.webclients.utils;
 
 import org.bahmni.webclients.OAuthToken;
 
@@ -17,14 +17,14 @@ import org.bahmni.webclients.WebClientsException;
 
 import java.io.IOException;
 
-final class OAuthTokenResponseParser {
-    static final long DEFAULT_LIFETIME_SECONDS = 60;
+public final class OAuthTokenResponseParser {
+    public static final long DEFAULT_LIFETIME_SECONDS = 60;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private OAuthTokenResponseParser() {
     }
 
-    static OAuthToken parseToken(String body, String tokenUrl) throws IOException {
+    public static OAuthToken parseToken(String body, String tokenUrl) throws IOException {
         JsonNode json = OBJECT_MAPPER.readTree(body);
         JsonNode token = json == null ? null : json.get("access_token");
         if (token == null || token.asText().isEmpty()) {
@@ -34,7 +34,7 @@ final class OAuthTokenResponseParser {
         return new OAuthToken(token.asText(), lifetimeSeconds);
     }
 
-    static String describeError(String body) {
+    public static String describeError(String body) {
         try {
             JsonNode json = OBJECT_MAPPER.readTree(body);
             if (json != null && json.has("error")) {

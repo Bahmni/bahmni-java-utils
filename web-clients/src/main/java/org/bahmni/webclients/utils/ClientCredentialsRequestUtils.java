@@ -7,7 +7,7 @@
  */
 
 
-package org.bahmni.webclients.oauth;
+package org.bahmni.webclients.utils;
 
 import org.bahmni.webclients.OAuth2ConnectionDetails;
 
@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-final class ClientCredentialsRequest {
+public final class ClientCredentialsRequestUtils {
 
-    private ClientCredentialsRequest() {
+    private ClientCredentialsRequestUtils() {
     }
 
-    static List<NameValuePair> formParameters(OAuth2ConnectionDetails credentials) {
+    public static List<NameValuePair> buildTokenRequestParameters(OAuth2ConnectionDetails credentials) {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("grant_type", "client_credentials"));
         String scope = credentials.getScope();
@@ -36,7 +36,7 @@ final class ClientCredentialsRequest {
         return params;
     }
 
-    static String authorizationHeader(OAuth2ConnectionDetails credentials) throws IOException {
+    public static String getAuthorizationHeader(OAuth2ConnectionDetails credentials) throws IOException {
         String id = URLEncoder.encode(credentials.getClientId(), "UTF-8");
         String secret = URLEncoder.encode(credentials.getClientSecret(), "UTF-8");
         return "Basic " + Base64.getEncoder().encodeToString((id + ":" + secret).getBytes(StandardCharsets.UTF_8));

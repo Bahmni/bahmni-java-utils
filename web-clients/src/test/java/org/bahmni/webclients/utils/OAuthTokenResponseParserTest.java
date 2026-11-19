@@ -7,7 +7,7 @@
  */
 
 
-package org.bahmni.webclients.oauth;
+package org.bahmni.webclients.utils;
 
 import org.bahmni.webclients.OAuthToken;
 

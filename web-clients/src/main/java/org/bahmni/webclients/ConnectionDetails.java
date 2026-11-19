@@ -11,7 +11,7 @@ package org.bahmni.webclients;
 
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-public class  ConnectionDetails {
+public class ConnectionDetails {
     private String authUrl;
     private String userId;
     private String password;
