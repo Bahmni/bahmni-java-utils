@@ -43,7 +43,7 @@ public class OpenMRSOAuthIT {
         Assume.assumeTrue(sessionUrl != null && tokenUrl != null && clientId != null && clientSecret != null);
 
         OAuth2ConnectionDetails credentials = new OAuth2ConnectionDetails(sessionUrl, tokenUrl, clientId, clientSecret,
-                null, 10000, 20000, OAuth2ConnectionDetails.DEFAULT_EXPIRY_SKEW_SECONDS);
+                null, 10000, 20000);
         authenticator = new OpenMRSOAuthLoginAuthenticator(credentials);
     }
 
