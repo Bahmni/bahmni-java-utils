@@ -38,7 +38,7 @@ public class HttpOAuthTokenClientTest {
     }
 
     private OAuth2ConnectionDetails credentials(String scope) {
-        return new OAuth2ConnectionDetails(null, server.tokenUrl(), "odoo-connect-sa", "s3cr3t/+=", scope, 2000, 5000, 30);
+        return new OAuth2ConnectionDetails(null, server.tokenUrl(), "odoo-connect-sa", "s3cr3t/+=", scope, 2000, 5000);
     }
 
     private String fetch(String scope) {

@@ -33,7 +33,7 @@ public class OpenMRSOAuthLoginAuthenticatorTest {
     public void setUp() throws Exception {
         server = new StubAuthServer();
         OAuth2ConnectionDetails credentials = new OAuth2ConnectionDetails(server.sessionUrl(), server.tokenUrl(),
-                "odoo-connect-sa", "secret", null, 2000, 5000, 30);
+                "odoo-connect-sa", "secret", null, 2000, 5000);
         authenticator = new OpenMRSOAuthLoginAuthenticator(credentials);
     }
 

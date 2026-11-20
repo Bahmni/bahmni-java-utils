@@ -10,7 +10,6 @@
 package org.bahmni.webclients;
 
 public class OAuth2ConnectionDetails {
-    public static final int DEFAULT_EXPIRY_SKEW_SECONDS = 30;
 
     private final String authUrl;
     private final String tokenUrl;
@@ -19,10 +18,9 @@ public class OAuth2ConnectionDetails {
     private final String scope;
     private final int connectionTimeout;
     private final int readTimeout;
-    private final int expirySkewSeconds;
 
     public OAuth2ConnectionDetails(String authUrl, String tokenUrl, String clientId, String clientSecret, String scope,
-                                  int connectionTimeout, int readTimeout, int expirySkewSeconds) {
+                                  int connectionTimeout, int readTimeout) {
         this.authUrl = authUrl;
         this.tokenUrl = tokenUrl;
         this.clientId = clientId;
@@ -30,7 +28,6 @@ public class OAuth2ConnectionDetails {
         this.scope = scope;
         this.connectionTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
-        this.expirySkewSeconds = expirySkewSeconds;
     }
 
     public String getAuthUrl() {
@@ -59,10 +56,6 @@ public class OAuth2ConnectionDetails {
 
     public int getReadTimeout() {
         return readTimeout;
-    }
-
-    public int getExpirySkewSeconds() {
-        return expirySkewSeconds;
     }
 
     @Override
