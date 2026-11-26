@@ -9,10 +9,7 @@
 
 package org.bahmni.webclients;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -46,6 +43,10 @@ public class HttpClient {
 
     public ClientCookies getCookies(URI uri) {
         return authenticator.getRequestDetails(uri).getClientCookies();
+    }
+
+    public ClientCookies refreshCookies(URI uri) {
+        return authenticator.refreshRequestDetails(uri).getClientCookies();
     }
 
     public String get(URI uri) {
